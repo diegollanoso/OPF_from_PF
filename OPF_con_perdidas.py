@@ -247,7 +247,7 @@ for g in generadores:
     cont += 1    
 
 #Lista de generadores
-# Name, BusConnect, Reference Machine, N° Gen paralelo, On or Off, Pmin, Pmax, P
+# Name, BusConnect, Reference Machine, N° Gen paralelo, On or Off, Pmin, Pmax, Pxdddd
 list_gen = np.zeros((ng, 6))
 pos_g = []
 cont = 0
@@ -338,7 +338,7 @@ for i in range(nl):
     model.addConstr(pk_loss[i] == (G[i]/(B[i])**2) * quicksum(kl*dpk.select(i,'*')))
     
     f_g = quicksum(p.select('*')*sf[i,pos_g])
-    print(f_g)
+
     model.addConstr(f[i] == PF[i] - f_g)
     model.addConstr(f[i] == pk_mas[i] - pk_menos[i])
     model.addConstr(sum(dpk.select(i,'*')) == pk_mas[i] + pk_menos[i])

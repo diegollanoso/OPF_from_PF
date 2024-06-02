@@ -9,11 +9,11 @@ import powerfactory as pf
 
 # La matriz de shift factors se limpia y ordena
 # Return matriz de shif factors
-def ShiftFactors(ptdf_dataframe, lista_nom):
+def ShiftFactors(ptdf_dataframe):
     ejes = ptdf_dataframe.axes
     ejes_corregidos = list()
 
-    #Líneas se encuentran dentro de otros objetos
+    # Elementos del SEP (NO Buses!) se encuentran dentro de otros objetos
     # ej: Talca - Itahue 66 kV L1\Tap San Rafael - Panguilemo  66 kV_bhk1
     # La línea se encuentra dentro de Talca - Itahue 66 kV L1
     # Ejes corregidos es el nombre del elemento sin incluir la carpeta de origen
@@ -23,53 +23,56 @@ def ShiftFactors(ptdf_dataframe, lista_nom):
             ejes_corregidos.append(i.split('\\')[1])
         else:
             ejes_corregidos.append(i)
+    del ejes_corregidos[0:3]
 
-    eliminar_col = list()
-    corregir = list()
-    [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind] = lista_nom
+    if False:
+        eliminar_col = list()
+        corregir = list()
+        [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind] = lista_nom
 
 
-    #PROBABLEMENTE!!! NO ES NECESARIO SI SE MODIFICA LAS VARIABLES DE SENSIBILIDAD EN EL POWERFACTORY
+        #PROBABLEMENTE!!! NO ES NECESARIO SI SE MODIFICA LAS VARIABLES DE SENSIBILIDAD EN EL POWERFACTORY
 
-    # Buscar en los nombres obtenidos del excel y comparar con los obtenidos directamente desde PF.
-    # Se guardan en 'eliminar_col', el numero de la columna que se desea eliminar
-    # Esto se hace para eliminar los Factores de sensibilidad que no se necesitan
-    # Para las líneas solo se utiliza dP/dP:bus1
-    # Para los trf se utilizan dP/dP:bushv  y  dP/dP:buslv
-    # Para los trf de 3dev se utilizan dP/dP:bushv   dP/dP:busmv   y dP/dP:buslv
-    # Para los inductores solo se utiliza dP/dP:bus1
-    # Para los capacitores solo se utiliza dP/dP:bus1
-    for i in ejes_corregidos:  
-        if i in nom_lin:
-            continue
-        elif i in nom_trf:
-            corregir.append(ejes_corregidos.index(i)+1)
-            continue
-        elif i in nom_trf3:
-            corregir.append(ejes_corregidos.index(i)+1)
-            corregir.append(ejes_corregidos.index(i)+2)
-            continue
-        elif i in nom_ind:
-            continue
-        elif i in nom_cap:
-            continue
-        else:
-            eliminar_col.append(ejes_corregidos.index(i))
+        # Buscar en los nombres obtenidos del excel y comparar con los obtenidos directamente desde PF.
+        # Se guardan en 'eliminar_col', el numero de la columna que se desea eliminar
+        # Esto se hace para eliminar los Factores de sensibilidad que no se necesitan
+        # Para las líneas solo se utiliza dP/dP:bus1
+        # Para los trf se utilizan dP/dP:bushv  y  dP/dP:buslv
+        # Para los trf de 3dev se utilizan dP/dP:bushv   dP/dP:busmv   y dP/dP:buslv
+        # Para los inductores solo se utiliza dP/dP:bus1
+        # Para los capacitores solo se utiliza dP/dP:bus1
+        for i in ejes_corregidos:  
+            if i in nom_lin:
+                continue
+            elif i in nom_trf:
+                corregir.append(ejes_corregidos.index(i)+1)
+                continue
+            elif i in nom_trf3:
+                corregir.append(ejes_corregidos.index(i)+1)
+                corregir.append(ejes_corregidos.index(i)+2)
+                continue
+            elif i in nom_ind:
+                continue
+            elif i in nom_cap:
+                continue
+            else:
+                eliminar_col.append(ejes_corregidos.index(i))
 
 # 
-    for i in corregir:
-        print(i)
-        eliminar_col.remove(i)
+        for i in corregir:
+            print(i)
+            eliminar_col.remove(i)
 
 
     ptdf_array_T = np.asarray(ptdf_dataframe)
-    ptdf_array_T = np.delete(ptdf_array_T ,eliminar_col, axis = 1)
+    ptdf_array_T = np.delete(ptdf_array_T ,[0,1,2], axis = 1)
+
 
     # PROBABLEMENTE!! Bastaría con este código
     #ptdf_array_T = np.asarray(ptdf_dataframe)
     #ptdf_array_T = np.delete(ptdf_array_T ,[0,1,2], axis = 1)
     
-    return np.transpose(ptdf_array_T).astype(float)
+    return np.transpose(ptdf_array_T).astype(float), ejes_corregidos
 
 
 class PowerFactorySim(object):
@@ -79,6 +82,21 @@ class PowerFactorySim(object):
         #self.app.Show()
         #activate project
         self.app.ActivateProject(project_name)
+        self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
+        self.generadores = self.app.GetCalcRelevantObjects('*.ElmSym') 
+        self.cargas = self.app.GetCalcRelevantObjects('*.ElmLod')
+        self.barras = self.app.GetCalcRelevantObjects('*.ElmTerm')
+        self.trafos = self.app.GetCalcRelevantObjects('*.ElmTr2')
+        self.trafos3 = self.app.GetCalcRelevantObjects('*.ElmTr3')
+        self.capacitores = self.app.GetCalcRelevantObjects('*.ElmScap')
+        self.inductores = self.app.GetCalcRelevantObjects('*.ElmSind')
+        self.genstate = self.app.GetCalcRelevantObjects('*.ElmGenstat')
+        self.asincronicos = self.app.GetCalcRelevantObjects('*.ElmAsm')
+        self.shunt = self.app.GetCalcRelevantObjects('*.ElmShnt')
+        
+        self.Sb = 100
+        self.raiz3 = 1.73205080757
+        self.kV_fm = 110            # Tensiones menores, tendrán Fm = 1e9
 
     # Return pandas con matriz de Shift-factors
     # Return lista ordenada con barras 
@@ -107,7 +125,7 @@ class PowerFactorySim(object):
         export.iopt_vars = 0
         export.iopt_tsel = 0
         export.iopt_exp = 6 #tipo de archivo a exportar
-        export.f_name = r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Tesis\Code\SF_datos.csv'
+        export.f_name = r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\SF_datos.csv'
         export.iopt_csel = 0 
         export.locn = 1
         export.iopt_sep=0
@@ -117,55 +135,131 @@ class PowerFactorySim(object):
         export.col_Sep = ';'
         export.Execute()
 
-        return (pd.read_csv(r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Tesis\Code\SF_datos.csv',skiprows = 0,delimiter=';'), sfactors.pbus.All())
+        return (pd.read_csv(r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\SF_datos.csv',skiprows = 0,delimiter=';'), sfactors.p_bus.All())
         
-    # Return 6 Listas con los nombres de cada uno de los elementos 
-    # bus, trafo, linea, trfo 3dev, cap, ind
-    def get_data(self):
-        generadores = self.app.GetCalcRelevantObjects('*.ElmSym') 
-        cargas = self.app.GetCalcRelevantObjects('*.ElmLod')
-        lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
-        barras = self.app.GetCalcRelevantObjects('*.ElmTerm')
-        trafos = self.app.GetCalcRelevantObjects('*.ElmTr2')
-        trafos3 = self.app.GetCalcRelevantObjects('*.ElmTr3')
-        capacitores = self.app.GetCalcRelevantObjects('*.ElmScap')
-        inductores = self.app.GetCalcRelevantObjects('*.ElmSind')
-        genstate = self.app.GetCalcRelevantObjects('*.ElmGenstat')
-        asincronicos = self.app.GetCalcRelevantObjects('*.ElmAsm')
-        shunt = self.app.GetCalcRelevantObjects('*.ElmShnt')
-        
+    # Return diccionarios de los elementos 
+    # bus, carga, linea, trafo, gen, genstat
+    def get_data(self, buses):
+        dict_barras = dict()
+        cont = 0
+        for bus in buses:
+            dict_barras[bus.loc_name] = cont
+            cont += 1
+
+        # CARGAS
+        dict_cargas = dict()                              
+        for c in self.cargas:
+            if c.outserv == 0 and c.bus1.cpCB.on_off == 1:                  # carga en servicio y switch conectado
+                # name carga = (N° barra, Potencia MW, NombreBarra)
+                dict_cargas[c.loc_name] = (dict_barras[c.bus1.cterm.loc_name],c.plini ,c.bus1.cterm.loc_name)
+
+
+        # LINEAS
+        dict_lineas = dict()
+        for line in self.lineas:
+            if line.outserv == 0:  #Linea en servicio
+                Zb = round(line.bus1.cterm.uknom*line.bus2.cterm.uknom/self.Sb,6)     
+                # Escoger flujo máximo de la línea cuando es menor a kV_fm
+                if line.bus1.cterm.uknom < self.kV_fm:
+                    fmax_kV = 1e9
+                else:
+                    fmax_kV = round(line.Inom_a*line.bus1.cterm.uknom*self.raiz3,4)
+                # name linea = (R, X, fmax, N° paralelas)
+                dict_lineas[line.loc_name]=(round(line.R1/Zb,6), round(line.X1/Zb,6), fmax_kV, line.nlnum)
+
+        # TRAFOS 2 DEV
+        dict_trafos = dict()
+        for t in self.trafos:
+            if t.typ_id.r1pu == 0:      # Checkear R1 trafo 2 dev
+                r = 1e-8
+            else:
+                r = t.typ_id.r1pu
+            
+            if t.outserv == 0:      # Trafo en servicio
+                if t.bushv.cterm.uknom < self.kV_fm and t.buslv.cterm.uknom:
+                    fmax_kV = 1e9
+                else:
+                    fmax_kV = t.Snom_a
+                
+                Zb = t.bushv.cterm.uknom * t.bushv.cterm.uknom/self.Sb
+                Zbt = t.bushv.cterm.uknom * t.bushv.cterm.uknom/ (t.Snom_a/t.ntnum)
+
+                # name trafo = (Xd, R, N° paralelo)
+                dict_trafos[t.loc_name] = (3*t.typ_id.x1pu*(Zbt/Zb), 3*r*(Zbt/Zb), t.ntnum, fmax_kV)
+
+        # GENERADORES
+
+        dict_gen = dict()
+        for gen in self.generadores:
+            if gen.ip_ctrl == 1:    # Buscar barra slack
+                bus_slack = gen.bus1.cterm.loc_name
+            if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                # name generador = (N° Barra, N° Gen paralelo,
+                #                   Outserv, Pmin, Pmax, Pref,
+                #                   costos var, costo fijo)
+                dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
+                                          gen.penaltyCosts, gen.fixedCosts)
+            else:
+                dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, 0,
+                                          gen.penaltyCosts, gen.fixedCosts)
+
+        # GENERADORES ESTATICOS
+
+        dict_genstat = dict()
+        for gen in self.genstate:
+            if gen.ip_ctrl == 1:    # Buscar barra slack
+                bus_slack = gen.bus1.cterm.loc_name
+            if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                # name generador = (N° Barra, N° Gen paralelo,
+                #                   Outserv, Pmin, Pmax, Pref,
+                #                   costos var, costo fijo)
+                dict_genstat[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
+                                          gen.penaltyCosts, gen.fixedCosts)
+            else:
+                dict_genstat[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, 0,
+                                          gen.penaltyCosts, gen.fixedCosts)
+
+        #FALTAN
+        # TRAFOS 3 DEVANADOS
+        # CAPACITORES SERIE
+        # INDUCTORES SERIE
+        # ASINCRONICOS
+        # GEN VIRTUALES
+
+
         #### Listas de elementos
-        nom_bus = list()
+        
         nom_trf = list()
         nom_lin = list()
-        lineas_error = list()
 
         nom_trf3 = list()
-        nom_trf3_eq = ['Rapel equivalente 1_acr1','Rapel equivalente 2_acs0']
         nom_cap = list()
         nom_ind = list()
-        nom_cargas = list()
         
 
-        for b in barras:
-            nom_bus.append(b.loc_name)
 
-        for t in trafos:
+
+        for t in self.trafos:
             nom_trf.append(t.loc_name)
 
-        for l in lineas:
+        for l in self.lineas:
             nom_lin.append(l.loc_name)
 
-        for t in trafos3:
+        for t in self.trafos3:
             nom_trf3.append(t.loc_name)
 
-        for c in capacitores:
+        for c in self.capacitores:
             nom_cap.append(c.loc_name)
 
-        for i in inductores:
+        for i in self.inductores:
             nom_ind.append(i.loc_name)
 
-        return [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind]
+        #return [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind]
+        return (dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat)
         ## Lista de cargas
         #cargas = self.app.GetCalcRelevantObjects('*.ElmLod')
         #nc = len(cargas) # N° de cargas
