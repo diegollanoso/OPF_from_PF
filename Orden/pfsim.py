@@ -8,7 +8,7 @@ import powerfactory as pf
 
 
 # La matriz de shift factors se limpia y ordena
-# Return matriz de shif factors
+# Return matriz de shif factors y indices con nombres de elementos
 def ShiftFactors(ptdf_dataframe):
     ejes = ptdf_dataframe.axes
     ejes_corregidos = list()
@@ -146,7 +146,8 @@ class PowerFactorySim(object):
             dict_barras[bus.loc_name] = cont
             cont += 1
 
-        # CARGAS
+        # CARGAS - en servicio y switch cerrado
+        # name carga = (N° barra, Potencia MW, NombreBarra)
         dict_cargas = dict()                              
         for c in self.cargas:
             if c.outserv == 0 and c.bus1.cpCB.on_off == 1:                  # carga en servicio y switch conectado
@@ -154,7 +155,8 @@ class PowerFactorySim(object):
                 dict_cargas[c.loc_name] = (dict_barras[c.bus1.cterm.loc_name],c.plini ,c.bus1.cterm.loc_name)
 
 
-        # LINEAS
+        # LINEAS - en servicio
+        # # name linea = (R, X, fmax, N° paralelas)
         dict_lineas = dict()
         for line in self.lineas:
             if line.outserv == 0:  #Linea en servicio
@@ -167,7 +169,8 @@ class PowerFactorySim(object):
                 # name linea = (R, X, fmax, N° paralelas)
                 dict_lineas[line.loc_name]=(round(line.R1/Zb,6), round(line.X1/Zb,6), fmax_kV, line.nlnum)
 
-        # TRAFOS 2 DEV
+        # TRAFOS 2 DEV - en servicio
+        # name trafo = (Xd, R, N° paralelo, fmax)
         dict_trafos = dict()
         for t in self.trafos:
             if t.typ_id.r1pu == 0:      # Checkear R1 trafo 2 dev
@@ -184,11 +187,13 @@ class PowerFactorySim(object):
                 Zb = t.bushv.cterm.uknom * t.bushv.cterm.uknom/self.Sb
                 Zbt = t.bushv.cterm.uknom * t.bushv.cterm.uknom/ (t.Snom_a/t.ntnum)
 
-                # name trafo = (Xd, R, N° paralelo)
+                # name trafo = (Xd, R, N° paralelo, fmax)
                 dict_trafos[t.loc_name] = (3*t.typ_id.x1pu*(Zbt/Zb), 3*r*(Zbt/Zb), t.ntnum, fmax_kV)
 
         # GENERADORES
-
+        #name generador = (N° Barra, N° Gen paralelo,
+        #                   Outserv, Pmin, Pmax, Pref,
+        #                   costos var, costo fijo)
         dict_gen = dict()
         for gen in self.generadores:
             if gen.ip_ctrl == 1:    # Buscar barra slack
@@ -198,15 +203,17 @@ class PowerFactorySim(object):
                 #                   Outserv, Pmin, Pmax, Pref,
                 #                   costos var, costo fijo)
                 dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
+                                          0, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
                                           gen.penaltyCosts, gen.fixedCosts)
             else:
                 dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, 0,
+                                          1, gen.Pmin_uc, gen.Pmax_uc, 0,
                                           gen.penaltyCosts, gen.fixedCosts)
 
         # GENERADORES ESTATICOS
-
+        # name generador = (N° Barra, N° Gen paralelo,
+        #                   Outserv, Pmin, Pmax, Pref,
+        #                   costos var, costo fijo)
         dict_genstat = dict()
         for gen in self.genstate:
             if gen.ip_ctrl == 1:    # Buscar barra slack
@@ -216,11 +223,11 @@ class PowerFactorySim(object):
                 #                   Outserv, Pmin, Pmax, Pref,
                 #                   costos var, costo fijo)
                 dict_genstat[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
+                                          0, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
                                           gen.penaltyCosts, gen.fixedCosts)
             else:
                 dict_genstat[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          gen.outserv, gen.Pmin_uc, gen.Pmax_uc, 0,
+                                          1, gen.Pmin_uc, gen.Pmax_uc, 0,
                                           gen.penaltyCosts, gen.fixedCosts)
 
         #FALTAN
