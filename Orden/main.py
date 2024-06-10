@@ -10,6 +10,7 @@ sim = pfsim.PowerFactorySim('IEEE 14-bus con PE y PV')
 #sim = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
 
 
+L=9
 
 ptdf_dataframe, indices_bus = sim.export_csv('AC')
 #ptdf_dataframe = pd.read_csv(r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Tesis\Code\SF_datos.csv',skiprows = 0,delimiter=';')
@@ -122,6 +123,16 @@ p_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, n
 #pdis_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg_dis')
 
 f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
+fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
+fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
+#perdidas
+ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
+dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
+n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
+n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
+
+
+
 
 # Función objetivo
 f_obj = 0
@@ -148,9 +159,33 @@ m.addConstr(p_statg >= Pmin_genstat, name='Pmin_genstat')
 m.addConstr(-p_statg >= -Pmax_genstat, name='Pmin_genstat')
 
 ## Sistema de transmisión
-m.addConstr(-f == SF[:,pos_gen] @ (p_g*ngen_par) + SF[:,pos_genstat] @ (p_statg*ngenstat_par)- Flujo_dda, name='f')
-m.addConstr(-f >= -FMax, name = 'fmax+')
-m.addConstr(f >= -FMax, name = 'fmax-')
+m.addConstr(f == SF[:,pos_gen] @ (p_g*ngen_par) + SF[:,pos_genstat] @ (p_statg*ngenstat_par)- Flujo_dda, name='sf')
+m.addConstr(f == fp - fn, name = 'f')
+m.addConstr(fp + fn == dpk.sum(1), name = 'SumDpk')
+kl = np.zeros((n_elem,L))
+for l in range(L):
+    kl[:,l] = (2*(l+1)-1)*FMax/L
+    m.addConstr(-dpk[:,l] >= -FMax/L, name = 'LimiteDpk')
+m.addConstr(ploss == G/(B**2)*(quicksum(kl[:,i]*dpk[:,i] for i in range(L))), name = 'Ploss')
+m.addConstr(-f - 0.5*ploss >= -FMax, name = 'fp')
+m.addConstr(f - 0.5*ploss >= -FMax, name = 'fn')
+m.addConstr(-fp >= -FMax, name = 'fp+')
+m.addConstr(-fn >= -FMax, name = 'fn+')
+
+m.addConstr(-fp>=-n_l*FMax, name='Cfp')   #flujo positvo-restriccion de complementaridad
+m.addConstr(-fn>=(-1+n_l)*FMax, name='Cfn') #flujo negativo-restriccion de complementaridad
+
+for l in range(L): 
+    if l==0:
+        m.addConstr(-dpk[:,l]>=-FMax/(L), name='d_f_Res_max_A_l')
+        m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_l')
+    elif l==L-1:
+        m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*FMax/(L), name='d_f_Res_max_A_L')
+        m.addConstr(dpk[:,l]>=0, name='d_f_Res_min_A_L')
+    else:
+        m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*(FMax/(L)), name='d_f_Res_max_A_L-1')
+        m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_L-1')
+
 
 # %%
 m.write('OPF.lp')
@@ -185,7 +220,10 @@ for genstat in dict_genstat_eff:
 cont=0
 for elem in indices_obj:
     print('Línea: %s => %.2f (MW)' % (elem,f[cont].X*sim.Sb))
+    #print("f_p = %.3f // f_n = %.3f" % (fp.X[cont],fn.X[cont]))
+    #print("d_f[0]=%.3f     -     d_f[1]=%.3f " % (dpk.X[cont,0],dpk.X[cont,1]))    
     cont += 1
+
 
 print('finish')
 #  %% Comprobación de resultados
