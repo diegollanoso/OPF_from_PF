@@ -25,6 +25,15 @@ def ShiftFactors(ptdf_dataframe):
             ejes_corregidos.append(i)
     del ejes_corregidos[0:3]
 
+
+    df = pd.DataFrame()
+    j=0
+    for i in ejes_corregidos:
+        df[ejes_corregidos[j]] = (ptdf_dataframe[ejes_corregidos[j]]-ptdf_dataframe[ejes_corregidos[j+1]])/2
+        j += 2
+        if len(ejes_corregidos) == j:
+            break
+
     if False:
         eliminar_col = list()
         corregir = list()
@@ -64,22 +73,22 @@ def ShiftFactors(ptdf_dataframe):
             eliminar_col.remove(i)
 
 
-    ptdf_array_T = np.asarray(ptdf_dataframe)
-    ptdf_array_T = np.delete(ptdf_array_T ,[0,1,2], axis = 1)
+    ptdf_array_T = np.asarray(df)
+    #ptdf_array_T = np.delete(ptdf_array_T ,[0,1,2], axis = 1)
 
 
     # PROBABLEMENTE!! Bastaría con este código
     #ptdf_array_T = np.asarray(ptdf_dataframe)
     #ptdf_array_T = np.delete(ptdf_array_T ,[0,1,2], axis = 1)
     
-    return np.transpose(ptdf_array_T).astype(float), ejes_corregidos
+    return np.transpose(ptdf_array_T).astype(float), df.axes[1]
 
 
 class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
         # start PowerFactory
         self.app = pf.GetApplication()
-        self.app.Show()
+        #self.app.Show()
         #activate project
         self.app.ActivateProject(project_name)
         self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
@@ -93,7 +102,9 @@ class PowerFactorySim(object):
         self.genstate = self.app.GetCalcRelevantObjects('*.ElmGenstat')
         self.asincronicos = self.app.GetCalcRelevantObjects('*.ElmAsm')
         self.shunt = self.app.GetCalcRelevantObjects('*.ElmShnt')
-        
+        self.ldf = self.app.GetFromStudyCase('ComLdf')
+
+
         self.Sb = 100
         self.raiz3 = 1.73205080757
         self.kV_fm = 110            # Tensiones menores, tendrán Fm = 1e9
@@ -283,3 +294,27 @@ class PowerFactorySim(object):
         #ng = len(generadores)
         #ngs = len(genstate)
         #nga = len(asincronicos)
+
+    # Check results
+    def check_results(self, gen_eff, genstat_eff, p_g, p_gstat, f_line):
+        cont = 0
+        for gen in self.generadores:
+            if gen.loc_name in gen_eff:
+                gen.pgini = p_g[cont].x*self.Sb
+                print('%s => %.2f (MW)' % (gen.loc_name,gen.ngnum*p_g[cont].X*self.Sb))
+                cont += 1
+
+        cont = 0
+        for gen in self.genstate:
+            if gen.loc_name in genstat_eff:
+                gen.pgini = p_gstat[cont].x*self.Sb
+                print('%s => %.2f (MW)' % (gen.loc_name,gen.ngnum*p_gstat[cont].X*self.Sb))
+                cont += 1
+
+        
+        self.ldf.Execute()
+        cont=0
+        for line in self.lineas:
+            if line.loc_name in f_line[0]:
+                print('%s ; Gurobi (DC) = %.3f [MW]; DIgSILENT (AC) = %.3f [MW]' % (line.loc_name, float(f_line[1][np.where(f_line[0] == line.loc_name)])*self.Sb, (-line.GetAttribute('m:Psum:bus2')+line.GetAttribute('m:Psum:bus1'))/2))
+                cont += 1

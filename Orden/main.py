@@ -80,6 +80,7 @@ for gen in dict_genstat_eff:
 n_elem = len(indices_obj)   # N° de líneas + 'trf2'
 # Obtención de fmax, R y X
 dict_full = dict()
+pos_line = list()
 FMax = np.zeros(n_elem)
 R = np.zeros(n_elem)
 X = np.zeros(n_elem)
@@ -91,6 +92,7 @@ for i in indices_obj:
         Fmax_i = dict_lineas[i][2]
         R_i = dict_lineas[i][0]
         X_i = dict_lineas[i][1]
+        pos_line.append(cont)
     elif i in dict_trafos:
         dict_full[i] = dict_trafos[i]
         Fmax_i = dict_trafos[i][3]
@@ -207,25 +209,29 @@ elif status == GRB.Status.INF_OR_UNBD or \
     m.computeIIS() 
     m.write("GTCEP.ilp")
 
-cont=0
-for gen in dict_gen_eff:
-    print('%s => %.2f (MW)' % (gen,ngen_par[cont]*p_g[cont].X*sim.Sb))
-    cont += 1
+results_line = np.vstack((np.array(indices_obj),f.x))[:,pos_line]
 
-cont=0
-for genstat in dict_genstat_eff:
-    print('%s => %.2f (MW)' % (genstat,ngenstat_par[cont]*p_statg[cont].X*sim.Sb))
-    cont += 1
+sim.check_results(dict_gen_eff, dict_genstat_eff, p_g, p_statg, results_line)
 
-cont=0
-for elem in indices_obj:
-    print('Línea: %s => %.2f (MW)' % (elem,f[cont].X*sim.Sb))
-    #print("f_p = %.3f // f_n = %.3f" % (fp.X[cont],fn.X[cont]))
-    #print("d_f[0]=%.3f     -     d_f[1]=%.3f " % (dpk.X[cont,0],dpk.X[cont,1]))    
-    cont += 1
+#cont=0
+#for gen in dict_gen_eff:
+#    print('%s => %.2f (MW)' % (gen,ngen_par[cont]*p_g[cont].X*sim.Sb))
+#    cont += 1
+#
+#cont=0
+#for genstat in dict_genstat_eff:
+#    print('%s => %.2f (MW)' % (genstat,ngenstat_par[cont]*p_statg[cont].X*sim.Sb))
+#    cont += 1
+#
+#cont=0
+#for elem in indices_obj:
+#    print('Línea: %s => %.2f (MW)' % (elem,f[cont].X*sim.Sb))
+#    #print("f_p = %.3f // f_n = %.3f" % (fp.X[cont],fn.X[cont]))
+#    #print("d_f[0]=%.3f     -     d_f[1]=%.3f " % (dpk.X[cont,0],dpk.X[cont,1]))    
+#    cont += 1
 
 
-print('finish')
+print('finish!')
 #  %% Comprobación de resultados
 
 
