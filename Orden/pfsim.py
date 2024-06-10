@@ -79,7 +79,7 @@ class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
         # start PowerFactory
         self.app = pf.GetApplication()
-        #self.app.Show()
+        self.app.Show()
         #activate project
         self.app.ActivateProject(project_name)
         self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
@@ -100,10 +100,13 @@ class PowerFactorySim(object):
 
     # Return pandas con matriz de Shift-factors
     # Return lista ordenada con barras 
-    def export_csv(self):
+    def export_csv(self, flujo):
         sfactors = self.app.GetFromStudyCase('ComVstab')
-        sfactors.iopt_method = 2 # 0 = AC; 2 = DC
-        
+        if flujo == 'AC':
+            sfactors.iopt_method = 0 # 0 = AC; 2 = DC
+        if flujo == 'DC':
+            sfactors.iopt_method = 2 # 0 = AC; 2 = DC
+
         #Results = sfactors.pResult
         #for i in Results.GetContents():
         #    i.Delete()
