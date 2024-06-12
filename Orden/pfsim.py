@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import gurobipy as gp
+from gurobipy import *
 
 # Importar DIgSILENT
 import sys
@@ -102,8 +104,10 @@ class PowerFactorySim(object):
         self.genstate = self.app.GetCalcRelevantObjects('*.ElmGenstat')
         self.asincronicos = self.app.GetCalcRelevantObjects('*.ElmAsm')
         self.shunt = self.app.GetCalcRelevantObjects('*.ElmShnt')
+        
         self.ldf = self.app.GetFromStudyCase('ComLdf')
-
+        self.IntEvt = self.app.GetFromStudyCase('IntEvt')
+        self.res = self.app.GetFromStudyCase('*.ElmRes')
 
         self.Sb = 100
         self.raiz3 = 1.73205080757
@@ -153,7 +157,7 @@ class PowerFactorySim(object):
         
     # Return diccionarios de los elementos 
     # bus, carga, linea, trafo, gen, genstat
-    def get_data(self, buses):
+    def get_data(self, buses, state='post'):
         dict_barras = dict()
         cont = 0
         for bus in buses:
@@ -166,7 +170,11 @@ class PowerFactorySim(object):
         for c in self.cargas:
             if c.outserv == 0 and c.bus1.cpCB.on_off == 1:                  # carga en servicio y switch conectado
                 # name carga = (N° barra, Potencia MW, NombreBarra)
-                dict_cargas[c.loc_name] = (dict_barras[c.bus1.cterm.loc_name],c.plini ,c.bus1.cterm.loc_name)
+                if state == 'post':
+                    potencia = c.GetAttribute('m:Psum:bus1')
+                else:
+                    potencia = c.plini
+                dict_cargas[c.loc_name] = (dict_barras[c.bus1.cterm.loc_name],potencia ,c.bus1.cterm.loc_name)
 
 
         # LINEAS - en servicio
@@ -213,11 +221,15 @@ class PowerFactorySim(object):
             if gen.ip_ctrl == 1:    # Buscar barra slack
                 bus_slack = gen.bus1.cterm.loc_name
             if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                if state == 'post':
+                    potencia = gen.g.GetAttribute('m:Psum:bus1')
+                else:
+                    potencia = gen.pgini
                 # name generador = (N° Barra, N° Gen paralelo,
                 #                   Outserv, Pmin, Pmax, Pref,
                 #                   costos var, costo fijo)
                 dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          0, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
+                                          0, gen.Pmin_uc, gen.Pmax_uc, potencia,
                                           gen.penaltyCosts, gen.fixedCosts)
             else:
                 dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
@@ -295,6 +307,29 @@ class PowerFactorySim(object):
         #ngs = len(genstate)
         #nga = len(asincronicos)
 
+    def prepare_dynamic_sim(self, monitored_variables,
+                            sim_type='rms', start_time=0.0,
+                            step_size=0.01, end_time=10.0):
+        # get result file
+        # select results variables to monitor
+        for elm_name, var_names in monitored_variables.items():
+            # get all network elements that match 'elm_name'
+            elements = self.app.GetCalcRelevantObjects(elm_name)
+            # select variables to monitor for each element
+            for element in elements:
+                self.res.AddVars(element, *var_names)
+        # retrieve initial conditions and time domain sim. objects
+        self.inc = self.app.GetFromStudyCase('ComInc')
+        self.sim = self.app.GetFromStudyCase('ComSim')
+        # set simulation type: 'rms' or 'ins' (for EMT)
+        self.inc.iopt_sim = sim_type
+        # set start time, step size and end time
+        self.inc.tstart = start_time
+        self.inc.dtgrd = step_size
+        self.sim.tstop = end_time
+        # set initial conditions
+        self.inc.Execute()
+
     # Check results
     def check_results(self, gen_eff, genstat_eff, p_g, p_gstat, f_line):
         cont = 0
@@ -318,3 +353,11 @@ class PowerFactorySim(object):
             if line.loc_name in f_line[0]:
                 print('%s ; Gurobi (DC) = %.3f [MW]; DIgSILENT (AC) = %.3f [MW]' % (line.loc_name, float(f_line[1][np.where(f_line[0] == line.loc_name)])*self.Sb, (-line.GetAttribute('m:Psum:bus2')+line.GetAttribute('m:Psum:bus1'))/2))
                 cont += 1
+
+
+#class LpGurobi(object):
+#    def __init__(self):
+#        self.m = gp.Model('Modelo 1')
+#        self.m.Params.MIPGap = 1e-5
+#        self.m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
+

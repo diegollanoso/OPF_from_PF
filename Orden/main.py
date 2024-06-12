@@ -9,7 +9,7 @@ sim = pfsim.PowerFactorySim('IEEE 14-bus con PE y PV')
 #sim = pfsim.PowerFactorySim('Ejemplo Clase')
 #sim = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
 
-
+before=False
 L=9
 
 ptdf_dataframe, indices_bus = sim.export_csv('AC')
@@ -17,7 +17,7 @@ ptdf_dataframe, indices_bus = sim.export_csv('AC')
 #ptdf_dataframe = pd.read_csv(r'C:\Users\lldie\Desktop\SF_datos.csv',skiprows = 0,delimiter=';')
 SF, indices_obj = pfsim.ShiftFactors(ptdf_dataframe)
 
-(dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat) = sim.get_data(indices_bus)
+(dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat) = sim.get_data(indices_bus,)
 
 
 
@@ -114,19 +114,119 @@ for i in range(n_elem):
 G = np.real(yprim)
 B = np.imag(yprim)
 
-# Definir Modelo
-m = gp.Model('Modelo 1')
+# Switch event
+# Gen Out
+name_events = list()
+events_folder = sim.IntEvt.GetContents()
+for e in events_folder:
+    name_events.append(e.loc_name)
+    e.outserv = 1   
+
+# Dynamic Simulation until 50 seg
+t_initial = 0.5
+for gen_out in dict_gen_eff:
+    p_out = dict_gen_eff[gen_out][5]
+    evt = events_folder[name_events.index('Salida Gen')]
+    evt.outserv = 0
+    evt.time = t_initial
+    evt.p_target = sim.generadores[list(dict_gen).index(gen_out)]
+  
+sim.prepare_dynamic_sim({'*.ElmSym' : ['m:Psum:bus1']}, 'rms', end_time=300)
+
+if before:
+    # Definir Modelo
+    m = gp.Model('Modelo 1')
+    m.Params.MIPGap = 1e-5
+    m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
+
+    p_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg')
+    pdis_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_dis')
+    p_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg')
+    pdis_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg_dis')
+
+    f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
+    fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
+    fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
+    #perdidas
+    ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
+    dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
+    n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
+    n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
+
+
+
+
+    # Función objetivo
+    f_obj = 0
+    #costo_gen = 0
+    #costo_genstat = 0
+
+    costo_gen = p_g* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
+    costo_genstat = p_statg* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
+
+    f_obj = costo_gen + costo_genstat
+
+    m.setObjective(f_obj, GRB.MINIMIZE)
+    m.getObjective()
+
+    ###  Restricciones
+    ## Balance Nodal
+    m.addConstr(p_g @ ngen_par + p_statg @ ngenstat_par == dda_barra.sum(), name='Balance')
+    m.addConstr(pdis_g @ ngen_par + p_statg @ ngenstat_par >= 1.1*dda_barra.sum(), name="Reserva")
+
+
+    ## Restricciones de generación
+    # Limitaciones de Potencia
+    m.addConstr(p_g >= Pmin_gen, name='Pmin_gen')
+    m.addConstr(-p_g >= -Pmax_gen, name='Pmax_gen')
+    m.addConstr(pdis_g >= 0, name='Pmin_gen_disp')
+    m.addConstr(-pdis_g >= -Pmax_gen, name='Pmax_gen_dip')
+
+    m.addConstr(p_statg >= Pmin_genstat, name='Pmin_genstat')
+    m.addConstr(-p_statg >= -Pmax_genstat, name='Pmin_genstat')
+    m.addConstr(pdis_statg >= 0, name='Pmin_genstat_disp')
+    m.addConstr(-pdis_statg >= -Pmax_genstat, name='Pmax_genstat_dip')
+
+
+    ## Sistema de transmisión
+    m.addConstr(f == SF[:,pos_gen] @ (p_g*ngen_par) + SF[:,pos_genstat] @ (p_statg*ngenstat_par)- Flujo_dda, name='sf')
+    m.addConstr(f == fp - fn, name = 'f')
+    m.addConstr(fp + fn == dpk.sum(1), name = 'SumDpk')
+    kl = np.zeros((n_elem,L))
+    for l in range(L):
+        kl[:,l] = (2*(l+1)-1)*FMax/L
+        m.addConstr(-dpk[:,l] >= -FMax/L, name = 'LimiteDpk')
+    m.addConstr(ploss == G/(B**2)*(quicksum(kl[:,i]*dpk[:,i] for i in range(L))), name = 'Ploss')
+    m.addConstr(-f - 0.5*ploss >= -FMax, name = 'fp')
+    m.addConstr(f - 0.5*ploss >= -FMax, name = 'fn')
+    m.addConstr(-fp >= -FMax, name = 'fp+')
+    m.addConstr(-fn >= -FMax, name = 'fn+')
+
+    m.addConstr(-fp>=-n_l*FMax, name='Cfp')   #flujo positvo-restriccion de complementaridad
+    m.addConstr(-fn>=(-1+n_l)*FMax, name='Cfn') #flujo negativo-restriccion de complementaridad
+
+    for l in range(L): 
+        if l==0:
+            m.addConstr(-dpk[:,l]>=-FMax/(L), name='d_f_Res_max_A_l')
+            m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_l')
+        elif l==L-1:
+            m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*FMax/(L), name='d_f_Res_max_A_L')
+            m.addConstr(dpk[:,l]>=0, name='d_f_Res_min_A_L')
+        else:
+            m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*(FMax/(L)), name='d_f_Res_max_A_L-1')
+            m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_L-1')
+
+m = gp.Model('Modelo AGC')
 m.Params.MIPGap = 1e-5
 m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
 
-p_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg')
-#pdis_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_dis')
-p_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg')
-#pdis_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg_dis')
+pg_inc = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_inc')
+pstatg_inc = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_inc')
 
 f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
 fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
 fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
+
 #perdidas
 ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
 dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
@@ -134,59 +234,6 @@ n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                           
 n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
 
 
-
-
-# Función objetivo
-f_obj = 0
-#costo_gen = 0
-#costo_genstat = 0
-
-costo_gen = p_g* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
-costo_genstat = p_statg* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
-
-f_obj = costo_gen + costo_genstat
-
-m.setObjective(f_obj, GRB.MINIMIZE)
-m.getObjective()
-
-###  Restricciones
-## Balance Nodal
-m.addConstr(p_g @ ngen_par + p_statg @ ngenstat_par == dda_barra.sum(), name='Balance')
-
-## Restricciones de generación
-# Limitaciones de Potencia
-m.addConstr(p_g >= Pmin_gen, name='Pmin_gen')
-m.addConstr(-p_g >= -Pmax_gen, name='Pmax_gen')
-m.addConstr(p_statg >= Pmin_genstat, name='Pmin_genstat')
-m.addConstr(-p_statg >= -Pmax_genstat, name='Pmin_genstat')
-
-## Sistema de transmisión
-m.addConstr(f == SF[:,pos_gen] @ (p_g*ngen_par) + SF[:,pos_genstat] @ (p_statg*ngenstat_par)- Flujo_dda, name='sf')
-m.addConstr(f == fp - fn, name = 'f')
-m.addConstr(fp + fn == dpk.sum(1), name = 'SumDpk')
-kl = np.zeros((n_elem,L))
-for l in range(L):
-    kl[:,l] = (2*(l+1)-1)*FMax/L
-    m.addConstr(-dpk[:,l] >= -FMax/L, name = 'LimiteDpk')
-m.addConstr(ploss == G/(B**2)*(quicksum(kl[:,i]*dpk[:,i] for i in range(L))), name = 'Ploss')
-m.addConstr(-f - 0.5*ploss >= -FMax, name = 'fp')
-m.addConstr(f - 0.5*ploss >= -FMax, name = 'fn')
-m.addConstr(-fp >= -FMax, name = 'fp+')
-m.addConstr(-fn >= -FMax, name = 'fn+')
-
-m.addConstr(-fp>=-n_l*FMax, name='Cfp')   #flujo positvo-restriccion de complementaridad
-m.addConstr(-fn>=(-1+n_l)*FMax, name='Cfn') #flujo negativo-restriccion de complementaridad
-
-for l in range(L): 
-    if l==0:
-        m.addConstr(-dpk[:,l]>=-FMax/(L), name='d_f_Res_max_A_l')
-        m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_l')
-    elif l==L-1:
-        m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*FMax/(L), name='d_f_Res_max_A_L')
-        m.addConstr(dpk[:,l]>=0, name='d_f_Res_min_A_L')
-    else:
-        m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*(FMax/(L)), name='d_f_Res_max_A_L-1')
-        m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_L-1')
 
 
 # %%
