@@ -5,9 +5,12 @@ import time
 import gurobipy as gp
 from gurobipy import *
 
-sim = pfsim.PowerFactorySim('IEEE 14-bus con PE y PV')
+#sim = pfsim.PowerFactorySim('IEEE 14-bus con PE y PV')
 #sim = pfsim.PowerFactorySim('Ejemplo Clase')
 #sim = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
+sim = pfsim.PowerFactorySim('Articulo2')
+
+Gen_AGC = ['G4_3', 'G6_3', 'G2_3', 'G4_1', 'G7_1', 'G2_1', 'G3_1', 'G4_4', 'G6_4', 'G2_4', 'G3_4', 'G4_2', 'G3_2']
 
 before=False
 L=9
@@ -122,8 +125,10 @@ for e in events_folder:
     name_events.append(e.loc_name)
     e.outserv = 1   
 
-# Dynamic Simulation until 50 seg
+# Dynamic Simulation until 50 seg - Finishing CPF
 t_initial = 0.5
+t_final = 300
+tstop_cpf = 49.9
 for gen_out in dict_gen_eff:
     p_out = dict_gen_eff[gen_out][5]
     evt = events_folder[name_events.index('Salida Gen')]
@@ -131,7 +136,15 @@ for gen_out in dict_gen_eff:
     evt.time = t_initial
     evt.p_target = sim.generadores[list(dict_gen).index(gen_out)]
   
-sim.prepare_dynamic_sim({'*.ElmSym' : ['m:Psum:bus1']}, 'rms', end_time=300)
+    #sim.prepare_dynamic_sim({'*.ElmSym' : ['m:Psum:bus1']}, 'rms', end_time=300)
+    sim.prepare_dynamic_sim({}, 'rms', end_time=t_final)
+    sim.run_dynamic_sim(end_sim=tstop_cpf)
+    
+    P_pfc = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.generadores)))  # Potencia generadores al final del CPF
+
+    Gen_on_AGC = np.array([n for n in Gen_AGC if n != gen_out])
+
+    
 
 if before:
     # Definir Modelo
@@ -233,6 +246,12 @@ dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='d
 n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
 n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
 
+f_obj = 0
+#costo_gen = 0
+#costo_genstat = 0
+
+costo_gen = p_g* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
+costo_genstat = p_statg* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
 
 
 

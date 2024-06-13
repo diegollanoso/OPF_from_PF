@@ -90,7 +90,7 @@ class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
         # start PowerFactory
         self.app = pf.GetApplication()
-        #self.app.Show()
+        self.app.Show()
         #activate project
         self.app.ActivateProject(project_name)
         self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
@@ -222,7 +222,7 @@ class PowerFactorySim(object):
                 bus_slack = gen.bus1.cterm.loc_name
             if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
                 if state == 'post':
-                    potencia = gen.g.GetAttribute('m:Psum:bus1')
+                    potencia = gen.GetAttribute('m:Psum:bus1')
                 else:
                     potencia = gen.pgini
                 # name generador = (N° Barra, N° Gen paralelo,
@@ -329,6 +329,32 @@ class PowerFactorySim(object):
         self.sim.tstop = end_time
         # set initial conditions
         self.inc.Execute()
+    
+    def run_dynamic_sim(self, end_sim = 49.9):
+        self.sim.tstop = end_sim
+        return bool(self.sim.Execute())
+
+
+    def get_dynamic_results(self, elm_name, var_name):
+        # get network element of interest
+        element = self.app.GetCalcRelevantObjects(elm_name)[0]
+        # load results from file
+        self.app.ResLoadData(self.res)
+        # find colum in results file that holds result of interest
+        col_index = self.app.ResGetIndex(
+            self.res, element, var_name)
+        # get number of rows (points in time) in the result file
+        n_rows = self.app.ResGetValueCount(self.res, 0)
+        # read results and time and store them in lists
+        time = []
+        var_values = []
+        for i in range(n_rows):
+            time.append(self.app.ResGetData(self.res, i, -1)[1])
+            var_values.append(
+                self.app.ResGetData(self.res, i, col_index)[1])
+            
+        return time, var_values
+
 
     # Check results
     def check_results(self, gen_eff, genstat_eff, p_g, p_gstat, f_line):
