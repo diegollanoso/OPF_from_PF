@@ -125,6 +125,8 @@ for e in events_folder:
     name_events.append(e.loc_name)
     e.outserv = 1   
 
+
+Ns = len(dict_gen_eff)
 # Dynamic Simulation until 50 seg - Finishing CPF
 t_initial = 0.5
 t_final = 300
@@ -144,114 +146,32 @@ for gen_out in dict_gen_eff:
 
     Gen_on_AGC = np.array([n for n in Gen_AGC if n != gen_out])
 
-    
 
-if before:
-    # Definir Modelo
-    m = gp.Model('Modelo 1')
+
+
+    m = gp.Model('Modelo AGC')
     m.Params.MIPGap = 1e-5
     m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
 
-    p_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg')
-    pdis_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_dis')
-    p_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg')
-    pdis_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg_dis')
+    pg_inc = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_inc')
+    pstatg_inc = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_inc')
 
     f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
     fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
     fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
+
     #perdidas
     ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
     dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
     n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
     n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
 
-
-
-
-    # Función objetivo
     f_obj = 0
     #costo_gen = 0
     #costo_genstat = 0
 
-    costo_gen = p_g* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
-    costo_genstat = p_statg* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
-
-    f_obj = costo_gen + costo_genstat
-
-    m.setObjective(f_obj, GRB.MINIMIZE)
-    m.getObjective()
-
-    ###  Restricciones
-    ## Balance Nodal
-    m.addConstr(p_g @ ngen_par + p_statg @ ngenstat_par == dda_barra.sum(), name='Balance')
-    m.addConstr(pdis_g @ ngen_par + p_statg @ ngenstat_par >= 1.1*dda_barra.sum(), name="Reserva")
-
-
-    ## Restricciones de generación
-    # Limitaciones de Potencia
-    m.addConstr(p_g >= Pmin_gen, name='Pmin_gen')
-    m.addConstr(-p_g >= -Pmax_gen, name='Pmax_gen')
-    m.addConstr(pdis_g >= 0, name='Pmin_gen_disp')
-    m.addConstr(-pdis_g >= -Pmax_gen, name='Pmax_gen_dip')
-
-    m.addConstr(p_statg >= Pmin_genstat, name='Pmin_genstat')
-    m.addConstr(-p_statg >= -Pmax_genstat, name='Pmin_genstat')
-    m.addConstr(pdis_statg >= 0, name='Pmin_genstat_disp')
-    m.addConstr(-pdis_statg >= -Pmax_genstat, name='Pmax_genstat_dip')
-
-
-    ## Sistema de transmisión
-    m.addConstr(f == SF[:,pos_gen] @ (p_g*ngen_par) + SF[:,pos_genstat] @ (p_statg*ngenstat_par)- Flujo_dda, name='sf')
-    m.addConstr(f == fp - fn, name = 'f')
-    m.addConstr(fp + fn == dpk.sum(1), name = 'SumDpk')
-    kl = np.zeros((n_elem,L))
-    for l in range(L):
-        kl[:,l] = (2*(l+1)-1)*FMax/L
-        m.addConstr(-dpk[:,l] >= -FMax/L, name = 'LimiteDpk')
-    m.addConstr(ploss == G/(B**2)*(quicksum(kl[:,i]*dpk[:,i] for i in range(L))), name = 'Ploss')
-    m.addConstr(-f - 0.5*ploss >= -FMax, name = 'fp')
-    m.addConstr(f - 0.5*ploss >= -FMax, name = 'fn')
-    m.addConstr(-fp >= -FMax, name = 'fp+')
-    m.addConstr(-fn >= -FMax, name = 'fn+')
-
-    m.addConstr(-fp>=-n_l*FMax, name='Cfp')   #flujo positvo-restriccion de complementaridad
-    m.addConstr(-fn>=(-1+n_l)*FMax, name='Cfn') #flujo negativo-restriccion de complementaridad
-
-    for l in range(L): 
-        if l==0:
-            m.addConstr(-dpk[:,l]>=-FMax/(L), name='d_f_Res_max_A_l')
-            m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_l')
-        elif l==L-1:
-            m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*FMax/(L), name='d_f_Res_max_A_L')
-            m.addConstr(dpk[:,l]>=0, name='d_f_Res_min_A_L')
-        else:
-            m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*(FMax/(L)), name='d_f_Res_max_A_L-1')
-            m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_L-1')
-
-m = gp.Model('Modelo AGC')
-m.Params.MIPGap = 1e-5
-m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
-
-pg_inc = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_inc')
-pstatg_inc = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_inc')
-
-f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
-fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
-fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
-
-#perdidas
-ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
-dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
-n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
-n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
-
-f_obj = 0
-#costo_gen = 0
-#costo_genstat = 0
-
-costo_gen = p_g* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
-costo_genstat = p_statg* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
+    costo_gen = pg_inc* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
+    costo_genstat = pstatg_inc* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
 
 
 
@@ -312,3 +232,88 @@ print('finish!')
 #    else:
 #        array_indices_corregidos.append(i)
 #
+
+#### OLD CODE FOR LOSSES
+
+#if before:
+#    # Definir Modelo
+#    m = gp.Model('Modelo 1')
+#    m.Params.MIPGap = 1e-5
+#    m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
+#
+#    p_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg')
+#    pdis_g = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_dis')
+#    p_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg')
+#    pdis_statg = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Psg_dis')
+#
+#    f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
+#    fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
+#    fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
+#    #perdidas
+#    ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
+#    dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
+#    n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
+#    n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
+#
+#
+#
+#
+#    # Función objetivo
+#    f_obj = 0
+#    #costo_gen = 0
+#    #costo_genstat = 0
+#
+#    costo_gen = p_g* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
+#    costo_genstat = p_statg* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
+#
+#    f_obj = costo_gen + costo_genstat
+#
+#    m.setObjective(f_obj, GRB.MINIMIZE)
+#    m.getObjective()
+#
+#    ###  Restricciones
+#    ## Balance Nodal
+#    m.addConstr(p_g @ ngen_par + p_statg @ ngenstat_par == dda_barra.sum(), name='Balance')
+#    m.addConstr(pdis_g @ ngen_par + p_statg @ ngenstat_par >= 1.1*dda_barra.sum(), name="Reserva")
+#
+#
+#    ## Restricciones de generación
+#    # Limitaciones de Potencia
+#    m.addConstr(p_g >= Pmin_gen, name='Pmin_gen')
+#    m.addConstr(-p_g >= -Pmax_gen, name='Pmax_gen')
+#    m.addConstr(pdis_g >= 0, name='Pmin_gen_disp')
+#    m.addConstr(-pdis_g >= -Pmax_gen, name='Pmax_gen_dip')
+#
+#    m.addConstr(p_statg >= Pmin_genstat, name='Pmin_genstat')
+#    m.addConstr(-p_statg >= -Pmax_genstat, name='Pmin_genstat')
+#    m.addConstr(pdis_statg >= 0, name='Pmin_genstat_disp')
+#    m.addConstr(-pdis_statg >= -Pmax_genstat, name='Pmax_genstat_dip')
+#
+#
+#    ## Sistema de transmisión
+#    m.addConstr(f == SF[:,pos_gen] @ (p_g*ngen_par) + SF[:,pos_genstat] @ (p_statg*ngenstat_par)- Flujo_dda, name='sf')
+#    m.addConstr(f == fp - fn, name = 'f')
+#    m.addConstr(fp + fn == dpk.sum(1), name = 'SumDpk')
+#    kl = np.zeros((n_elem,L))
+#    for l in range(L):
+#        kl[:,l] = (2*(l+1)-1)*FMax/L
+#        m.addConstr(-dpk[:,l] >= -FMax/L, name = 'LimiteDpk')
+#    m.addConstr(ploss == G/(B**2)*(quicksum(kl[:,i]*dpk[:,i] for i in range(L))), name = 'Ploss')
+#    m.addConstr(-f - 0.5*ploss >= -FMax, name = 'fp')
+#    m.addConstr(f - 0.5*ploss >= -FMax, name = 'fn')
+#    m.addConstr(-fp >= -FMax, name = 'fp+')
+#    m.addConstr(-fn >= -FMax, name = 'fn+')
+#
+#    m.addConstr(-fp>=-n_l*FMax, name='Cfp')   #flujo positvo-restriccion de complementaridad
+#    m.addConstr(-fn>=(-1+n_l)*FMax, name='Cfn') #flujo negativo-restriccion de complementaridad
+#
+#    for l in range(L): 
+#        if l==0:
+#            m.addConstr(-dpk[:,l]>=-FMax/(L), name='d_f_Res_max_A_l')
+#            m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_l')
+#        elif l==L-1:
+#            m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*FMax/(L), name='d_f_Res_max_A_L')
+#            m.addConstr(dpk[:,l]>=0, name='d_f_Res_min_A_L')
+#        else:
+#            m.addConstr(-dpk[:,l]>=-n_a[:,l-1]*(FMax/(L)), name='d_f_Res_max_A_L-1')
+##            m.addConstr(dpk[:,l]>=n_a[:,l]*(FMax/(L)), name='d_f_Res_min_A_L-1')
