@@ -46,6 +46,7 @@ Cvar_gen = np.zeros(ngen_eff)
 Ccte_gen = np.zeros(ngen_eff)
 Pmin_gen = np.zeros(ngen_eff)
 Pmax_gen =np.zeros(ngen_eff)
+Gen_on_AGC = np.zeros(ngen_eff)
 cont=0
 for gen in dict_gen_eff:
     pos_gen[cont] = dict_gen_eff[gen][0]
@@ -54,6 +55,8 @@ for gen in dict_gen_eff:
     Pmax_gen[cont] = dict_gen_eff[gen][4]/sim.Sb
     Cvar_gen[cont] = dict_gen_eff[gen][6]
     Ccte_gen[cont] = dict_gen_eff[gen][7]
+    if gen in Gen_AGC:
+        Gen_on_AGC[cont] = 1
     cont+=1
 
 
@@ -70,6 +73,7 @@ Pmin_genstat = np.zeros(ngenstat_eff)
 Pmax_genstat =np.zeros(ngenstat_eff)
 Cvar_genstat = np.zeros(ngenstat_eff)
 Ccte_genstat = np.zeros(ngenstat_eff)
+Genstat_on_AGC = np.zeros(ngenstat_eff)
 cont=0
 for gen in dict_genstat_eff:
     pos_genstat[cont] = dict_genstat_eff[gen][0]
@@ -78,6 +82,8 @@ for gen in dict_genstat_eff:
     Pmax_genstat[cont] = dict_genstat_eff[gen][4]/sim.Sb
     Cvar_genstat[cont] = dict_genstat_eff[gen][6]
     Ccte_genstat[cont] = dict_genstat_eff[gen][7]
+    if gen in Gen_AGC:
+        Genstat_on_AGC[cont] = 1
     cont+=1
 
 n_elem = len(indices_obj)   # N° de líneas + 'trf2'
@@ -126,54 +132,133 @@ for e in events_folder:
     e.outserv = 1   
 
 
+#df = pd.DataFrame()
+
 Ns = len(dict_gen_eff)
 # Dynamic Simulation until 50 seg - Finishing CPF
 t_initial = 0.5
 t_final = 300
 tstop_cpf = 49.9
-for gen_out in dict_gen_eff:
-    p_out = dict_gen_eff[gen_out][5]
-    evt = events_folder[name_events.index('Salida Gen')]
-    evt.outserv = 0
-    evt.time = t_initial
-    evt.p_target = sim.generadores[list(dict_gen).index(gen_out)]
-  
-    #sim.prepare_dynamic_sim({'*.ElmSym' : ['m:Psum:bus1']}, 'rms', end_time=300)
-    sim.prepare_dynamic_sim({}, 'rms', end_time=t_final)
-    sim.run_dynamic_sim(end_sim=tstop_cpf)
+Pgen_pfc = np.zeros((ngen_eff, Ns))
+Pgenstat_pfc = np.zeros((ngenstat_eff, Ns))
+Gen_on_AGC = np.tile(Gen_on_AGC,(Ns,1)).T
+Genstat_on_AGC = np.tile(Genstat_on_AGC,(Ns,1)).T
+P_out = np.zeros(Ns)
+cont = 0
+if False:
+    for gen_out in dict_gen_eff:
+        P_out[cont] = dict_gen_eff[gen_out][5]
+        evt = events_folder[name_events.index('Salida Gen')]
+        evt.outserv = 0
+        evt.time = t_initial
+        evt.p_target = sim.generadores[list(dict_gen).index(gen_out)]
     
-    P_pfc = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.generadores)))  # Potencia generadores al final del CPF
+        #sim.prepare_dynamic_sim({'*.ElmSym' : ['m:Psum:bus1']}, 'rms', end_time=300)
+        sim.prepare_dynamic_sim({}, 'rms', end_time=t_final)
+        sim.run_dynamic_sim(end_sim=tstop_cpf)
 
-    Gen_on_AGC = np.array([n for n in Gen_AGC if n != gen_out])
+        Pgen_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.generadores)))  # Potencia generadores al final del CPF
+        Pgenstat_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.genstate)))  # Potencia generadores al final del CPF
 
+        if (gen_out in Gen_AGC) and (gen_out in dict_gen_eff):
+            Gen_on_AGC[list(dict_gen_eff.keys()).index(gen_out),cont] = 0
 
+        elif (gen_out in Gen_AGC) and (gen_out in dict_genstat_eff):
+            Genstat_on_AGC[list(dict_genstat_eff.keys()).index(gen_out),cont] = 0
 
+        cont += 1
 
-    m = gp.Model('Modelo AGC')
-    m.Params.MIPGap = 1e-5
-    m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
-
-    pg_inc = m.addMVar(ngen_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_inc')
-    pstatg_inc = m.addMVar(ngenstat_eff, vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_inc')
-
-    f = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
-    fp = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
-    fn = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
-
-    #perdidas
-    ploss = m.addMVar(n_elem,vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
-    dpk = m.addMVar((n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
-    n_l = m.addMVar(n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
-    n_a = m.addMVar((n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
-
-    f_obj = 0
-    #costo_gen = 0
-    #costo_genstat = 0
-
-    costo_gen = pg_inc* ngen_par @ Cvar_gen*sim.Sb + Ccte_gen.sum()
-    costo_genstat = pstatg_inc* ngenstat_par @ Cvar_genstat*sim.Sb + Ccte_genstat.sum()
+    df = pd.DataFrame(Pgen_pfc).T
+    df.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.csv", index=False)
+    df1 = pd.DataFrame(Pgenstat_pfc).T
+    df1.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.csv", index=False)
+    df2 = pd.DataFrame(Gen_on_AGC).T
+    df2.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.csv", index=False)
+    df3 = pd.DataFrame(Genstat_on_AGC).T
+    df3.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.csv", index=False)
+    df4 = pd.DataFrame(P_out).T
+    df4.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.csv", index=False)
 
 
+if True:
+    Pgen_pfc = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.csv").to_numpy().T
+    try:
+        Pgenstat_pfc = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.csv").to_numpy().T
+    except:
+        Pgenstat_pfc = np.zeros((ngenstat_eff, Ns))
+    Gen_on_AGC = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.csv").to_numpy().T
+    try:
+        Genstat_on_AGC = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.csv").to_numpy().T
+    except:
+        Genstat_on_AGC = np.tile(Genstat_on_AGC,(Ns,1)).T
+    P_out = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.csv").to_numpy().T
+
+
+
+Neg_Gen_on_AGC = np.where((Gen_on_AGC==0)|(Gen_on_AGC==1), Gen_on_AGC.astype(int)^1, Gen_on_AGC.astype(int))
+Neg_Genstat_on_AGC = np.where((Genstat_on_AGC==0)|(Genstat_on_AGC==1), Genstat_on_AGC.astype(int)^1, Genstat_on_AGC.astype(int))
+
+Pgen_pre = [P[0] for P in dict_gen_eff.values()]
+Pgenstat_pre = [P[0] for P in dict_genstat_eff.values()]
+P_pre = Pgen_pre + Pgenstat_pfc
+
+
+VOLL = 1e5
+
+m = gp.Model('Modelo AGC')
+m.Params.MIPGap = 1e-5
+m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
+
+pg_inc = m.addMVar((ngen_eff, Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_inc')
+vg_inc = m.addMVar(ngen_eff, vtype=GRB.BINARY, name='vg_inc')
+
+pstatg_inc = m.addMVar((ngenstat_eff, Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_inc')
+vstatg_inc = m.addMVar(ngenstat_eff, vtype=GRB.BINARY, name='vstatg_inc')
+
+
+p_ens = m.addMVar((len(indices_bus),Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='P_ens')
+
+f = m.addMVar((n_elem, Ns),vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='flujo') # Flujo por las líneas
+fp = m.addMVar((n_elem, Ns),vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fp') # Flujo-p por las líneas
+fn = m.addMVar((n_elem, Ns),vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='fn') # Flujo-n por las líneas
+
+
+#perdidas
+ploss = m.addMVar((n_elem, Ns),vtype=GRB.CONTINUOUS, lb=-GRB.INFINITY, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
+dpk = m.addMVar((n_elem,L, Ns), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
+n_l = m.addMVar((n_elem, Ns), vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
+n_a = m.addMVar((n_elem,L, Ns), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
+
+
+
+f_obj = 0
+#costo_gen = 0
+#costo_genstat = 0
+Csfc = Ccte_gen @ vg_inc
+Csfc += Ccte_genstat @ vstatg_inc
+
+Cop = 0
+Cue = 0
+Cpl = 0
+for s in range(Ns):
+    Cop += Gen_on_AGC[:,s] * Cvar_gen*sim.Sb @ pg_inc[:,s]
+    Cop += Neg_Gen_on_AGC[:,s] * VOLL*sim.Sb @ pg_inc[:,s]
+    if np.size(Cvar_genstat) != 0:
+        Cop += Genstat_on_AGC[:,s] * Cvar_genstat*sim.Sb @ pstatg_inc[:,s]
+        Cop += Neg_Genstat_on_AGC[:,s] * VOLL *sim.Sb @ pstatg_inc[:,s]
+
+    Cue += (VOLL * p_ens[:,s]).sum() * sim.Sb
+    Cpl += (VOLL * ploss[:,s]).sum() * sim.Sb
+
+f_obj = Cop + Cue + Cpl
+m.setObjective(f_obj,GRB.MINIMIZE)
+
+#Balance
+for s in range(Ns):
+    m.addConstr(P_pre - P_out[s] + pg_inc.sum(0) + pstatg_inc.sum(0) + p_ens.sum(0) == dda_barra.sum() + ploss.sum(0) , name ='Balance')
+
+#Flujo 
+    f_gen = P_pre * SF
 
 # %%
 m.write('OPF.lp')
