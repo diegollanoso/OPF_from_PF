@@ -178,7 +178,7 @@ class PowerFactorySim(object):
 
 
         # LINEAS - en servicio
-        # # name linea = (R, X, fmax, N° paralelas)
+        # # name linea = (R, X, fmax, N° paralelas, from, to)
         dict_lineas = dict()
         for line in self.lineas:
             if line.outserv == 0:  #Linea en servicio
@@ -189,10 +189,10 @@ class PowerFactorySim(object):
                 else:
                     fmax_kV = round(line.Inom_a*line.bus1.cterm.uknom*self.raiz3,4)
                 # name linea = (R, X, fmax, N° paralelas)
-                dict_lineas[line.loc_name]=(round(line.R1/Zb,6), round(line.X1/Zb,6), fmax_kV, line.nlnum)
+                dict_lineas[line.loc_name]=(round(line.R1/Zb,6), round(line.X1/Zb,6), fmax_kV, line.nlnum, line.bus1.cterm.loc_name, line.bus2.cterm.loc_name)
 
         # TRAFOS 2 DEV - en servicio
-        # name trafo = (Xd, R, N° paralelo, fmax)
+        # name trafo = (Xd, R, N° paralelo, fmax, from HV, to LV)
         dict_trafos = dict()
         for t in self.trafos:
             if t.typ_id.r1pu == 0:      # Checkear R1 trafo 2 dev
@@ -201,7 +201,7 @@ class PowerFactorySim(object):
                 r = t.typ_id.r1pu
             
             if t.outserv == 0:      # Trafo en servicio
-                if t.bushv.cterm.uknom < self.kV_fm and t.buslv.cterm.uknom:
+                if t.bushv.cterm.uknom < self.kV_fm:
                     fmax_kV = 1e9
                 else:
                     fmax_kV = t.Snom_a
@@ -210,7 +210,7 @@ class PowerFactorySim(object):
                 Zbt = t.bushv.cterm.uknom * t.bushv.cterm.uknom/ (t.Snom_a/t.ntnum)
 
                 # name trafo = (Xd, R, N° paralelo, fmax)
-                dict_trafos[t.loc_name] = (3*t.typ_id.x1pu*(Zbt/Zb), 3*r*(Zbt/Zb), t.ntnum, fmax_kV)
+                dict_trafos[t.loc_name] = (3*t.typ_id.x1pu*(Zbt/Zb), 3*r*(Zbt/Zb), t.ntnum, fmax_kV, t.bushv.cterm.loc_name, t.buslv.cterm.loc_name)
 
         # GENERADORES
         #name generador = (N° Barra, N° Gen paralelo,
