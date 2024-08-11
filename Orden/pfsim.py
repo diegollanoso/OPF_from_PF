@@ -88,10 +88,10 @@ def ShiftFactors(ptdf_dataframe):
 
 class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
-        # start PowerFactory
+        # Start PowerFactory
         self.app = pf.GetApplication()
         self.app.Show()
-        #activate project
+        # Activate project
         self.app.ActivateProject(project_name)
         self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
         self.generadores = self.app.GetCalcRelevantObjects('*.ElmSym') 
@@ -215,7 +215,7 @@ class PowerFactorySim(object):
         # GENERADORES
         #name generador = (N° Barra, N° Gen paralelo,
         #                   Outserv, Pmin, Pmax, Pref,
-        #                   costos var, costo fijo)
+        #                   costos var, costo fijo, rampa)
         dict_gen = dict()
         for gen in self.generadores:
             if gen.ip_ctrl == 1:    # Buscar barra slack
@@ -227,19 +227,19 @@ class PowerFactorySim(object):
                     potencia = gen.pgini
                 # name generador = (N° Barra, N° Gen paralelo,
                 #                   Outserv, Pmin, Pmax, Pref,
-                #                   costos var, costo fijo)
+                #                   costos var, costo fijo, rampa)
                 dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
                                           0, gen.Pmin_uc, gen.Pmax_uc, potencia,
-                                          gen.penaltyCosts, gen.fixedCosts)
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
             else:
                 dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
                                           1, gen.Pmin_uc, gen.Pmax_uc, 0,
-                                          gen.penaltyCosts, gen.fixedCosts)
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
 
         # GENERADORES ESTATICOS
         # name generador = (N° Barra, N° Gen paralelo,
         #                   Outserv, Pmin, Pmax, Pref,
-        #                   costos var, costo fijo)
+        #                   costos var, costo fijo, rampa)
         dict_genstat = dict()
         for gen in self.genstate:
             if gen.ip_ctrl == 1:    # Buscar barra slack
@@ -247,14 +247,14 @@ class PowerFactorySim(object):
             if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
                 # name generador = (N° Barra, N° Gen paralelo,
                 #                   Outserv, Pmin, Pmax, Pref,
-                #                   costos var, costo fijo)
+                #                   costos var, costo fijo, rampa)
                 dict_genstat[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
                                           0, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
-                                          gen.penaltyCosts, gen.fixedCosts)
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
             else:
                 dict_genstat[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
                                           1, gen.Pmin_uc, gen.Pmax_uc, 0,
-                                          gen.penaltyCosts, gen.fixedCosts)
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
 
         #FALTAN
         # TRAFOS 3 DEVANADOS

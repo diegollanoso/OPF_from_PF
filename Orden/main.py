@@ -11,14 +11,19 @@ from gurobipy import *
 #sim = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
 sim = pfsim.PowerFactorySim('Articulo2')
 
-Gen_AGC = ['G4_3', 'G6_3', 'G2_3', 'G4_1', 'G7_1', 'G2_1', 'G3_1', 'G4_4', 'G6_4', 'G2_4', 'G3_4', 'G4_2', 'G3_2']
+Gen_AGC = ['G2_1', 'G3_1', 'G4_1', 'G7_1', 'G3_2', 'G4_2', 'G2_3', 'G4_3', 'G6_3', 'G2_4', 'G3_4', 'G4_4', 'G6_4']
+#Gen_outages = ['G5_1']
+#Gen_outages = ['G4_1', 'G5_1', 'G6_1', 'G2_2', 'G5_2']
+Gen_outages = ['G4_1', 'G5_1', 'G6_1', 'G2_2', 'G5_2', 'G5_3', 'G3_4', 'G5_4', 'G7_4']
+
 
 before=False
 L=6
+T_Sfc = 15 # 15 Min, <-- Tiempo de operación AGC
 
 ptdf_dataframe, indices_bus = sim.export_csv('AC')
-#ptdf_dataframe = pd.read_csv(r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Tesis\Code\SF_datos.csv',skiprows = 0,delimiter=';')
-#ptdf_dataframe = pd.read_csv(r'C:\Users\lldie\Desktop\SF_datos.csv',skiprows = 0,delimiter=';')
+#ptdf_dataframe = pd.read_excel(r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Tesis\Code\SF_datos.xlsx',skiprows = 0,delimiter=';')
+#ptdf_dataframe = pd.read_excel(r'C:\Users\lldie\Desktop\SF_datos.xlsx',skiprows = 0,delimiter=';')
 SF, indices_obj = pfsim.ShiftFactors(ptdf_dataframe)
 
 (dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat) = sim.get_data(indices_bus)
@@ -51,8 +56,11 @@ Pmax_gen =np.zeros(ngen_eff)
 Gen_on_AGC = np.zeros(ngen_eff)
 pos_gen_agc_list = list()
 Pgen_pre = np.zeros(ngen_eff)
+Ramp_gen = np.zeros(ngen_eff)
+all_gen = list()
 cont=0
 for gen in dict_gen_eff:
+    all_gen.append(gen)
     pos_gen[cont] = dict_gen_eff[gen][0]
     ngen_par[cont] = dict_gen_eff[gen][1]
     Pmin_gen[cont] = dict_gen_eff[gen][3]/sim.Sb
@@ -60,6 +68,7 @@ for gen in dict_gen_eff:
     Pgen_pre[cont] = dict_gen_eff[gen][5]/sim.Sb
     Cvar_gen[cont] = dict_gen_eff[gen][6]
     Ccte_gen[cont] = dict_gen_eff[gen][7]
+    Ramp_gen[cont] = dict_gen_eff[gen][8]/sim.Sb
     if gen in Gen_AGC:
         Gen_on_AGC[cont] = 1
         pos_gen_agc_list.append(cont)
@@ -83,6 +92,7 @@ Ccte_genstat = np.zeros(ngenstat_eff)
 Genstat_on_AGC = np.zeros(ngenstat_eff)
 pos_genstat_agc_list = list()
 Pgenstat_pre = np.zeros(ngenstat_eff)
+Ramp_genstat = np.zeros(ngenstat_eff)
 cont=0
 for gen in dict_genstat_eff:
     pos_genstat[cont] = dict_genstat_eff[gen][0]
@@ -92,6 +102,7 @@ for gen in dict_genstat_eff:
     Pgenstat_pre[cont] = dict_genstat_eff[gen][5]/sim.Sb
     Cvar_genstat[cont] = dict_genstat_eff[gen][6]
     Ccte_genstat[cont] = dict_genstat_eff[gen][7]
+    Ramp_genstat[cont] = dict_genstat_eff[gen][8]
     if gen in Gen_AGC:
         Genstat_on_AGC[cont] = 1
         pos_genstat_agc_list.append(cont)
@@ -106,6 +117,7 @@ n_elem = len(indices_obj)   # N° de líneas + 'trf2'
 # Obtención de fmax, R y X
 dict_full = dict()
 pos_line = list()
+all_line = list()
 FMax = np.zeros(n_elem)
 R = np.zeros(n_elem)
 X = np.zeros(n_elem)
@@ -115,6 +127,7 @@ cont = -1
 for i in indices_obj:
     cont += 1
     if i in dict_lineas:
+        all_line.append(i)
         dict_full[i] = dict_lineas[i]
         Fmax_i = dict_lineas[i][2]
         R_i = dict_lineas[i][0]
@@ -162,22 +175,31 @@ for e in events_folder:
 
 #df = pd.DataFrame()
 
-Ns = len(dict_gen_eff)
+Ns = len(Gen_outages)
 # Dynamic Simulation until 50 seg - Finishing CPF
-t_initial = 0.5
-t_final = 300
-tstop_cpf = 49.9
+t_initial = 0.5 # Tiempo Perturbación
+t_final = 300 # Tiempo total
+tstop_cpf = 49.9 # Tiempo hasta el CPF
+D_pfc = np.zeros((len(indices_bus),Ns))
+PL_pre_line = np.zeros((len(dict_lineas),Ns))
+#PL_pre_trafo2 = np.zeros((len(dict_trafos),Ns))
 Pgen_pfc = np.zeros((ngen_eff, Ns))
 Pgenstat_pfc = np.zeros((ngenstat_eff, Ns))
 Gen_on_AGC = np.tile(Gen_on_AGC,(Ns,1)).T
 Genstat_on_AGC = np.tile(Genstat_on_AGC,(Ns,1)).T
 P_out = np.zeros(Ns)
-Pos_gen_out = np.zeros(Ns)
+Barra_gen_out = np.zeros(Ns)
+list_gen_out = list()
 cont = 0
-if False:
+if True:
     for gen_out in dict_gen_eff:
+        if gen_out not in Gen_outages:
+            continue
+        print('Progreso: ' + str(cont) + '/' + str(Ns))
+        print('Generador Out: ' + gen_out)
+        list_gen_out.append(gen_out)
         P_out[cont] = dict_gen_eff[gen_out][5]/sim.Sb
-        Pos_gen_out[cont] = dict_gen_eff[gen_out][0]
+        Barra_gen_out[cont] = dict_gen_eff[gen_out][0]
         evt = events_folder[name_events.index('Salida Gen')]
         evt.outserv = 0
         evt.time = t_initial
@@ -187,44 +209,67 @@ if False:
         sim.prepare_dynamic_sim({}, 'rms', end_time=t_final)
         sim.run_dynamic_sim(end_sim=tstop_cpf)
 
-        Pgen_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.generadores)))  # Potencia generadores al final del CPF
-        Pgenstat_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.genstate)))  # Potencia generadores al final del CPF
+        for load in list(map(lambda x: (x.GetAttribute('m:Psum:bus1'),dict_barras[x.bus1.cterm.loc_name]), sim.cargas)):  # Demanda al final del CPF por carga
+            D_pfc[load[1],cont] += load[0]/sim.Sb
+
+        PL_pre_line[:,cont] = np.array(list(map(lambda x: x.GetAttribute('c:Losses'), sim.lineas)))  
+        #PL_pre_trafo2[:,cont] = np.array(list(map(lambda x: x.GetAttribute('c:Ploss'), sim.trafos)))  
+
+
+        for gen in sim.generadores:
+            Pgen_pfc[list(all_gen).index(gen.loc_name),cont] = gen.GetAttribute('m:Psum:bus1')/sim.Sb
+
+        for gen in sim.genstate:
+            Pgen_pfc[list(all_gen).index(gen.loc_name),cont] = gen.GetAttribute('m:Psum:bus1')/sim.Sb
+
+        #Pgen_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.generadores)))/sim.Sb  # Potencia generadores al final del CPF
+        #Pgenstat_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute('m:Psum:bus1'), sim.genstate)))/sim.Sb  # Potencia generadores al final del CPF
 
         if (gen_out in Gen_AGC) and (gen_out in dict_gen_eff):
-            Gen_on_AGC[list(dict_gen_eff.keys()).index(gen_out),cont] = 0
+            Gen_on_AGC[list(all_gen).index(gen_out),cont] = 0
 
         elif (gen_out in Gen_AGC) and (gen_out in dict_genstat_eff):
             Genstat_on_AGC[list(dict_genstat_eff.keys()).index(gen_out),cont] = 0
 
         cont += 1
 
+    df0 = pd.DataFrame(np.array(D_pfc)).T
+    df0.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\DPFC.xlsx", index=False)
     df = pd.DataFrame(Pgen_pfc).T
-    df.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.csv", index=False)
+    df.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.xlsx", index=False)
     df1 = pd.DataFrame(Pgenstat_pfc).T
-    df1.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.csv", index=False)
+    df1.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.xlsx", index=False)
     df2 = pd.DataFrame(Gen_on_AGC).T
-    df2.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.csv", index=False)
+    df2.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.xlsx", index=False)
     df3 = pd.DataFrame(Genstat_on_AGC).T
-    df3.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.csv", index=False)
+    df3.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.xlsx", index=False)
     df4 = pd.DataFrame(P_out).T
-    df4.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.csv", index=False)
-    df4 = pd.DataFrame(Pos_gen_out).T
-    df4.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PosPout.csv", index=False)
+    df4.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.xlsx", index=False)
+    df5 = pd.DataFrame(Barra_gen_out).T
+    df5.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\BarraGenOut.xlsx", index=False)
+    df6 = pd.DataFrame(PL_pre_line).T
+    df6.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PLLine.xlsx", index=False)
+    df7 = pd.DataFrame(list_gen_out).T
+    df7.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\ListGenOut.xlsx", index=False)
+
 
 
 if True:
-    Pgen_pfc = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.csv").to_numpy().T
+    PL_pre_line = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PLLine.xlsx").to_numpy().T
+    D_pfc = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\DPFC.xlsx").to_numpy().T
+    Pgen_pfc = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.xlsx").to_numpy().T
     try:
-        Pgenstat_pfc = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.csv").to_numpy().T
+        Pgenstat_pfc = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.xlsx").to_numpy().T
     except:
         Pgenstat_pfc = np.zeros((ngenstat_eff, Ns))
-    Gen_on_AGC = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.csv").to_numpy().T
+    Gen_on_AGC = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.xlsx").to_numpy().T
     try:
-        Genstat_on_AGC = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.csv").to_numpy().T
+        Genstat_on_AGC = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.xlsx").to_numpy().T
     except:
         Genstat_on_AGC = np.tile(Genstat_on_AGC,(Ns,1)).T
-    P_out = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.csv").to_numpy().T
-    Pps_gen_out = pd.read_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PosPout.csv").to_numpy().T
+    P_out = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.xlsx").to_numpy()[0]
+    Barra_gen_out = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\BarraGenOut.xlsx").to_numpy()[0]
+    list_gen_out = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\ListGenOut.xlsx").to_numpy()[0]
 
 
 
@@ -241,10 +286,14 @@ m.Params.MIPGap = 1e-5
 m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
 
 pg_inc = m.addMVar((ngen_eff, Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_inc')
+pg_dec = m.addMVar((ngen_eff, Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg_dec')
 vg_inc = m.addMVar(n_gen_agc, vtype=GRB.BINARY, name='vg_inc')
+vg_dec = m.addMVar(n_gen_agc, vtype=GRB.BINARY, name='vg_dec')
 
 pstatg_inc = m.addMVar((ngenstat_eff, Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_inc')
+pstatg_dec = m.addMVar((ngenstat_eff, Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pstatg_dec')
 vstatg_inc = m.addMVar(n_genstat_agc, vtype=GRB.BINARY, name='vstatg_inc')
+vstatg_dec = m.addMVar(n_genstat_agc, vtype=GRB.BINARY, name='vstatg_dec')
 
 
 p_ens = m.addMVar((len(indices_bus),Ns), vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='P_ens')
@@ -257,22 +306,19 @@ fn = m.addMVar((n_elem, Ns),vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='f
 #perdidas
 ploss = m.addMVar((n_elem, Ns),vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='losses') # Flujo por las líneas
 dpk = m.addMVar((n_elem,L, Ns), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
-n_l = m.addMVar((n_elem, Ns), vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
-n_a = m.addMVar((n_elem,L, Ns), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
-
 
 
 f_obj = 0
 #costo_gen = 0
 #costo_genstat = 0
-Csfc = Ccte_gen[pos_gen_agc_list] @ vg_inc
-Csfc += Ccte_genstat[pos_genstat_agc_list] @ vstatg_inc
+Csfc = Ccte_gen[pos_gen_agc_list] @ (vg_inc + vg_dec)
+Csfc += Ccte_genstat[pos_genstat_agc_list] @ (vstatg_inc + vstatg_dec)
 
 Cop = 0
 Cue = 0
 Cpl = 0
 for s in range(Ns):
-    Cop += Gen_on_AGC[:,s] * Cvar_gen*sim.Sb @ pg_inc[:,s]
+    Cop += Gen_on_AGC[:,s] * Cvar_gen*sim.Sb @ (pg_inc[:,s] + pg_dec[:,s])
     #Cop += Neg_Gen_on_AGC[:,s] * VOLL*sim.Sb @ pg_inc[:,s]
     if np.size(Cvar_genstat) != 0:
         Cop += Genstat_on_AGC[:,s] * Cvar_genstat*sim.Sb @ pstatg_inc[:,s]
@@ -288,17 +334,22 @@ m.setObjective(f_obj,GRB.MINIMIZE)
 f_gen =  SF[:,pos_gen] @ Pgen_pre
 f_genstat =  SF[:,pos_genstat] @ Pgenstat_pre
 
-#Balance
+
 for s in range(Ns):
-    m.addConstr(P_pre - P_out[s] + pg_inc[pos_gen_agc_list,s].sum() + pstatg_inc[pos_genstat_agc_list,s].sum() + p_ens[:,s].sum() == dda_barra.sum() + ploss[:,s].sum() , name ='Balance')
-#Flujo 2
+    PL_pre = PL_pre_line[:,s].sum()/sim.Sb/1000 #+ PL_pre_trafo2[:,s].sum()
+    #Balance
+    #m.addConstr(P_pre - P_out[s] + pg_inc[pos_gen_agc_list,s].sum() - pg_dec[pos_gen_agc_list,s].sum() + pstatg_inc[pos_genstat_agc_list,s].sum() - pstatg_dec[pos_genstat_agc_list,s].sum() + p_ens[:,s].sum() == dda_barra.sum() + ploss[:,s].sum() , name ='Balance')
+    #m.addConstr(P_pre - P_out[s] + pg_inc[pos_gen_agc_list,s].sum() - pg_dec[pos_gen_agc_list,s].sum() + pstatg_inc[pos_genstat_agc_list,s].sum() - pstatg_dec[pos_genstat_agc_list,s].sum() + p_ens[:,s].sum() == D_pfc[:,s].sum() + ploss[:,s].sum() , name ='Balance')
+    m.addConstr(pg_inc[pos_gen_agc_list,s].sum() - pg_dec[pos_gen_agc_list,s].sum() + pstatg_inc[pos_genstat_agc_list,s].sum() - pstatg_dec[pos_genstat_agc_list,s].sum() + p_ens[:,s].sum() == P_out[s] - dda_barra.sum() + D_pfc[:,s].sum() - PL_pre + ploss[:,s].sum(), name ='Balance')
+    #Flujo2
     f_ens =  SF @ p_ens[:,s]
-    f_gen_agc = SF[:,pos_gen[pos_gen_agc_list]] @ pg_inc[pos_gen_agc_list,s]
+    f_gen_agc = SF[:,pos_gen[pos_gen_agc_list]] @ (pg_inc[pos_gen_agc_list,s] - pg_dec[pos_gen_agc_list,s])
     f_genstat_agc = 0
     if np.size(Cvar_genstat) != 0:
-        f_genstat_agc = Genstat_on_AGC[:,s] * SF[:,pos_genstat] @ pstatg_inc[:,s]
-    f_gen_out = SF[:,int(Pos_gen_out[s])]*P_out[s]
+        f_genstat_agc = Genstat_on_AGC[:,s] * SF[:,pos_genstat] @ (pstatg_inc[:,s] - pstatg_dec[:,s])
+    f_gen_out = SF[:,int(Barra_gen_out[s])]*P_out[s]
     f_loss = 0.5 * SF @ abs(A.T) @ ploss[:,s]
+    Flujo_dda = SF @ D_pfc[:,s]
     m.addConstr(f[:,s] == f_gen + f_genstat + f_ens + f_gen_agc + f_genstat_agc - Flujo_dda - f_gen_out - f_loss, name='flujos') 
     m.addConstr(f[:,s] == fp[:,s] - fn[:,s], name = 'f')
     m.addConstr(fp[:,s] + fn[:,s] == dpk[:,:,s].sum(1), name='SumaDpk')
@@ -313,27 +364,26 @@ for s in range(Ns):
     for l in range(L):
         m.addConstr(-dpk[:,l,s] >= -FMax/L, name = 'LimiteDpk')
     
-    m.addConstr(-fp[:,s]>=-n_l[:,s]*FMax, name='fp')   #flujo positvo-restriccion de complementaridad
-    m.addConstr(-fn[:,s]>=(1-n_l[:,s])*(-FMax), name='fn') #flujo nefativo-restriccion de complementaridad
 
-    for l in range(L): 
-        if l==0:
-            m.addConstr(-dpk[:,l,s]>=-FMax/(L), name='d_f_Res_max_A_l')
-            m.addConstr(dpk[:,l,s]>=n_a[:,l,s]*(FMax/(L)), name='d_f_Res_min_A_l')
-        elif l==L-1:
-            m.addConstr(-dpk[:,l,s]>=-n_a[:,l-1,s]*FMax/(L), name='d_f_Res_max_A_L')
-            m.addConstr(dpk[:,l,s]>=0, name='d_f_Res_min_A_L')
-        else:
-            m.addConstr(-dpk[:,l,s]>=-n_a[:,l-1,s]*(FMax/(L)), name='d_f_Res_max_A_L-1')
-            m.addConstr(dpk[:,l,s]>=n_a[:,l,s]*(FMax/(L)), name='d_f_Res_min_A_L-1')
-
-
-# Generadores
+    # Generadores
+    m.addConstr(pg_inc[list(dict_gen_eff).index(list_gen_out[s]),s] == 0, name = 'GenOut+')
+    m.addConstr(pg_dec[list(dict_gen_eff).index(list_gen_out[s]),s] == 0, name = 'GenOut-')
     m.addConstr(-pg_inc[pos_gen_agc_list,s] >= -vg_inc * (Pmax_gen[pos_gen_agc_list] * ngen_par[pos_gen_agc_list] - Pgen_pre[pos_gen_agc_list]))
+    m.addConstr(-pg_dec[pos_gen_agc_list,s] >= -vg_dec * (Pgen_pre[pos_gen_agc_list] - Pmin_gen[pos_gen_agc_list] * ngen_par[pos_gen_agc_list]))
+        #Nueva Lista que solo tiene unidades participantes en el AGC / se quita de unidades participantes la unidad que sale de servicio
+    pos_part_gen_agc_list = pos_gen_agc_list[:]
+    if Barra_gen_out[s] in pos_gen_agc_list:
+        pos_part_gen_agc_list.remove(Barra_gen_out[s])
+    #m.addConstr(-pg_inc[pos_part_gen_agc_list,s] >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] - (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list]))
+    #m.addConstr(-pg_dec[pos_part_gen_agc_list,s] >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] + (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list]))
     if np.size(Cvar_genstat) != 0:
         m.addConstr(-pg_inc[pos_genstat_agc_list,s] >= -vstatg_inc * (Pmax_gen[pos_genstat_agc_list] * ngen_par[pos_genstat_agc_list] - Pgen_pre[pos_genstat_agc_list]))
+        m.addConstr(-pg_dec[pos_genstat_agc_list,s] >= -vstatg_dec * (Pgen_pre[pos_genstat_agc_list] - Pmin_gen[pos_genstat_agc_list] * ngen_par[pos_genstat_agc_list]))
+        #m.addConstr(-pg_inc[pos_genstat_agc_list,s] >= -T_Sfc * Ramp_genstat[pos_genstat_agc_list] - (Pgenstat_pfc[pos_genstat_agc_list, s] - Pgenstat_pre[pos_genstat_agc_list]))
+        #m.addConstr(-pg_dec[pos_genstat_agc_list,s] >= -T_Sfc * Ramp_genstat[pos_genstat_agc_list] + (Pgenstat_pfc[pos_genstat_agc_list, s] - Pgenstat_pre[pos_genstat_agc_list]))
 
-    m.addConstr(-p_ens[:,s] >= -dda_barra)
+
+    m.addConstr(-p_ens[:,s] >= -D_pfc[:,s])
 
 # %%
 m.write('OPF.lp')
@@ -342,18 +392,28 @@ t2 = time.time()
 m.optimize()
 t3=time.time()
 
-print('-----------------------------')
-print('La demanda total del sistema es: %.2f (MW)' % (dda_barra.sum()*sim.Sb))    
-print ('Cost = %.2f ($) => Csfc = %.2f ($) + Cop = %.2f ($) + Cue = %.2f ($) + Cpl = %.2f ($)' % (m.objVal,Csfc.getValue(),Cop.getValue(),Cue.getValue(),Cpl.getValue()))
-print('num_Vars =  %d / num_Const =  %d / num_NonZeros =  %d' % (m.NumVars,m.NumConstrs,m.DNumNZs)) #print('num_Vars =  %d / num_Const =  %d' % (len(m.getVars()), len(m.getConstrs())))      
-print ('Total P_loss = %.2f [MW]'%(sim.Sb*ploss.sum().getValue()))
-#print('=> Formulation time: %.4f (s)'% (t1-t0))
-print('=> Solution time: %.4f (s)' % (t3-t2))
-print('=> Solver time: %.4f (s)' % (m.Runtime))
 status = m.Status
 if status == GRB.Status.OPTIMAL:
+    print('-----------------------------')
+    print('La demanda total del sistema es: %.2f (MW)' % (dda_barra.sum()*sim.Sb))    
+    print ('Cost = %.2f ($) => Csfc = %.2f ($) + Cop = %.2f ($) + Cue = %.2f ($) + Cpl = %.2f ($)' % (m.objVal,Csfc.getValue(),Cop.getValue(),Cue.getValue(),Cpl.getValue()))
+    print('num_Vars =  %d / num_Const =  %d / num_NonZeros =  %d' % (m.NumVars,m.NumConstrs,m.DNumNZs)) #print('num_Vars =  %d / num_Const =  %d' % (len(m.getVars()), len(m.getConstrs())))      
+    print ('Total P_loss = %.2f [MW]'%(sim.Sb*ploss.sum().getValue()))
+    #print('=> Formulation time: %.4f (s)'% (t1-t0))
+    print('=> Solution time: %.4f (s)' % (t3-t2))
+    print('=> Solver time: %.4f (s)' % (m.Runtime))
     print ('Costo => %.2f ($/h)' % m.objVal) 
     #print ('Las perdidas son %.2f (MW)' % sum(pk_loss[i].X for i in range(len(pk_loss)))) 
+
+    Post_gen_out = np.zeros(Ns)
+
+    part_factors = np.zeros((ngen_eff,Ns))
+    for gen, s in np.ndindex(pg_inc.x.shape):
+        Post_gen_out[s] = P_out[s] - dda_barra.sum() + D_pfc[:,s].sum() - PL_pre_line[:,s].sum()/sim.Sb/1000 +  ploss[:,s].x.sum()
+        if pg_inc.x[gen,s] != 0 or pg_dec.x[gen,s] != 0:
+            part_factors[gen,s] = (pg_inc.x[gen,s]-pg_dec.x[gen,s])/Post_gen_out[s]
+
+
 elif status == GRB.Status.INF_OR_UNBD or \
     status == GRB.Status.INFEASIBLE  or \
     status == GRB.Status.UNBOUNDED:
@@ -361,13 +421,88 @@ elif status == GRB.Status.INF_OR_UNBD or \
     m.computeIIS() 
     m.write("GTCEP.ilp")
 
-part_factors = np.zeros((ngen_eff,Ns))
-for gen, s in np.ndindex(pg_inc.x.shape):
-    if pg_inc.x[gen,s] != 0:
-        part_factors[gen,s] = pg_inc.x[gen,s]/P_out[s]
+### Chekeos
+#PowerFactory
+results_line = np.zeros((len(dict_lineas),Ns))
+result_gen = np.zeros((ngen_eff,Ns))
+for scen in range(Ns):
+    print('Progreso: ' + str(scen) + '/' + str(Ns))
+    print('Generador Out: ' + list_gen_out[scen])
+    evt = events_folder[name_events.index('Salida Gen')]
+    evt.outserv = 0
+    evt.time = t_initial
+    evt.p_target = sim.generadores[list(dict_gen).index(list_gen_out[scen])]
+    for i_gen in range(len(Gen_AGC)):
+        evt2 = events_folder[name_events.index('Evento Gamma ' + str(i_gen+1))]
+        evt2.outserv = 0
+        evt2.value = str(part_factors[pos_gen_agc_list,scen][i_gen])
+    sim.prepare_dynamic_sim({}, 'rms', end_time=t_final)
+    sim.run_dynamic_sim(end_sim=t_final)
+
+    for gen in sim.generadores:
+        result_gen[list(all_gen).index(gen.loc_name),scen] = gen.GetAttribute('m:Psum:bus1')
+    
+    for line in sim.lineas:
+        results_line[all_line.index(line.loc_name),scen] = (line.GetAttribute('m:Psum:bus1') - line.GetAttribute('m:Psum:bus2'))/2
+    #results_line[:,scen] = np.array(list(map(lambda x: (x.GetAttribute('m:Psum:bus1') + x.GetAttribute('m:Psum:bus2'))/2 , sim.lineas)))  
+
+with pd.ExcelWriter('1Comparaciones.xlsx') as writer:
+    for scen in range(Ns):
+        P_final = Pgen_pre + pg_inc[:,scen].x - pg_dec[:,scen].x 
+        P_final[list(all_gen).index(list_gen_out[scen])] = 0
+        Res_gen_export = pd.DataFrame(np.vstack((all_gen,result_gen[:,scen],P_final*sim.Sb)).T, columns=['Gen', 'P_PF', 'P_Py'])
+        name_hoja = 'E ' + str(scen) + ' ' + list_gen_out[scen]
+        Res_gen_export.to_excel(writer, sheet_name= name_hoja,index=False)
+
+
+        Res_line_export = pd.DataFrame(np.vstack((all_line,results_line[:,scen],f[pos_line,scen].x*sim.Sb, FMax[pos_line]*sim.Sb)).T, columns=['Linea', 'P_PF', 'P_Py', 'FMax'])
+        Res_line_export.to_excel(writer, sheet_name= name_hoja,index=False, startcol = 6)
+
+#Excel
+#dict_scen = dict()
+dddf = np.vstack((range(1,Ns+1),list_gen_out,P_out,Barra_gen_out))
+Res_escenarios = pd.DataFrame(dddf.T,index=range(1,Ns+1), columns=['Escenario', 'Gen', 'Potencia ', 'Posición'])
+
+name_column=['Gen', 'Potencia']
+all_list= [all_gen]
+all_list.append(Pgen_pre)
+
+df_genOnAGC = pd.DataFrame(np.vstack((list_gen_out, Gen_on_AGC)).T, columns=np.insert(all_gen,0,'Gen', axis=0))
+for scen in range(Ns):
+    all_list.append(Pgen_pfc[:,scen])
+    name_column.append('E' + str(scen + 1))
+
+
+powers_gen = pd.DataFrame(np.array(all_list).T,columns=name_column)
+all_gen = np.array(all_gen)
+Datos_gen = [all_gen[pos_gen_agc_list],Pmin_gen[pos_gen_agc_list],Pmax_gen[pos_gen_agc_list],Ramp_gen[pos_gen_agc_list], Pgen_pre[pos_gen_agc_list]]
+
+datos_gen = pd.DataFrame(np.array(Datos_gen).T, columns=['Gen', 'P min', 'P max', 'Rampa', 'P previa'])
+with pd.ExcelWriter("0Resultados.xlsx") as writer:
+    Res_escenarios.to_excel(writer, sheet_name='Escenarios - Gen OUT', index=False)
+    powers_gen.to_excel(writer, sheet_name='Generadores', index=False)
+    datos_gen.to_excel(writer,sheet_name='DatosGenAGC', index = False)
+    df_genOnAGC.to_excel(writer, sheet_name='Generador en AGC', index=False)
+    for scen in range(Ns):
+        aiuda = -pg_inc[:,scen].x >= -T_Sfc * Ramp_gen - (Pgen_pfc[:,scen] - Pgen_pre)
+        scenarios = pd.DataFrame(np.vstack((all_gen,Pgen_pre,Pgen_pfc[:,scen], pg_inc[:,scen].x - pg_dec[:,scen].x,Pgen_pre + pg_inc[:,scen].x ,Gen_on_AGC[:,scen], T_Sfc * Ramp_gen, aiuda)).T, 
+                                 columns=['Gen', 'Potencia Previa', 'Potencia PFC', 'Aumento', 'Potencia SFC', 'Gen en AGC', 'Rampa', 'Boolean'])
+        name_hoja = 'E ' + str(scen) + ' ' + list_gen_out[scen]
+        scenarios.to_excel(writer, sheet_name= name_hoja,index=False)
+
+#for s in range(Ns):
+#    pos_part_gen_agc_list = pos_gen_agc_list[:]
+#    if Barra_gen_out[s] in pos_gen_agc_list:
+#        pos_part_gen_agc_list.remove(Barra_gen_out[s])
+#    y = -pg_inc[pos_part_gen_agc_list,s].x >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] - (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list])
+#    if False in y:
+#        print('Escenario n°:' + str(s))
+#        print(y)
+
+
 
 #df = pd.DataFrame(part_factors).T
-#df.to_csv(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PartFactors.csv", index=False)
+#df.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PartFactors.xlsx", index=False)
 
 
 
@@ -399,7 +534,7 @@ print('finish!')
 
 
 
-#indices = pd.read_csv(r'C:\Users\lldie\Desktop\SF_Indices.csv',skiprows = 0,delimiter=';', usecols=[2], encoding= 'ISO-8859-1')
+#indices = pd.read_excel(r'C:\Users\lldie\Desktop\SF_Indices.xlsx',skiprows = 0,delimiter=';', usecols=[2], encoding= 'ISO-8859-1')
 
 #array_indices = indices.to_numpy()[:,0]
 #array_indices_corregidos = list()

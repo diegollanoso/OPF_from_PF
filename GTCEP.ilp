@@ -1,0 +1,8 @@
+\ Model Modelo AGC_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ R2845: - Pg_inc[5,2] >= 2.6
+Bounds
+End
