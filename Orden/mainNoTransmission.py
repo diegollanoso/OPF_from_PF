@@ -26,7 +26,7 @@ ptdf_dataframe, indices_bus = sim.export_csv('AC')
 #ptdf_dataframe = pd.read_excel(r'C:\Users\lldie\Desktop\SF_datos.xlsx',skiprows = 0,delimiter=';')
 SF, indices_obj = pfsim.ShiftFactors(ptdf_dataframe)
 
-(dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat, bus_slack) = sim.get_data(indices_bus)
+(dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat) = sim.get_data(indices_bus)
 
 
 
@@ -55,7 +55,6 @@ Pmin_gen = np.zeros(ngen_eff)
 Pmax_gen =np.zeros(ngen_eff)
 Gen_on_AGC = np.zeros(ngen_eff)
 pos_gen_agc_list = list()
-name_gen_agc_list = list()
 Pgen_pre = np.zeros(ngen_eff)
 Ramp_gen = np.zeros(ngen_eff)
 all_gen = list()
@@ -73,7 +72,6 @@ for gen in dict_gen_eff:
     if gen in Gen_AGC:
         Gen_on_AGC[cont] = 1
         pos_gen_agc_list.append(cont)
-        name_gen_agc_list.append(gen)
     cont+=1
 
 n_gen_agc = len(pos_gen_agc_list)
@@ -166,35 +164,6 @@ for i in range(n_elem):
 G = np.real(yprim)
 B = np.imag(yprim)
 
-## SHIFT FACTORS CALCULATED
-
-n_bus_slack = list(dict_barras.keys()).index(bus_slack)
-noslack = np.flatnonzero(np.arange(len(indices_bus)) != n_bus_slack)
-
-
-BfR = sparse((np.r_[np.imag(yprim), -np.imag(yprim)], (I, np.r_[i_buses, j_buses])), (n_elem,len(indices_bus)))
-BbusR = S.T * BfR
-SFR = np.zeros((n_elem,len(indices_bus)))
-SFR[:,noslack] = BfR[:, noslack].todense()*np.linalg.inv(BbusR[np.ix_(noslack, noslack)].todense())    
-
-difference = (SFR - SF)/SFR
-
-SF_PF = pd.DataFrame(np.vstack((list(dict_barras.keys()),SF)).T, columns=np.insert(indices_obj, 0, 'x', axis=0))
-SF_DC_Lossy = pd.DataFrame(np.vstack((list(dict_barras.keys()),SFR)).T, columns=np.insert(indices_obj, 0, 'x', axis=0))
-diff = pd.DataFrame(np.vstack((list(dict_barras.keys()),difference)).T, columns=np.insert(indices_obj, 0, 'x', axis=0))
-
-
-
-
-with pd.ExcelWriter('3ShiftFactors.xlsx') as writer:
-    SF_PF.to_excel(writer, sheet_name='SF_PF', index=False)
-    SF_DC_Lossy.to_excel(writer, sheet_name='SF_DC', index=False)
-    diff.to_excel(writer, sheet_name='Diff', index=False)
-
-
-
-
-
 # Switch event
 # Gen Out
 name_events = list()
@@ -222,7 +191,7 @@ P_out = np.zeros(Ns)
 Barra_gen_out = np.zeros(Ns)
 list_gen_out = list()
 cont = 0
-if False:
+if True:
     for gen_out in dict_gen_eff:
         if gen_out not in Gen_outages:
             continue
@@ -397,16 +366,16 @@ for s in range(Ns):
     
 
     # Generadores
-    m.addConstr(pg_inc[list(dict_gen_eff).index(list_gen_out[s]),s] == 0, name = 'GenOut+')
-    m.addConstr(pg_dec[list(dict_gen_eff).index(list_gen_out[s]),s] == 0, name = 'GenOut-')
-    m.addConstr(-pg_inc[pos_gen_agc_list,s] >= -vg_inc * (Pmax_gen[pos_gen_agc_list] * ngen_par[pos_gen_agc_list] - Pgen_pre[pos_gen_agc_list]), name = 'PMax')
-    m.addConstr(-pg_dec[pos_gen_agc_list,s] >= -vg_dec * (Pgen_pre[pos_gen_agc_list] - Pmin_gen[pos_gen_agc_list] * ngen_par[pos_gen_agc_list]), name = 'PMin')
-    #Nueva Lista que solo tiene unidades participantes en el AGC / se quita de unidades participantes la unidad que sale de servicio
+    #m.addConstr(pg_inc[list(dict_gen_eff).index(list_gen_out[s]),s] == 0, name = 'GenOut+')
+    #m.addConstr(pg_dec[list(dict_gen_eff).index(list_gen_out[s]),s] == 0, name = 'GenOut-')
+    #m.addConstr(-pg_inc[pos_gen_agc_list,s] >= -vg_inc * (Pmax_gen[pos_gen_agc_list] * ngen_par[pos_gen_agc_list] - Pgen_pre[pos_gen_agc_list]))
+    #m.addConstr(-pg_dec[pos_gen_agc_list,s] >= -vg_dec * (Pgen_pre[pos_gen_agc_list] - Pmin_gen[pos_gen_agc_list] * ngen_par[pos_gen_agc_list]))
+        #Nueva Lista que solo tiene unidades participantes en el AGC / se quita de unidades participantes la unidad que sale de servicio
     pos_part_gen_agc_list = pos_gen_agc_list[:]
-    if list_gen_out[s] in name_gen_agc_list:
-        pos_part_gen_agc_list.pop(name_gen_agc_list.index(list_gen_out[s]))
-    m.addConstr(-pg_inc[pos_part_gen_agc_list,s] >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] - (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list]), name = list_gen_out[s] +'_Ramp+')
-    m.addConstr(-pg_dec[pos_part_gen_agc_list,s] >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] + (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list]), name = 'Ramp-')
+    if Barra_gen_out[s] in pos_gen_agc_list:
+        pos_part_gen_agc_list.remove(Barra_gen_out[s])
+    #m.addConstr(-pg_inc[pos_part_gen_agc_list,s] >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] - (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list]))
+    #m.addConstr(-pg_dec[pos_part_gen_agc_list,s] >= -T_Sfc * Ramp_gen[pos_part_gen_agc_list] + (Pgen_pfc[pos_part_gen_agc_list,s] - Pgen_pre[pos_part_gen_agc_list]))
     if np.size(Cvar_genstat) != 0:
         m.addConstr(-pg_inc[pos_genstat_agc_list,s] >= -vstatg_inc * (Pmax_gen[pos_genstat_agc_list] * ngen_par[pos_genstat_agc_list] - Pgen_pre[pos_genstat_agc_list]))
         m.addConstr(-pg_dec[pos_genstat_agc_list,s] >= -vstatg_dec * (Pgen_pre[pos_genstat_agc_list] - Pmin_gen[pos_genstat_agc_list] * ngen_par[pos_genstat_agc_list]))
@@ -414,7 +383,7 @@ for s in range(Ns):
         #m.addConstr(-pg_dec[pos_genstat_agc_list,s] >= -T_Sfc * Ramp_genstat[pos_genstat_agc_list] + (Pgenstat_pfc[pos_genstat_agc_list, s] - Pgenstat_pre[pos_genstat_agc_list]))
 
 
-    m.addConstr(-p_ens[:,s] >= -D_pfc[:,s], 'LimENS')
+    m.addConstr(-p_ens[:,s] >= -D_pfc[:,s])
 
 # %%
 m.write('OPF.lp')
@@ -503,20 +472,20 @@ for scen in range(Ns):
     all_list.append(Pgen_pfc[:,scen])
     name_column.append('E' + str(scen + 1))
 
-# %%
+
 powers_gen = pd.DataFrame(np.array(all_list).T,columns=name_column)
 all_gen = np.array(all_gen)
-Datos_gen = [all_gen[pos_gen_agc_list], Cvar_gen[pos_gen_agc_list], Ccte_gen[pos_gen_agc_list], Pmin_gen[pos_gen_agc_list]*sim.Sb,Pmax_gen[pos_gen_agc_list]*sim.Sb,Ramp_gen[pos_gen_agc_list]*sim.Sb, Pgen_pre[pos_gen_agc_list]*sim.Sb]
+Datos_gen = [all_gen[pos_gen_agc_list],Pmin_gen[pos_gen_agc_list],Pmax_gen[pos_gen_agc_list],Ramp_gen[pos_gen_agc_list], Pgen_pre[pos_gen_agc_list]]
 
-datos_gen = pd.DataFrame(np.array(Datos_gen).T, columns=['Gen', 'C_fuel', 'C_AGC', 'P min', 'P max', 'Rampa', 'P previa'])
-datos_gen = datos_gen.sort_values(by = 'Gen', key = lambda col:col.str[3]+col.str[1])
+datos_gen = pd.DataFrame(np.array(Datos_gen).T, columns=['Gen', 'P min', 'P max', 'Rampa', 'P previa'])
 with pd.ExcelWriter("0Resultados.xlsx") as writer:
     Res_escenarios.to_excel(writer, sheet_name='Escenarios - Gen OUT', index=False)
     powers_gen.to_excel(writer, sheet_name='Generadores', index=False)
     datos_gen.to_excel(writer,sheet_name='DatosGenAGC', index = False)
     df_genOnAGC.to_excel(writer, sheet_name='Generador en AGC', index=False)
     for scen in range(Ns):
-        scenarios = pd.DataFrame(np.vstack((all_gen,Pgen_pre,Pgen_pfc[:,scen], pg_inc[:,scen].x - pg_dec[:,scen].x,Pgen_pre + pg_inc[:,scen].x ,Gen_on_AGC[:,scen], T_Sfc * Ramp_gen)).T, 
+        aiuda = -pg_inc[:,scen].x >= -T_Sfc * Ramp_gen - (Pgen_pfc[:,scen] - Pgen_pre)
+        scenarios = pd.DataFrame(np.vstack((all_gen,Pgen_pre,Pgen_pfc[:,scen], pg_inc[:,scen].x - pg_dec[:,scen].x,Pgen_pre + pg_inc[:,scen].x ,Gen_on_AGC[:,scen], T_Sfc * Ramp_gen, aiuda)).T, 
                                  columns=['Gen', 'Potencia Previa', 'Potencia PFC', 'Aumento', 'Potencia SFC', 'Gen en AGC', 'Rampa', 'Boolean'])
         name_hoja = 'E ' + str(scen) + ' ' + list_gen_out[scen]
         scenarios.to_excel(writer, sheet_name= name_hoja,index=False)

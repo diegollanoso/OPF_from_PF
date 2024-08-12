@@ -292,7 +292,7 @@ class PowerFactorySim(object):
             nom_ind.append(i.loc_name)
 
         #return [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind]
-        return (dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat)
+        return (dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat, bus_slack)
         ## Lista de cargas
         #cargas = self.app.GetCalcRelevantObjects('*.ElmLod')
         #nc = len(cargas) # N° de cargas

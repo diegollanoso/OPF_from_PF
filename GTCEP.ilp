@@ -3,6 +3,6 @@
 Minimize
  
 Subject To
- R2845: - Pg_inc[5,2] >= 2.6
+ G4_1_Ramp+[2]: - Pg_inc[5,2] >= 2.6
 Bounds
 End
