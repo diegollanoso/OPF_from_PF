@@ -3,6 +3,6 @@
 Minimize
  
 Subject To
- G4_1_Ramp+[2]: - Pg_inc[5,2] >= 2.6
+ E2-G4_1_Ramp-[0]: - Pg_dec[0,0,1] >= 2.934588335749927
 Bounds
 End

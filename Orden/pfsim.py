@@ -93,6 +93,9 @@ class PowerFactorySim(object):
         self.app.Show()
         # Activate project
         self.app.ActivateProject(project_name)
+        folder_scens = self.app.GetProjectFolder('scen')
+        self.scens = folder_scens.GetContents()
+        self.scens[0].Activate()
         self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
         self.generadores = self.app.GetCalcRelevantObjects('*.ElmSym') 
         self.cargas = self.app.GetCalcRelevantObjects('*.ElmLod')
@@ -157,7 +160,8 @@ class PowerFactorySim(object):
         
     # Return diccionarios de los elementos 
     # bus, carga, linea, trafo, gen, genstat
-    def get_data(self, buses, state='post'):
+    def get_data(self, buses, Nt = 1, state='post'):
+        self.ldf.Execute()
         dict_barras = dict()
         cont = 0
         for bus in buses:
@@ -165,7 +169,7 @@ class PowerFactorySim(object):
             cont += 1
 
         # CARGAS - en servicio y switch cerrado
-        # name carga = (N° barra, Potencia MW, NombreBarra)
+        # name carga = (N° barra, NombreBarra, Potencia peak MW, Potencia mean, Potencia valle)
         dict_cargas = dict()                              
         for c in self.cargas:
             if c.outserv == 0 and c.bus1.cpCB.on_off == 1:                  # carga en servicio y switch conectado
@@ -174,7 +178,7 @@ class PowerFactorySim(object):
                     potencia = c.GetAttribute('m:Psum:bus1')
                 else:
                     potencia = c.plini
-                dict_cargas[c.loc_name] = (dict_barras[c.bus1.cterm.loc_name],potencia ,c.bus1.cterm.loc_name)
+                dict_cargas[c.loc_name] = [dict_barras[c.bus1.cterm.loc_name], c.bus1.cterm.loc_name, potencia, 0, 0]
 
 
         # LINEAS - en servicio
@@ -221,20 +225,19 @@ class PowerFactorySim(object):
             if gen.ip_ctrl == 1:    # Buscar barra slack
                 bus_slack = gen.bus1.cterm.loc_name
             if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
-                if state == 'post':
-                    potencia = gen.GetAttribute('m:Psum:bus1')
-                else:
-                    potencia = gen.pgini
+                potencia = gen.GetAttribute('m:Psum:bus1')
                 # name generador = (N° Barra, N° Gen paralelo,
-                #                   Outserv, Pmin, Pmax, Pref,
+                #                   Outserv, Pmin, Pmax,
                 #                   costos var, costo fijo, rampa)
-                dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          0, gen.Pmin_uc, gen.Pmax_uc, potencia,
-                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
+                dict_gen[gen.loc_name] = [dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          0, gen.Pmin_uc, gen.Pmax_uc,
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp,
+                                          potencia, 0, 0]
             else:
-                dict_gen[gen.loc_name] = (dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          1, gen.Pmin_uc, gen.Pmax_uc, 0,
-                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
+                dict_gen[gen.loc_name] = [dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          1, gen.Pmin_uc, gen.Pmax_uc,
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp,
+                                          0, 0, 0]
 
         # GENERADORES ESTATICOS
         # name generador = (N° Barra, N° Gen paralelo,
@@ -290,6 +293,23 @@ class PowerFactorySim(object):
 
         for i in self.inductores:
             nom_ind.append(i.loc_name)
+
+        for sc in range(1,Nt):
+            self.scens[sc].Activate()
+            self.ldf.Execute()
+
+                #Agregar potencias de carga en otros escenarios.
+
+            for carga in self.cargas:
+                dict_cargas[carga.loc_name][sc+2] = carga.GetAttribute('m:Psum:bus1')
+
+            for gen in self.generadores:
+                if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                    potencia = gen.GetAttribute('m:Psum:bus1')
+                else:
+                    potencia = 0
+                dict_gen[gen.loc_name][sc+8] = potencia
+                    
 
         #return [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind]
         return (dict_barras, dict_cargas, dict_lineas, dict_trafos, dict_gen, dict_genstat, bus_slack)
