@@ -1,8 +1,20 @@
-\ Model Modelo AGC_copy
+\ Model Modelo 1_copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
  
 Subject To
- E2-G4_1_Ramp-[0]: - Pg_dec[0,0,1] >= 2.934588335749927
+ Balance: Pg_mas[0,5,2] + Pg_mas[1,5,2] + Pg_mas[2,5,2] + Pg_mas[3,5,2]
+   + Pg_mas[4,5,2] + Pg_mas[5,5,2] + Pg_mas[6,5,2] + Pg_mas[7,5,2]
+   + Pg_mas[8,5,2] + Pg_mas[9,5,2] + Pg_mas[10,5,2] + Pg_mas[11,5,2]
+   + Pg_mas[12,5,2] + p_gvf[0,5,2] + p_gvf[1,5,2] + p_gvf[2,5,2]
+   + p_gvf[3,5,2] + p_gvf[4,5,2] + p_gvf[5,5,2] + p_gvf[6,5,2]
+   + p_gvf[7,5,2] + p_gvf[8,5,2] + p_gvf[9,5,2] + p_gvf[10,5,2]
+   + p_gvf[11,5,2] + p_gvf[12,5,2] + p_gvf[13,5,2] + p_gvf[14,5,2]
+   + p_gvf[15,5,2] + p_gvf[16,5,2] + p_gvf[17,5,2] + p_gvf[18,5,2]
+   + p_gvf[19,5,2] + p_gvf[20,5,2] + p_gvf[21,5,2] + p_gvf[22,5,2]
+   + p_gvr[0,5,2] + p_gvr[1,5,2] + p_gvr[2,5,2] + p_gvr[3,5,2]
+   + p_gvr[4,5,2] + p_gvr[5,5,2] + p_gvr[6,5,2] + p_gvr[7,5,2]
+   + p_gvr[8,5,2] + p_gvr[9,5,2] + p_gvr[10,5,2] + p_gvr[11,5,2]
+   + p_gvr[12,5,2] = -1.540600040226309
 Bounds
 End

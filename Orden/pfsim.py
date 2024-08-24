@@ -90,7 +90,7 @@ class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
         # Start PowerFactory
         self.app = pf.GetApplication()
-        self.app.Show()
+        #self.app.Show()
         # Activate project
         self.app.ActivateProject(project_name)
         folder_scens = self.app.GetProjectFolder('scen')
@@ -191,7 +191,7 @@ class PowerFactorySim(object):
                 if line.bus1.cterm.uknom < self.kV_fm:
                     fmax_kV = 1e9
                 else:
-                    fmax_kV = round(line.Inom_a*line.bus1.cterm.uknom*self.raiz3,4)
+                    fmax_kV = round(line.Inom_a*line.bus1.cterm.uknom*self.raiz3,4)*0.97
                 # name linea = (R, X, fmax, N° paralelas)
                 dict_lineas[line.loc_name]=(round(line.R1/Zb,6), round(line.X1/Zb,6), fmax_kV, line.nlnum, line.bus1.cterm.loc_name, line.bus2.cterm.loc_name)
 

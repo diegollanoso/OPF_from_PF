@@ -4,7 +4,7 @@
 
 - Realizar presentación de paper
 
-- Adaptar la función objetivo y restricciones para añadir distintos escenarios de demanda.
+- Falta añadir la probabilidad de ocurrencia de las contigencnias en la función objetivo
 
 - Añadir generadores estaticos.
 
@@ -34,7 +34,14 @@
 
 - Diferencias en las cargas, al final del CPF y se obtiene la demanda de las cargas durante la simulación, no se colocan condiciones. Mientras, que en el diccionario original se colocan 2 resitriccion, Out of Service / Circuit Breaker.
 
+### questions
+
+- Costo de VOLL es energía o potencia?
+- Que pasa si el CPF lleva al generador por encima o bajo el límite de potencia?
+
 ### Progreso
+
+- 16/8: Se añaden la función objetivo y restricciones para los distintos escenarios de demanda.
 
 - 13/8: Se solucionan los SF, problemas en el control de frecuencia - potencia del generador. Se añaden los escenarios valle y mean.
 
