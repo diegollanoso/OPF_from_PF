@@ -1,14 +1,32 @@
 # Code
 
+### CASOS
+
+- A:Sin sistema de transmisión
+    VOLL = 150000
+    No hay penalización por perdidas
+
+- B:Sistema de transmisión
+    Restricciones de complementaridad y adyacencia
+    VOLL = 150000
+    No hay penalización por perdidas
+
+
+
 ### TBD
 
-- Realizar presentación de paper
+- Realizar simulaciones para confirmar valores de flujo DC
+
+- Añadir el tranmssion switching con perdidas
+    - Usar SF con ploss
+
+- Añadir factor de seguridad a FMax
+
+- Revisar restricciones de complementaridad y exclusividad
 
 - Falta añadir la probabilidad de ocurrencia de las contigencnias en la función objetivo
 
 - Añadir generadores estaticos.
-
-- Necesito data de generación variable.
 
 - Que tomar como perdidas? Solo líneas o tambien los trafos?? Se consideran ambos! No se pueden añadir perdidas en simulaciones 
 
@@ -30,16 +48,20 @@
         1.- Usar listas para las cargas y generadores.
         2.- Exportar datos de potencia de cargas y generadores e importarlos como tuplas.
 
-- Existen diferencias entre el SF obtenido con los flujos y algebraicamente. Posiblemente el error se de en el obtenido con el flujo, notar que aparece sensibilidad de potencia hacia el Gen 7_1
 
 - Diferencias en las cargas, al final del CPF y se obtiene la demanda de las cargas durante la simulación, no se colocan condiciones. Mientras, que en el diccionario original se colocan 2 resitriccion, Out of Service / Circuit Breaker.
 
 ### questions
 
-- Costo de VOLL es energía o potencia?
 - Que pasa si el CPF lleva al generador por encima o bajo el límite de potencia?
 
 ### Progreso
+
+- 3/9: Añadir flujos DC
+
+- 2/9: Código más ordenado con clases para powerfactory, simulación y gurobi. 
+
+- 24/8: Código más ordenado con clases para simulación y modelo gurobi
 
 - 16/8: Se añaden la función objetivo y restricciones para los distintos escenarios de demanda.
 
