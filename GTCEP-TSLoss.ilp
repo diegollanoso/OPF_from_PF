@@ -1,0 +1,17 @@
+\ Model Modelo TS-Loss_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ fe_p[2,2]: 0.3571428539258751 Pg[0] - 0.1428571460741248 Pg[1]
+   - 0.2857142921482497 f[0] + 0.3571428539258751 f[1]
+   >= 0.2285714231644525
+ fe_n[1,2]: - 0.3571428539258751 Pg[0] + 0.1428571460741248 Pg[1]
+   + 0.2857142921482497 f[0] - 0.3571428539258751 f[1]
+   >= 0.6571428388679533
+Bounds
+ Pg[0] free
+ Pg[1] free
+ f[0] free
+ f[1] free
+End

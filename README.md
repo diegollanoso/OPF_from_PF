@@ -15,6 +15,8 @@
 
 ### TBD
 
+- Revisar restriccion de suma de dpk = flujos
+
 - Realizar simulaciones para confirmar valores de flujo DC
 
 - Añadir el tranmssion switching con perdidas
@@ -56,6 +58,10 @@
 - Que pasa si el CPF lleva al generador por encima o bajo el límite de potencia?
 
 ### Progreso
+
+- 9/9: Código de OPF diapositiva clases
+
+- 8/9: Código de AGC realizado
 
 - 3/9: Añadir flujos DC
 
