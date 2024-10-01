@@ -11,11 +11,11 @@ import optm
 #pf = pfsim.PowerFactorySim('Ejemplo Clase')
 #pf = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
 
-Sim_PF = False
+Sim_PF = True
 flujo_dc = 0
 
-Estudio = 5
-Nt = 3 # N° de escenarios
+Estudio = 6
+Nt = 1 # N° de escenarios
 TS = False
 
 if Estudio == 0: # Flujo DC
@@ -66,18 +66,19 @@ elif Estudio == 5: # Se puede bajar la potencia de los generadores
 
 elif Estudio == 6: # Transmission Switching con perdidas
     VOLL = 300
-    Pot_Down = 0
+    Pot_Down = 1
     Flujos = 1
     Perdidas = 1
-    PerdidasPlus = 0
+    PerdidasPlus = 1
 
-    Costo_ts = 50
-    M = 1e6
-    TS = True
+    Costo_ts = 0
+    TS = 1
 
 
 t0 = time.time()
-pf = pfsim.PowerFactorySim('Articulo2')
+#project_file = '3Bus_TS'
+project_file = 'Articulo2'
+pf = pfsim.PowerFactorySim(project_file)
 
 #Gen_AGC = ['G2_1', 'G3_1', 'G4_1', 'G7_1', 'G2_3', 'G4_3', 'G6_3', 'G3_2', 'G4_2', 'G2_4', 'G3_4', 'G4_4', 'G6_4']
 
@@ -91,9 +92,6 @@ pf = pfsim.PowerFactorySim('Articulo2')
 
 
 escenarios = ['peak', 'media', 'valle']
-
-TS_lines = ['']
-nl_ts=len(TS_lines)
 
 pf.TS = TS
 
@@ -312,6 +310,8 @@ m_optm.flujos = Flujos # 1 = OPF / 0 = ED
 m_optm.losses = Perdidas # 1 = Perdidas / 0 = Sin perdidas
 m_optm.losses_plus = PerdidasPlus # 1 = Añadir Complementaridad / Exclusividad
 m_optm.Voll = VOLL # VOLL
+m_optm.TS = TS
+m_optm.costo_ts = Costo_ts
 
 m_optm(pf, sim)
 
@@ -368,7 +368,7 @@ if True:
     #df_genOnAGC = pd.DataFrame(np.vstack((Gen_outages, Gen_on_AGC[ti,:,:])).T, columns=np.insert(all_gen,0,'Gen', axis=0))
     
     # %%
-    with pd.ExcelWriter("00Resultados.xlsx") as writer:
+    with pd.ExcelWriter('00Resultados'+ project_file+ '.xlsx') as writer:
         Res_escenarios.to_excel(writer, sheet_name='Escenarios - Gen OUT', index=False)
         datos_gen.to_excel(writer,sheet_name='DatosGenAGC', index = False)
     
@@ -403,6 +403,8 @@ if True:
         #df_genOnAGC.to_excel(writer, sheet_name='Generador en AGC', index=False)
     
     
+
+
     
     #PowerFactor
     results_line = np.zeros((len(dict_lineas),pf.Ns,Nt))
@@ -450,13 +452,19 @@ if True:
 
 
         else:
+            
             signal_list = list()
             for gen in pf.gen_agc:
                 comp = gen.c_pmod
                 for slot in comp.pblk:
-                    if slot.loc_name[:9] == 'pcu Slot':
-                        val = comp.pelm[comp.pblk.index(slot)].signal[3][4:]
+                    ## Slot pcu
+                    if slot.loc_name[:9] == 'pcu Slot' or slot.loc_name[:9] == 'Gov Slot':
+                        val = comp.pelm[comp.pblk.index(slot)].signal[3][-2:]
+                        if not val[0].isdigit():
+                            val = val[1]
                         signal_list.append('Evento Gamma ' + val)
+
+
             for ti in range(Nt):
                 pf.scens[ti].Activate()
                 print('Escenario: ' + str(ti+1))
@@ -475,6 +483,15 @@ if True:
                         evt2.outserv = 0
                         evt2.value = str(m_optm.part_factors[:,scen,ti][pf.name_gen_agc_list.index(gen)])
                         count += 1
+                    cont = 0
+                    line_sim_out = list()
+                    for line in pf.lineas:
+                        if line.loc_name in pf.TS_lines:
+                            if m_optm.s_ts.x[cont,scen,ti] == 0:
+                                line.outserv = 1
+                                line_sim_out.append(line)
+                        cont += 1
+
                     pf.prepare_dynamic_sim({}, 'rms', end_time=t_final)
                     pf.run_dynamic_sim(end_sim=t_final)
 
@@ -483,10 +500,15 @@ if True:
                             result_gen[list(all_gen).index(gen.loc_name),scen,ti] = gen.GetAttribute('m:Psum:bus1')
 
                     for line in pf.lineas:
-                        results_line[pf.all_line.index(line.loc_name),scen,ti] = (line.GetAttribute('m:Psum:bus1') - line.GetAttribute('m:Psum:bus2'))/2
+                        if not line in line_sim_out:
+                            results_line[pf.all_line.index(line.loc_name),scen,ti] = (line.GetAttribute('m:Psum:bus1') - line.GetAttribute('m:Psum:bus2'))/2
                     #results_line[:,scen] = np.array(list(map(lambda x: (x.GetAttribute('m:Psum:bus1') + x.GetAttribute('m:Psum:bus2'))/2 , pf.lineas)))  
     
-    with pd.ExcelWriter('01Comparaciones.xlsx') as writer:
+
+                    for line in line_sim_out:
+                        line.outserv = 0
+
+    with pd.ExcelWriter('01Comparaciones'+ project_file +'.xlsx') as writer:
         for ti in range(Nt):    
             for scen in range(pf.Ns):
                 delta_inc = np.zeros(pf.ngen)
@@ -511,11 +533,20 @@ if True:
     escenariosPy_col = ['Py_peak', 'Py_media', 'Py_valle']
     escenariosPF_col = ['PF_peak', 'PF_media', 'PF_valle']
     
-    with pd.ExcelWriter('03Casos_DC.xlsx') as writer:
+    with pd.ExcelWriter('03Casos_DC' + project_file +'.xlsx') as writer:
         for ti in range(Nt):
             P_agc = np.zeros(pf.Ns)
             costo = np.zeros(pf.Ns)
             for scen in range(pf.Ns):
+                j=0
+                for gen in pf.name_gen_agc_list:
+                    print(gen + ' = ' + str(m_optm.pg_inc.x[j,scen,ti]*100))
+                    j+=1
+                j=0
+                for line in pf.all_line:
+                    if line in pf.TS_lines:
+                        print(line + ' = ' +str(m_optm.s_ts.x[j,scen,ti]))
+                        j+=1
                 if m_optm.pot_down:
                     costo[scen] = pf.Cvar_gen[pf.pos_gen_agc_list]*pf.Sb @ (m_optm.pg_inc[:,scen,ti].x + m_optm.pg_dec[:,scen,ti].x)
                 else:
@@ -544,6 +575,34 @@ if True:
     
     
     t5 = time.time()
+
+    print('Líneas candidatas:')
+    #print('Gen')
+    #print(pf.SF[pf.pos_ts,:][:,pf.pos_gen] @ pf.Pgen_pre[:,0])
+    print('inc')
+    print(pf.SF[pf.pos_ts,:][:,pf.pos_gen[pf.pos_gen_agc_list]] @ (m_optm.pg_inc[:,0,0].x))
+    #print('Gen_out')
+    #print(pf.SF[pf.pos_ts,:][:,int(sim.Barra_gen_out[0])]*sim.P_out[0,0])
+    #print('dda')
+    #print(pf.SF[pf.pos_ts,:] @ sim.D_pfc[:,0,0])
+    print('loss')
+    print(0.5 * pf.SF[pf.pos_ts,:] @ abs(pf.A[pf.pos_ts,:].T) @ m_optm.ploss[pf.pos_ts,0,0].x)
+    print('flujos')
+    print(m_optm.f.x[:,0,0])
+    print('f1')
+    fts_gen = pf.SF[pf.pos_ts,:][:,pf.pos_gen] @ pf.Pgen_pre[:,0]
+    fts_ens = pf.SF[pf.pos_ts,:] @ m_optm.p_ens[:,0,0].x        
+    fts_gen_out = pf.SF[pf.pos_ts,:][:,int(sim.Barra_gen_out[0])]*sim.P_out[0,0]
+    fts_dda = pf.SF[pf.pos_ts,:] @ sim.D_pfc[:,0,0]
+    f1 = fts_gen + fts_ens + fts_gen_out + fts_dda
+    print(f1)
+    print('f2')
+    f2 = m_optm.f_ts.x[:,0,0] - (pf.SF[pf.pos_ts,:] @ pf.A[pf.pos_ts,:].T) @ m_optm.f_ts.x[:,0,0]
+    print(f2)
+
+    #m_optm.m.getVars()
+
+
     #Excel
     #dict_scen = dict()
     
@@ -754,47 +813,6 @@ if False:
 #    #print("f_p = %.3f // f_n = %.3f" % (fp.X[cont],fn.X[cont]))
 #    #print("d_f[0]=%.3f     -     d_f[1]=%.3f " % (dpk.X[cont,0],dpk.X[cont,1]))    
 #    cont += 1
-
-if False:
-    #df0 = pd.DataFrame(np.array(D_pfc)).T
-    #df0.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\DPFC.xlsx", index=False)
-    #df = pd.DataFrame(Pgen_pfc).T
-    #df.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.xlsx", index=False)
-    #df1 = pd.DataFrame(Pgenstat_pfc).T
-    #df1.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.xlsx", index=False)
-    #df2 = pd.DataFrame(Gen_on_AGC).T
-    #df2.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.xlsx", index=False)
-    #df3 = pd.DataFrame(Genstat_on_AGC).T
-    #df3.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.xlsx", index=False)
-    #df4 = pd.DataFrame(P_out).T
-    #df4.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.xlsx", index=False)
-    #df5 = pd.DataFrame(Barra_gen_out).T
-    #df5.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\BarraGenOut.xlsx", index=False)
-    #df6 = pd.DataFrame(PL_pre_line).T
-    #df6.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PLLine.xlsx", index=False)
-
-
-
-
-    PL_pre_line = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PLLine.xlsx").to_numpy().T
-    D_pfc = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\DPFC.xlsx").to_numpy().T
-    Pgen_pfc = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenPFC.xlsx").to_numpy().T
-    try:
-        Pgenstat_pfc = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\PgenstatPFC.xlsx").to_numpy().T
-    except:
-        Pgenstat_pfc = np.zeros((ngenstat_eff, Ns))
-    Gen_on_AGC = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenAGC.xlsx").to_numpy().T
-    try:
-        Genstat_on_AGC = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\GenStatAGC.xlsx").to_numpy().T
-    except:
-        Genstat_on_AGC = np.tile(Genstat_on_AGC,(Ns,1)).T
-    P_out = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\Pout.xlsx").to_numpy()[0]
-    Barra_gen_out = pd.read_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\BarraGenOut.xlsx").to_numpy()[0]
-
-
-
-#Neg_Gen_on_AGC = np.where((Gen_on_AGC==0)|(Gen_on_AGC==1), Gen_on_AGC.astype(int)^1, Gen_on_AGC.astype(int))
-#Neg_Genstat_on_AGC = np.where((Genstat_on_AGC==0)|(Genstat_on_AGC==1), Genstat_on_AGC.astype(int)^1, Genstat_on_AGC.astype(int))
 
 
 #cont=0

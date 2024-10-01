@@ -84,10 +84,21 @@ class PowerFactorySim(object):
         self.IntEvt = self.app.GetFromStudyCase('IntEvt')
         self.res = self.app.GetFromStudyCase('*.ElmRes')
 
-        self.gen_agc = self.app.GetProjectFolder('study').GetContents('Base Case.IntCase')[0].GetContents('Gen AGC.SetSelect')[0].All()
+        try:
+            study_case = self.app.GetProjectFolder('study').GetContents('Base Case.IntCase')[0]
+        except:
+            try:
+                study_case = self.app.GetProjectFolder('study').GetContents('Study Case.IntCase')[0]
+            except:
+                print('Error en nombre StudyCase')
+
+
+        self.gen_agc = study_case.GetContents('Gen AGC.SetSelect')[0].All()
+
+
         self.Gen_AGC = list(map(lambda x: x.loc_name, self.gen_agc))
 
-        gen_out = self.app.GetProjectFolder('study').GetContents('Base Case.IntCase')[0].GetContents('Gen OUT.SetSelect')[0].All()
+        gen_out = study_case.GetContents('Gen OUT.SetSelect')[0].All()
         self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
         #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[-1:]
         self.Ns = len(self.Gen_Outages)
@@ -102,9 +113,12 @@ class PowerFactorySim(object):
         self.potencia_dc2 = 'm:P:bus2'
         self.potencia_ac = 'm:Psum:bus1'
         self.potencia_ac2 = 'm:Psum:bus2'
-
-        line_ts = self.app.GetProjectFolder('study').GetContents('Base Case.IntCase')[0].GetContents('Line TS.SetSelect')[0].All()
-        self.TS_lines = list(map(lambda x: x.loc_name, line_ts))
+        
+        try:
+            line_ts = study_case.GetContents('Line TS.SetSelect')[0].All()
+            self.TS_lines = list(map(lambda x: x.loc_name, line_ts))
+        except:
+            print('Not Found: Lineas candidatas a TS')
 
         self.Sb = 100
         self.raiz3 = 1.73205080757
@@ -384,7 +398,7 @@ class PowerFactorySim(object):
         X = np.zeros(self.n_elem)
         i_buses = np.zeros(self.n_elem).astype(int)
         j_buses = np.zeros(self.n_elem).astype(int)
-        pos_ts = list()
+        self.pos_ts = list()
         cont = -1
         for i in self.indices_obj:
             cont += 1
@@ -399,7 +413,7 @@ class PowerFactorySim(object):
                 self.pos_line.append(cont)
                 if self.TS:
                     if i in self.TS_lines:
-                        pos_ts.append(cont)
+                        self.pos_ts.append(cont)
 
             elif i in dict_trafos:
                 dict_full[i] = dict_trafos[i]
@@ -419,10 +433,10 @@ class PowerFactorySim(object):
             j_buses[cont] = j_bus
         
         if self.TS:
-            self.pos_nots = [pos for pos in self.pos_line if pos not in pos_ts]
+            self.pos_nots = [pos for pos in self.pos_line if pos not in self.pos_ts]
             # Lineas Candidatas TS
-            self.i_buses_ts = i_buses[pos_ts]
-            self.j_buses_ts = j_buses[pos_ts]
+            self.i_buses_ts = i_buses[self.pos_ts]
+            self.j_buses_ts = j_buses[self.pos_ts]
 
         I = np.r_[range(self.n_elem), range(self.n_elem)]
         S = sparse((np.r_[np.ones(self.n_elem), -np.ones(self.n_elem)], (I, np.r_[i_buses, j_buses])), (self.n_elem, self.Nb))

@@ -8,6 +8,8 @@ class Modelo():
         #m.setParam('DualReductions', 0)
         self.m.Params.MIPGap = 1e-7
         self.m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
+        self.m.Params.IntFeasTol = 1e-7
+
 
         self.T_Sfc = 15
         self.pot_down = 0
@@ -16,6 +18,8 @@ class Modelo():
         self.losses_plus = 0
         self.L = 11
         self.Voll = 500
+        self.TS = False
+        self.costo_ts = 0
 
     def __call__(self,data,simm):
         self.pg_inc = self.m.addMVar((data.n_gen_agc, data.Ns, data.Nt), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
@@ -36,8 +40,13 @@ class Modelo():
             self.ploss = self.m.addMVar((data.n_elem, data.Ns, data.Nt),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='losses') # Flujo por las líneas
             dpk = self.m.addMVar((data.n_elem, self.L, data.Ns, data.Nt), vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
 
+        if self.losses_plus:
             n_l = self.m.addMVar((data.n_elem, data.Ns, data.Nt), vtype=self.gp.GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
             n_a = self.m.addMVar((data.n_elem, data.Ns, data.Nt, self.L), vtype=self.gp.GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
+
+        if self.TS:
+            self.s_ts = self.m.addMVar((len(data.pos_ts),data.Ns, data.Nt), vtype=self.gp.GRB.BINARY, name='s_ts')                                    # variable binaria de TS
+            self.f_ts = self.m.addMVar((len(data.pos_ts),data.Ns, data.Nt),vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=-self.gp.GRB.INFINITY, name='f_ts')
 
 
         self.ObjFunction(data)
@@ -47,17 +56,21 @@ class Modelo():
                 self.Balance(data, simm, s, ti)
                 self.R_Generadores(data, simm, ti, s)
 
-                if self.losses:
+                if self.TS:
+                    #self.Flujos_TS(data,simm, ti, s, f_ts, dpk, fp, fn)
+                    self.Flujos_TS(data,simm, ti, s, dpk, fp, fn)
+                    if self.losses_plus:
+                        self.R_FlujoLossesPlus(data, fp, fn, n_l, n_a , dpk, ti, s)
+                elif self.losses:
                     self.R_FlujoLosses(data, simm, ti, s, fp, fn, dpk)
                     if self.losses_plus:
                         self.R_FlujoLossesPlus(data, fp, fn, n_l, n_a , dpk, ti, s)
-
                 elif self.flujos:
                     self.R_FlujoLosses(data, simm, ti, s, fp=0,fn=0,dpk=0)
                 
 
 
-        self.m.write('OPF.lp')
+        self.m.write('OPF_DownPower.lp')
 
 
     def ObjFunction(self, data):
@@ -69,12 +82,12 @@ class Modelo():
 
         f_obj = 0
 
-        #Csfc += Ccte_genstat[pos_genstat_agc_list] @ (vstatg_inc + vstatg_dec)
+        self.Cts = 0 
+
         
         self.Cop = 0
         self.Cue = 0
         self.Cpl = 0
-        self.Cts = 0
         for ti in range(data.Nt):
             Cop_s = 0
             Cue_s = 0
@@ -94,12 +107,13 @@ class Modelo():
                 Cue_s += (self.Voll * self.p_ens[:,s,ti]).sum() * data.Sb
                 if self.losses and not self.losses_plus:
                     Cpl_s += (self.Voll * self.ploss[:,s,ti]).sum() * data.Sb
-                #Cts_s += Costo_ts*(1-s_ts[:,s,ti]).sum()
+                if self.TS:
+                    Cts_s += self.costo_ts * (1 - self.s_ts[:,s,ti]).sum()
 
+            self.Cts += Cts_s
             self.Cop += Cop_s
             self.Cue += Cue_s
             self.Cpl += Cpl_s
-            self.Cts += Cts_s
 
         f_obj = self.Csfc + self.Cop + self.Cue + self.Cpl + self.Cts
 
@@ -107,7 +121,7 @@ class Modelo():
 
     def Balance(self, data, simm, s, ti):    
         # Con perdidas y gen pueden bajar potencia
-        if self.flujos and self.losses and self.pot_down:
+        if self.pot_down:
             self.m.addConstr(self.pg_inc[:,s,ti].sum() - self.pg_dec[:,s,ti].sum() + self.p_ens[:,s].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum() - simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
         
         # Con perdidas 
@@ -169,6 +183,81 @@ class Modelo():
         else:
             self.m.addConstr(-self.f[:,s,ti] >= -data.FMax, name = 'fMax+ s='+str(s)+' c='+str(ti))
             self.m.addConstr(self.f[:,s,ti] >= -data.FMax, name = 'fMax- s='+str(s)+' c='+str(ti))
+
+    #def Flujos_TS(self,data,simm, ti, s, f_ts, dpk, fp, fn, M = 1e6):
+    def Flujos_TS(self,data,simm, ti, s, dpk, fp, fn, M = 1e6):
+
+        if self.pot_down:
+            inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
+
+        else:
+            inc = self.pg_inc[:,s,ti]
+
+
+        f_loss_c = 0
+        f_loss_nc = 0
+
+        if self.losses:
+            kl = np.zeros((data.n_elem, self.L))
+            for l in range(self.L):
+                kl[:,l] = (2*(l+1)-1)*(data.FMax)/self.L
+            
+            self.m.addConstr(self.ploss[:,s,ti] == data.G/(data.B**2)*(gp.quicksum(kl[:,i]*dpk[:,i,s,ti] for i in range(self.L))), name = 'TS_Ploss')  
+        
+        
+            f_loss_nc = 0.5 * data.SF[data.pos_nots,:] @ abs(data.A[data.pos_nots,:].T) @ self.ploss[data.pos_nots,s,ti]
+            f_loss_c = 0.5 * data.SF[data.pos_ts,:] @ abs(data.A[data.pos_ts,:].T) @ self.ploss[data.pos_ts,s,ti]
+
+
+
+        #Líneas NO candidatas
+
+        fnots_gen = data.SF[data.pos_nots,:][:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        fnots_ens = data.SF[data.pos_nots,:] @ self.p_ens[:,s,ti]
+        if np.size(data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]]) !=0:
+            fnots_gen_agc = data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
+        else:
+            fnots_gen_agc= 0
+        if np.size(data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]) != 0:
+            fnots_gen_out = data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+        else:
+            fnots_gen_out =0
+        fnots_dda = data.SF[data.pos_nots,:] @ simm.D_pfc[:,s,ti]
+
+        fe = fnots_gen + fnots_ens + fnots_gen_agc - fnots_dda - fnots_gen_out
+
+        fv = (data.SF[data.pos_nots,:] @ data.A[data.pos_ts,:].T) @ self.f_ts[:,s,ti]
+
+        self.m.addConstr(-(fe-f_loss_nc+fv) >= -data.FMax[data.pos_nots], name = 'fe_p')
+        self.m.addConstr(fe-f_loss_nc+fv >= -data.FMax[data.pos_nots], name = 'fe_n')
+
+        #Líneas candidatas
+        fts_gen = data.SF[data.pos_ts,:][:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        fts_ens = data.SF[data.pos_ts,:] @ self.p_ens[:,s,ti]        
+        fts_gen_agc = data.SF[data.pos_ts,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
+        fts_gen_out = data.SF[data.pos_ts,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+        fts_dda = data.SF[data.pos_ts,:] @ simm.D_pfc[:,s,ti]
+
+
+        f1 = fts_gen + fts_ens + fts_gen_agc - fts_dda - fts_gen_out
+        f2 = self.f_ts[:,s,ti] - (data.SF[data.pos_ts,:] @ data.A[data.pos_ts,:].T) @ self.f_ts[:,s,ti]
+
+        self.m.addConstr(f1-f_loss_c-f2 <= (data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_p') # 1
+        self.m.addConstr(f1-f_loss_c-f2 >= -(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_n')
+
+        self.m.addConstr(self.f_ts[:,s,ti] <= M*(1 - self.s_ts[:,s,ti]), name = 'fs2_p') # 2
+        self.m.addConstr(self.f_ts[:,s,ti] >= -M*(1 - self.s_ts[:,s,ti]), name = 'fs2_n') # 2
+
+        self.m.addConstr(dpk[:,:,s,ti].sum(1) == fp[:,s,ti] + fn[:,s,ti], 'dpk')
+
+        self.m.addConstr(self.f[:,s,ti] == fp[:,s,ti] - fn[:,s,ti], name = 'flujo')
+
+        self.m.addConstr(self.f[data.pos_ts,s,ti] == f1-f_loss_c-f2)
+        self.m.addConstr(self.f[data.pos_nots,s,ti] == fe-f_loss_nc+fv)
+
+        self.m.addConstr(-fp[:,s,ti] - fn[:,s,ti] - 0.5*self.ploss[:,s,ti] >= -data.FMax, name = 'suma_f')
+
+
 
 
     def R_FlujoLossesPlus(self, data, fp, fn, n_l, n_a , dpk, ti, s):
@@ -239,7 +328,7 @@ class Modelo():
             print('=> Solver time: %.4f (s)' % (self.m.Runtime))
             print ('Costo => %.2f ($/h)' % self.m.objVal) 
             #print ('Las perdidas son %.2f (MW)' % sum(pk_loss[i].X for i in range(len(pk_loss)))) 
-        
+
             Post_gen_out = np.zeros((data.Ns,data.Nt))
     
             self.part_factors = np.zeros((data.n_gen_agc,data.Ns,data.Nt))
@@ -275,4 +364,81 @@ class Modelo():
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP.ilp")
+
+
+
+if False:
+     def Flujos_TS(self,data,simm, ti, s, f_ts, dpk, fp, fn, M = 1e6):
+
+        if self.pot_down:
+            inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
+
+        else:
+            inc = self.pg_inc[:,s,ti]
+
+
+        f_loss_c = 0
+        f_loss_nc = 0
+
+        if self.losses:
+            kl = np.zeros((data.n_elem, self.L))
+            for l in range(self.L):
+                kl[:,l] = (2*(l+1)-1)*(data.FMax)/self.L
+            
+            self.m.addConstr(self.ploss[:,s,ti] == data.G/(data.B**2)*(gp.quicksum(kl[:,i]*dpk[:,i,s,ti] for i in range(self.L))), name = 'Ploss')  
+        
+        
+            f_loss_nc = 0.5 * data.SF[data.pos_nots,:] @ abs(data.A[data.pos_nots,:].T) @ self.ploss[data.pos_nots,s,ti]
+            f_loss_c = 0.5 * data.SF[data.pos_ts,:] @ abs(data.A[data.pos_ts,:].T) @ self.ploss[data.pos_ts,s,ti]
+
+
+
+        #Líneas NO candidatas
+
+        fnots_gen = data.SF[data.pos_nots,:][:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        fnots_ens = data.SF[data.pos_nots,:] @ self.p_ens[:,s,ti]
+        if np.size(data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]]) !=0:
+            fnots_gen_agc = data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
+        else:
+            fnots_gen_agc= 0
+        if np.size(data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]) != 0:
+            fnots_gen_out = data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+        else:
+            fnots_gen_out =0
+        fnots_dda = data.SF[data.pos_nots,:] @ simm.D_pfc[:,s,ti]
+
+        fe = fnots_gen + fnots_ens + fnots_gen_agc - fnots_dda - fnots_gen_out
+
+        fv = (data.SF[data.pos_nots,:] @ data.A[data.pos_ts,:].T) @ f_ts[:,s,ti]
+
+        self.m.addConstr(-(fe-f_loss_nc+fv) >= -data.FMax[data.pos_nots], name = 'fe_p')
+        self.m.addConstr(fe-f_loss_nc+fv >= -data.FMax[data.pos_nots], name = 'fe_n')
+
+        #Líneas candidatas
+        fts_gen = data.SF[data.pos_ts,:][:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        fts_ens = data.SF[data.pos_ts,:] @ self.p_ens[:,s,ti]        
+        fts_gen_agc = data.SF[data.pos_ts,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
+        fts_gen_out = data.SF[data.pos_ts,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+        fts_dda = data.SF[data.pos_ts,:] @ simm.D_pfc[:,s,ti]
+
+
+        f1 = fts_gen + fts_ens + fts_gen_agc - fts_dda - fts_gen_out
+
+        f2 = f_ts[:,s,ti] - (data.SF[data.pos_ts,:] @ data.A[data.pos_ts,:].T) @ f_ts[:,s,ti]
+
+        self.m.addConstr(f1-f_loss_c-f2 <= (data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_p') # 1
+        self.m.addConstr(f1-f_loss_c-f2 >= -(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_n')
+
+        self.m.addConstr(f_ts[:,s,ti] <= M*(1 - self.s_ts[:,s,ti]), name = 'fs2_p') # 2
+        self.m.addConstr(f_ts[:,s,ti] >= -M*(1 - self.s_ts[:,s,ti]), name = 'fs2_n') # 2
+
+        self.m.addConstr(dpk[:,:,s,ti].sum(1) == fp[:,s,ti] + fn[:,s,ti], 'dpk')
+
+        self.m.addConstr(self.f[:,s,ti] == fp[:,s,ti] - fn[:,s,ti], name = 'flujo')
+
+        self.m.addConstr(self.f[data.pos_ts,s,ti] == f1-f_loss_c-f2)
+        self.m.addConstr(self.f[data.pos_nots,s,ti] == fe-f_loss_nc+fv)
+
+        self.m.addConstr(-fp[:,s,ti] - fn[:,s,ti] - 0.5*self.ploss[:,s,ti] >= -data.FMax, name = 'suma_f')
+
 

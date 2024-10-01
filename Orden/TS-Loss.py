@@ -35,8 +35,8 @@ if False:
 pf = pfsim.PowerFactorySim('3Bus_TS', False)
 
 
-bin_comp = True
-bin_ady = True
+bin_comp = 0
+bin_ady = 0
 
 
 pf.flujo_dc = 0
@@ -57,9 +57,10 @@ dict_linea = pf.get_data()
 
 m = gp.Model('Modelo TS-Loss')
 #m.setParam('DualReductions', 0)
-m.Params.MIPGap = 1e-10
-m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
-m.Params.IntegralityFocus = 1
+#m.Params.MIPGap = 1e-10
+#m.Params.OutputFlag = 0 # eliminar mensajes adicioneales Gurobi
+#m.Params.IntegralityFocus = 1
+m.Params.IntFeasTol = 1e-9
 
 
 pg = m.addMVar((pf.ngen),vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=0, name='Pg')
@@ -71,12 +72,12 @@ dpk = m.addMVar((pf.n_elem,L), vtype=GRB.CONTINUOUS, lb=0, ub=GRB.INFINITY, name
 n_l = m.addMVar(pf.n_elem, vtype=GRB.BINARY, name='n_l')                                          # variable binaria complentaridad
 n_a = m.addMVar((pf.n_elem,L), vtype=GRB.BINARY, name='n_a')                                          # variable binaria adyacencia
 s_ts = m.addMVar(len(pf.pos_ts), vtype=GRB.BINARY, name='s_ts')                                    # variable binaria de TS
-f_ts = m.addMVar(len(pf.pos_ts),vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=-GRB.INFINITY, name='f')
+f_ts = m.addMVar(len(pf.pos_ts),vtype=GRB.CONTINUOUS, ub=GRB.INFINITY, lb=-GRB.INFINITY, name='f_ts')
 
 
 
-Cop = pf.Ccte_gen @ pg * pf.Sb
-Cts = costo_ts * (1 - s_ts).sum()
+Cop = pf.Cvar_gen @ pg * pf.Sb
+Cts = costo_ts * (1-s_ts).sum()
 f_obj = Cop + Cts
 
 m.setObjective(f_obj,gp.GRB.MINIMIZE)
@@ -106,6 +107,8 @@ if pf.TS and not TsLoss:
     m.addConstr(f_ts >= -M*(1 - s_ts), name = 'fs2_n') # 2
 
 elif TsLoss:
+
+    m.addConstr(pg[0] == 0)
 
     kl = np.zeros((pf.n_elem, L))
     for l in range(L):
@@ -224,7 +227,7 @@ else:
     
 
 
-m.write('OPF-TSLoss.lp')
+m.write('OPF-TSLossDC.lp')
 
 
 m.optimize()

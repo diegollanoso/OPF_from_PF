@@ -15,6 +15,11 @@
 
 ### TBD
 
+- Añadir muestreo al AGC
+
+- Añadir variabilidad en la generación renovable
+    - Añadir generadores estaticos
+
 - Revisar restriccion de suma de dpk = flujos
 
 - Realizar simulaciones para confirmar valores de flujo DC
@@ -42,6 +47,9 @@
 - Eliminar carpetas y archivos innecesarios.
 
 ### Considerar
+
+- Se tuvo que ajustar el parámetro IntFeasTol del modelo para que las restricciones Big-M 
+https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_guide.html#dealing-with-big-m-constraints
 
 - Se asume que todos las contigencias afectan al sistema, es decir, antes de la salida de cargas o generadores se encuentran consumiendo o entregando potencia.
 
