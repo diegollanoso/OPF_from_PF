@@ -15,7 +15,7 @@
 
 ### TBD
 
-- Añadir muestreo al AGC
+- Añadir 
 
 - Añadir variabilidad en la generación renovable
     - Añadir generadores estaticos
@@ -47,6 +47,8 @@
 - Eliminar carpetas y archivos innecesarios.
 
 ### Considerar
+
+- Añadir muestreo al AGC
 
 - Se tuvo que ajustar el parámetro IntFeasTol del modelo para que las restricciones Big-M 
 https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_guide.html#dealing-with-big-m-constraints

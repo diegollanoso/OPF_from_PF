@@ -11,12 +11,13 @@ import optm
 #pf = pfsim.PowerFactorySim('Ejemplo Clase')
 #pf = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
 
-Sim_PF = True
+Sim_PF = False
 flujo_dc = 0
 
 Estudio = 6
 Nt = 1 # N° de escenarios
 TS = False
+Costo_ts = 0
 
 if Estudio == 0: # Flujo DC
     VOLL = 2500
@@ -44,7 +45,7 @@ elif Estudio == 2:# Sistema de transmisión sin perdidas y con efecto en Voltage
     PerdidasPlus = 0
 
 elif Estudio == 3:# Sistema de transmisión con perdidas
-    VOLL = 2500
+    VOLL = 300
     Pot_Down = 0
     Flujos = 1
     Perdidas = 1
@@ -346,7 +347,7 @@ if True:
         PgenPre_all.append(pf.Pgen_pre[pf.pos_gen_agc_list,ti]*pf.Sb)
     
     if m_optm.pot_down:
-        Datos_gen = [all_gen[pf.pos_gen_agc_list], pf.Cvar_gen[pf.pos_gen_agc_list], pf.Ccte_gen[pf.pos_gen_agc_list], pf.Pmin_gen[pf.pos_gen_agc_list]*pf.Sb,pf.Pmax_gen[pf.pos_gen_agc_list]*pf.Sb,pf.Ramp_gen[pf.pos_gen_agc_list]*pf.Sb] + PgenPre_all + [m_optm.vg_inc.x, m_optm.vg_dec.x]
+        Datos_gen = [all_gen[pf.pos_gen_agc_list], pf.Cvar_gen, pf.Ccte_gen, pf.Pmin_gen*pf.Sb,pf.Pmax_gen*pf.Sb,pf.Ramp_gen[pf.pos_gen_agc_list]*pf.Sb] + PgenPre_all + [m_optm.vg_inc.x, m_optm.vg_dec.x]
         datos_gen = pd.DataFrame(np.array(Datos_gen).T, columns=['Gen', 'C_fuel', 'C_AGC', 'P min', 'P max', 'Rampa'] + NamePPre_all + ['v_inc', 'v_dec'])
         datos_gen = datos_gen.sort_values(by = 'Gen', key = lambda col:col.str[3]+col.str[1])
 
@@ -538,19 +539,22 @@ if True:
             P_agc = np.zeros(pf.Ns)
             costo = np.zeros(pf.Ns)
             for scen in range(pf.Ns):
-                j=0
-                for gen in pf.name_gen_agc_list:
-                    print(gen + ' = ' + str(m_optm.pg_inc.x[j,scen,ti]*100))
-                    j+=1
-                j=0
-                for line in pf.all_line:
-                    if line in pf.TS_lines:
-                        print(line + ' = ' +str(m_optm.s_ts.x[j,scen,ti]))
-                        j+=1
+                #j=0
+                #for gen in pf.name_gen_agc_list:
+                #    print(gen + ' = ' + str(m_optm.pg_inc.x[j,scen,ti]*100))
+                #    j+=1
+                
+                #j=0
+                #for line in pf.all_line:
+                #    if line in pf.TS_lines:
+                #        if  m_optm.s_ts.x[j,scen,ti] != 1 and m_optm.s_ts.x[j,scen,ti] != 0:
+                #            print(line + ' = ' +str(m_optm.s_ts.x[j,scen,ti]))
+                #        j+=1
+
                 if m_optm.pot_down:
-                    costo[scen] = pf.Cvar_gen[pf.pos_gen_agc_list]*pf.Sb @ (m_optm.pg_inc[:,scen,ti].x + m_optm.pg_dec[:,scen,ti].x)
+                    costo[scen] = pf.Cvar_gen*pf.Sb @ (m_optm.pg_inc[:,scen,ti].x + m_optm.pg_dec[:,scen,ti].x)
                 else:
-                    costo[scen] = pf.Cvar_gen[pf.pos_gen_agc_list]*pf.Sb @ (m_optm.pg_inc[:,scen,ti].x)
+                    costo[scen] = pf.Cvar_gen*pf.Sb @ (m_optm.pg_inc[:,scen,ti].x)
                 
                 if m_optm.losses:
                     P_agc[scen] = sim.P_out[scen,ti] - pf.dda_barra[:,ti].sum() + sim.D_pfc[:,scen,ti].sum() - sim.PL_pre_line[ti] + m_optm.ploss[:,scen,ti].x.sum()
@@ -564,8 +568,8 @@ if True:
             else:
                 diff_power = np.array(m_optm.pg_inc.x[:,:,ti])*pf.Sb
             
-            
-            diff_power = pd.DataFrame(np.vstack((pf.Gen_Outages,diff_power,P_agc*pf.Sb,sim.P_out[:,ti]*pf.Sb, costo)).T, columns = [escenariosPy_col[ti]] + pf.name_gen_agc_list + ['P_agc', 'P_out', 'Costo'])
+            columns_diffpower = [escenariosPy_col[ti]] + pf.name_gen_agc_list + ['P_agc', 'P_out', 'Costo']
+            diff_power = pd.DataFrame(np.vstack((pf.Gen_Outages,diff_power,P_agc*pf.Sb,sim.P_out[:,ti]*pf.Sb, costo)).T, columns = columns_diffpower)
             diff_power.to_excel(writer, index = False, sheet_name='Case', startrow= ti*12)
     
     
@@ -573,32 +577,35 @@ if True:
             results_pf = pd.DataFrame(np.vstack((pf.Gen_Outages,diff_gen_pf)).T, columns = [escenariosPF_col[ti]] + pf.name_gen_agc_list)
             results_pf.to_excel(writer, index = False, sheet_name='Case', startrow= 12*(3+ti))
     
+            diff_line = pd.DataFrame(np.vstack((m_optm.f.x[:,:,ti])).T, columns = list(pf.indices_obj))
+            diff_line.to_excel(writer, index = False, sheet_name='Case', startrow= ti*12, startcol=len(columns_diffpower)+2)
+
     
     t5 = time.time()
 
-    print('Líneas candidatas:')
-    #print('Gen')
-    #print(pf.SF[pf.pos_ts,:][:,pf.pos_gen] @ pf.Pgen_pre[:,0])
-    print('inc')
-    print(pf.SF[pf.pos_ts,:][:,pf.pos_gen[pf.pos_gen_agc_list]] @ (m_optm.pg_inc[:,0,0].x))
-    #print('Gen_out')
-    #print(pf.SF[pf.pos_ts,:][:,int(sim.Barra_gen_out[0])]*sim.P_out[0,0])
-    #print('dda')
-    #print(pf.SF[pf.pos_ts,:] @ sim.D_pfc[:,0,0])
-    print('loss')
-    print(0.5 * pf.SF[pf.pos_ts,:] @ abs(pf.A[pf.pos_ts,:].T) @ m_optm.ploss[pf.pos_ts,0,0].x)
-    print('flujos')
-    print(m_optm.f.x[:,0,0])
-    print('f1')
-    fts_gen = pf.SF[pf.pos_ts,:][:,pf.pos_gen] @ pf.Pgen_pre[:,0]
-    fts_ens = pf.SF[pf.pos_ts,:] @ m_optm.p_ens[:,0,0].x        
-    fts_gen_out = pf.SF[pf.pos_ts,:][:,int(sim.Barra_gen_out[0])]*sim.P_out[0,0]
-    fts_dda = pf.SF[pf.pos_ts,:] @ sim.D_pfc[:,0,0]
-    f1 = fts_gen + fts_ens + fts_gen_out + fts_dda
-    print(f1)
-    print('f2')
-    f2 = m_optm.f_ts.x[:,0,0] - (pf.SF[pf.pos_ts,:] @ pf.A[pf.pos_ts,:].T) @ m_optm.f_ts.x[:,0,0]
-    print(f2)
+    #print('Líneas candidatas:')
+    ##print('Gen')
+    ##print(pf.SF[pf.pos_ts,:][:,pf.pos_gen] @ pf.Pgen_pre[:,0])
+    #print('inc')
+    #print(pf.SF[pf.pos_ts,:][:,pf.pos_gen[pf.pos_gen_agc_list]] @ (m_optm.pg_inc[:,0,0].x))
+    ##print('Gen_out')
+    ##print(pf.SF[pf.pos_ts,:][:,int(sim.Barra_gen_out[0])]*sim.P_out[0,0])
+    ##print('dda')
+    ##print(pf.SF[pf.pos_ts,:] @ sim.D_pfc[:,0,0])
+    #print('loss')
+    #print(0.5 * pf.SF[pf.pos_ts,:] @ abs(pf.A[pf.pos_ts,:].T) @ m_optm.ploss[pf.pos_ts,0,0].x)
+    #print('flujos')
+    #print(m_optm.f.x[:,0,0])
+    #print('f1')
+    #fts_gen = pf.SF[pf.pos_ts,:][:,pf.pos_gen] @ pf.Pgen_pre[:,0]
+    #fts_ens = pf.SF[pf.pos_ts,:] @ m_optm.p_ens[:,0,0].x        
+    #fts_gen_out = pf.SF[pf.pos_ts,:][:,int(sim.Barra_gen_out[0])]*sim.P_out[0,0]
+    #fts_dda = pf.SF[pf.pos_ts,:] @ sim.D_pfc[:,0,0]
+    #f1 = fts_gen + fts_ens + fts_gen_out + fts_dda
+    #print(f1)
+    #print('f2')
+    #f2 = m_optm.f_ts.x[:,0,0] - (pf.SF[pf.pos_ts,:] @ pf.A[pf.pos_ts,:].T) @ m_optm.f_ts.x[:,0,0]
+    ##print(f2)
 
     #m_optm.m.getVars()
 
@@ -828,6 +835,14 @@ if False:
 #
 #
 print('=> Check time: %.4f (s)' % (t5-t4))
+
+if m_optm.m.SolCount > 1:
+    m_optm.m.setParam(m_optm.gp.GRB.Param.SolutionNumber,1)
+    print('Another Solution: ' + str(m_optm.m.PoolObjVal))
+
+    #for e in range(m_optm.m.SolCount):
+    #    m_optm.m.setParam(m_optm.gp.GRB.Param.SolutionNumber,e)
+        
 
 
 print('finish!')

@@ -83,6 +83,7 @@ class PowerFactorySim(object):
 
         self.IntEvt = self.app.GetFromStudyCase('IntEvt')
         self.res = self.app.GetFromStudyCase('*.ElmRes')
+        self.events_folder = self.IntEvt.GetContents()
 
         try:
             study_case = self.app.GetProjectFolder('study').GetContents('Base Case.IntCase')[0]
@@ -227,7 +228,7 @@ class PowerFactorySim(object):
                     fmax_kV = 1e9
                 else:
                     fmax_kV = line.Inom_a*line.bus1.cterm.uknom*self.raiz3
-                # name linea = (R, X, fmax, N° paralelas)
+                # name linea = (R, X, fmax, N° paralelas, bus1, bus2)
                 dict_lineas[line.loc_name]=(line.R1/Zb, line.X1/Zb, fmax_kV, line.nlnum, line.bus1.cterm.loc_name, line.bus2.cterm.loc_name)
 
         # TRAFOS 2 DEV - en servicio
@@ -256,7 +257,9 @@ class PowerFactorySim(object):
         #                   Outserv, Pmin, Pmax, Pref,
         #                   costos var, costo fijo, rampa)
         self.dict_gen = dict()
+        self.Name_all_gen = dict()
         for gen in self.generadores:
+            self.Name_all_gen[gen.loc_name] = gen
             if gen.ip_ctrl == 1:    # Buscar barra slack
                 self.bus_slack = gen.bus1.cterm.loc_name
             if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
@@ -355,13 +358,14 @@ class PowerFactorySim(object):
 
         # Generadores
         self.ngen=len(self.dict_gen)
+        self.n_gen_agc = len(self.Gen_AGC)
 
         self.pos_gen = np.zeros(self.ngen).astype(int)
         self.ngen_par = np.zeros(self.ngen)
-        self.Cvar_gen = np.zeros(self.ngen)
-        self.Ccte_gen = np.zeros(self.ngen)
-        self.Pmin_gen = np.zeros(self.ngen)
-        self.Pmax_gen =np.zeros(self.ngen)
+        self.Cvar_gen = np.zeros(self.n_gen_agc)
+        self.Ccte_gen = np.zeros(self.n_gen_agc)
+        self.Pmin_gen = np.zeros(self.n_gen_agc)
+        self.Pmax_gen =np.zeros(self.n_gen_agc)
         self.Gen_on_AGC = np.zeros(self.ngen)
         self.pos_gen_agc_list = list()
         self.name_gen_agc_list = list()
@@ -369,14 +373,11 @@ class PowerFactorySim(object):
         self.Ramp_gen = np.zeros(self.ngen)
         self.all_gen = list()
         cont=0
+        cont2 = 0
         for gen in self.dict_gen:
             self.all_gen.append(gen)
             self.pos_gen[cont] = self.dict_gen[gen][0]
             self.ngen_par[cont] = self.dict_gen[gen][1]
-            self.Pmin_gen[cont] = self.dict_gen[gen][3]/self.Sb
-            self.Pmax_gen[cont] = self.dict_gen[gen][4]/self.Sb
-            self.Cvar_gen[cont] = self.dict_gen[gen][5]
-            self.Ccte_gen[cont] = self.dict_gen[gen][6]
             self.Ramp_gen[cont] = self.dict_gen[gen][7]/self.Sb
             for ti in range(self.Nt):
                 self.Pgen_pre[cont,ti] = self.dict_gen[gen][8+ti]/self.Sb
@@ -384,9 +385,15 @@ class PowerFactorySim(object):
                 self.Gen_on_AGC[cont] = 1
                 self.pos_gen_agc_list.append(cont)
                 self.name_gen_agc_list.append(gen)
+                self.Pmin_gen[cont2] = self.dict_gen[gen][3]/self.Sb
+                self.Pmax_gen[cont2] = self.dict_gen[gen][4]/self.Sb
+                self.Cvar_gen[cont2] = self.dict_gen[gen][5]
+                self.Ccte_gen[cont2] = self.dict_gen[gen][6]
+                cont2 += 1
+
             cont+=1
 
-        self.n_gen_agc = len(self.pos_gen_agc_list)
+
 
         self.n_elem = len(self.indices_obj)   # N° de líneas + 'trf2'
         # Obtención de fmax, R y X
@@ -394,10 +401,10 @@ class PowerFactorySim(object):
         self.pos_line = list()
         self.all_line = list()
         self.FMax = np.zeros(self.n_elem)
-        R = np.zeros(self.n_elem)
-        X = np.zeros(self.n_elem)
-        i_buses = np.zeros(self.n_elem).astype(int)
-        j_buses = np.zeros(self.n_elem).astype(int)
+        self.R = np.zeros(self.n_elem)
+        self.X = np.zeros(self.n_elem)
+        self.i_buses = np.zeros(self.n_elem).astype(int)
+        self.j_buses = np.zeros(self.n_elem).astype(int)
         self.pos_ts = list()
         cont = -1
         for i in self.indices_obj:
@@ -425,44 +432,48 @@ class PowerFactorySim(object):
             else:
                 print('Elemento no encontrado en diccs: ' + i)
             self.FMax[cont] = Fmax_i/self.Sb
-            R[cont] = R_i
+            self.R[cont] = R_i
             if self.flujo_dc:
-                R[cont] = 0
-            X[cont] = X_i
-            i_buses[cont] = i_bus
-            j_buses[cont] = j_bus
+                self.R[cont] = 0
+            self.X[cont] = X_i
+            self.i_buses[cont] = i_bus
+            self.j_buses[cont] = j_bus
         
         if self.TS:
-            self.pos_nots = [pos for pos in self.pos_line if pos not in self.pos_ts]
-            # Lineas Candidatas TS
-            self.i_buses_ts = i_buses[self.pos_ts]
-            self.j_buses_ts = j_buses[self.pos_ts]
+            self.pos_nots = [pos for pos in list(range(len(self.indices_obj))) if pos not in self.pos_ts]
+            # Lineas Candidatass TS
+            self.i_buses_ts = self.i_buses[self.pos_ts]
+            self.j_buses_ts = self.j_buses[self.pos_ts]
 
         I = np.r_[range(self.n_elem), range(self.n_elem)]
-        S = sparse((np.r_[np.ones(self.n_elem), -np.ones(self.n_elem)], (I, np.r_[i_buses, j_buses])), (self.n_elem, self.Nb))
+        S = sparse((np.r_[np.ones(self.n_elem), -np.ones(self.n_elem)], (I, np.r_[self.i_buses, self.j_buses])), (self.n_elem, self.Nb))
         self.A = np.array(S.todense())
 
 
         val_min = 1e-24 #Valor mínimo para evitar valores nulos en matriz X
         yprim = np.zeros(self.n_elem).astype(complex)
         for i in range(self.n_elem):
-            if X[i] == 0:
-                X[i] = val_min
-            yprim[i] = 1/(complex(R[i],X[i]))
+            if self.X[i] == 0:
+                self.X[i] = val_min
+            yprim[i] = 1/(complex(self.R[i],self.X[i]))
         self.G = np.real(yprim)
         self.B = np.imag(yprim)
 
         ## CALCULO DE SHIFT FACTORS
         if self.use_sf:
             n_bus_slack = list(self.dict_barras.keys()).index(self.bus_slack)
-            noslack = np.flatnonzero(np.arange(self.Nb) != n_bus_slack)
+            self.noslack = np.flatnonzero(np.arange(self.Nb) != n_bus_slack)
 
-            BfR = sparse((np.r_[np.imag(yprim), -np.imag(yprim)], (I, np.r_[i_buses, j_buses])), (self.n_elem,self.Nb))
+            BfR = sparse((np.r_[np.imag(yprim), -np.imag(yprim)], (I, np.r_[self.i_buses, self.j_buses])), (self.n_elem,self.Nb))
             BbusR = S.T * BfR
             SFR = np.zeros((self.n_elem,self.Nb))
-            SFR[:,noslack] = BfR[:, noslack].todense()*np.linalg.inv(BbusR[np.ix_(noslack, noslack)].todense())    
+            SFR[:,self.noslack] = BfR[:, self.noslack].todense()*np.linalg.inv(BbusR[np.ix_(self.noslack, self.noslack)].todense())    
 
             self.SF = SFR
+
+            #SF_pf = pd.DataFrame(np.vstack((self.name_gen_agc_list,self.SF[:,self.pos_gen[self.pos_gen_agc_list]])).T, columns=np.insert(self.indices_obj, 0, 'x', axis=0))
+            #SF_pf.to_excel(r"C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\SF_gens.xlsx", index = False)
+
 
         #return [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind]
         return (dict_lineas)
@@ -471,7 +482,7 @@ class PowerFactorySim(object):
 
     def prepare_dynamic_sim(self, monitored_variables,
                             sim_type='rms', start_time=0.0,
-                            step_size=0.01, end_time=10.0):
+                            step_size=0.01):
         # get result file
         # select results variables to monitor
         for elm_name, var_names in monitored_variables.items():
@@ -488,7 +499,6 @@ class PowerFactorySim(object):
         # set start time, step size and end time
         self.inc.tstart = start_time
         self.inc.dtgrd = step_size
-        self.sim.tstop = end_time
         # set initial conditions
         self.inc.Execute()
     
@@ -554,8 +564,7 @@ class Simulacion(object):
         # Switch event
         # Gen Out
         self.name_events = list()
-        self.events_folder = data.IntEvt.GetContents()
-        for e in self.events_folder:
+        for e in data.events_folder:
             self.name_events.append(e.loc_name)
             e.outserv = 1   
 
@@ -577,7 +586,7 @@ class Simulacion(object):
                 cont += 1
                 sys.stdout.write('\r')
                 sys.stdout.write('Progreso: ' + str(cont+1+data.Ns*ti) + '/' + str(data.Ns*data.Nt))
-                sys.stdout.write('Generador Out: ' + gen_out)
+                sys.stdout.write(' - Generador Out: ' + gen_out)
                 sys.stdout.flush()
                 
                 self.P_out[cont,ti] = data.dict_gen[gen_out][8+ti]/data.Sb
@@ -586,12 +595,12 @@ class Simulacion(object):
                 if data.flujo_dc:
                     continue
 
-                evt = self.events_folder[self.name_events.index('Salida Gen')]
+                evt = data.events_folder[self.name_events.index('Salida Gen')]
                 evt.outserv = 0
                 evt.time = t_initial
                 evt.p_target = data.generadores[list(data.dict_gen).index(gen_out)]
 
-                data.prepare_dynamic_sim({}, 'rms', end_time=tstop_cpf)
+                data.prepare_dynamic_sim({}, 'rms')
                 if self.PL_pre_line[ti] == 0: # Obtener perdidas solo una vez para cada contingencia y cada operación demanda
                     self.PL_pre_line[ti] = np.array(list(map(lambda x: x.GetAttribute('c:Losses'), data.lineas))).sum()/1000/data.Sb
                 data.run_dynamic_sim(end_sim=tstop_cpf)
@@ -621,13 +630,106 @@ class Simulacion(object):
                 #elif (gen_out in Gen_AGC) and (gen_out in dict_genstat_eff):
                 #    self.Genstat_on_AGC[ti, list(dict_genstat_eff.keys()).index(gen_out),cont] = 0
 
+class ShortSim(object):
+    def __init__(self, data, big_optm, simm, gen_out, ti):
+        #count=0
+        #for gen in pf.Gen_AGC:
+        #    evt2 = simm.events_folder[simm.name_events.index(signal_list[count])]
+        #    evt2.outserv = 0
+        #    evt2.value = str(big_optm.part_factors[:,scen,ti][pf.name_gen_agc_list.index(gen)])
+        #    count += 1
+
+        data.prepare_dynamic_sim({}, 'rms')
+        data.run_dynamic_sim(end_sim=ti)
+
+        # Potencia en cada generador
+        self.p_gen = np.zeros(len(data.generadores))
+        i=0
+        for gen in data.generadores:
+            self.p_gen[i] = gen.GetAttribute('m:Psum:bus1')/data.Sb
+            i += 1
+
+        # Demanda en cada barra
+        self.D_t = np.zeros(data.Nb)
+        for load in list(map(lambda x: (x.GetAttribute('m:Psum:bus1'),data.dict_barras[x.bus1.cterm.loc_name]), data.cargas)):  # Demanda al final del CPF por carga
+            self.D_t[load[1]] += load[0]/data.Sb
+
+    def CreateEvent_gen(self, data, simm, gen, value, ti):
+        evento = data.IntEvt.CreateObject('EvtParam', 'Evt Gamma ' + str(gen) + ' - ' + str(ti))    
+        evento.time = ti
+        evento.p_target = data.Name_all_gen[gen]
 
 
 
+class new_SF(object):
+    def __init__(self, pf, m_optm, ti, scen):
+        N_ts = int(sum(1-m_optm.s_ts.x[:,scen,ti]))
+
+        new_n_elem = pf.n_elem - N_ts # N° de líneas + trf2 - Líneas TS
+        new_R = np.zeros(new_n_elem)
+        new_X = np.zeros(new_n_elem)
+        new_i_buses = np.zeros(new_n_elem)
+        new_j_buses = np.zeros(new_n_elem)
+        new_Fmax = np.zeros(new_n_elem)
+
+        cont=0
+        j=-1
+        for i in range(pf.n_elem):
+            if i in pf.pos_line:
+                j += 1
+                if m_optm.s_ts[j,scen,ti].x:
+                    new_R[cont] = pf.R[i]
+                    new_X[cont] = pf.X[i]
+                    new_i_buses[cont] = pf.i_buses[i]
+                    new_j_buses[cont] = pf.j_buses[i]
+                    new_Fmax[cont] = pf.FMax[i]
+                    cont+=1
+            else:
+                new_R[cont] = pf.R[i]
+                new_X[cont] = pf.X[i]
+                new_i_buses[cont] = pf.i_buses[i]
+                new_j_buses[cont] = pf.j_buses[i]
+                new_Fmax[cont] = pf.FMax[i]
+                cont+=1
+
+        I = np.r_[range(new_n_elem), range(new_n_elem)]
+        S = sparse((np.r_[np.ones(new_n_elem), -np.ones(new_n_elem)], (I, np.r_[new_i_buses, new_j_buses])), (new_n_elem, pf.Nb))
+        self.A = np.array(S.todense())
 
 
+        val_min = 1e-24 #Valor mínimo para evitar valores nulos en matriz X
+        yprim = np.zeros(new_n_elem).astype(complex)
+        for i in range(new_n_elem):
+            if new_X[i] == 0:
+                new_X[i] = val_min
+            yprim[i] = 1/(complex(new_R[i],new_X[i]))
+        self.G = np.real(yprim)
+        self.B = np.imag(yprim)
 
 
+        BfR = sparse((np.r_[np.imag(yprim), -np.imag(yprim)], (I, np.r_[new_i_buses, new_j_buses])), (new_n_elem,pf.Nb))
+        BbusR = S.T * BfR
+        SFR = np.zeros((new_n_elem,pf.Nb))
+        SFR[:,pf.noslack] = BfR[:, pf.noslack].todense()*np.linalg.inv(BbusR[np.ix_(pf.noslack, pf.noslack)].todense())    
+
+        self.SF = SFR
+
+def CreateEvents_line(data, optm, scen,ti):
+    for line in data.lineas:
+        if line.loc_name in data.TS_lines:
+            index = data.all_line.index(line.loc_name)
+            if optm.s_ts.x[index,scen,ti] == 0:
+                event_folder = data.IntEvt.GetContents()
+                lista_eventos = list(map(lambda x: x.loc_name , event_folder))
+                name_evt = 'Evt '  + str(line.loc_name)
+                if name_evt in lista_eventos:
+                    position = lista_eventos.index(name_evt)
+                    data.events_folder[position].outserv = 0
+                else:
+                    evento = data.IntEvt.CreateObject('EvtOutage', 'Evt ' + str(line.loc_name))   
+                    evento.p_target = line
+                    evento.i_what = 0
+                    evento.time = 30 
 
 
 #class LpGurobi(object):
