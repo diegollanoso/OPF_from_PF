@@ -1,0 +1,8 @@
+\ Model optimization_model_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ Condición_inicial: ACE_exp[0] = -7.006571693977534
+Bounds
+End

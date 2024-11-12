@@ -15,25 +15,31 @@
 
 ### TBD
 
-- Añadir 
+- Añadir la potencia entre áreas
+
+- Revisar el valor de P_out de optm.py
 
 - Añadir variabilidad en la generación renovable
     - Añadir generadores estaticos
 
+- En gráfico de paper aparece potencia negativas
+
+- Anotar los valores de inercia que obtengo 
+
+- Añadir control terciario de frecuencia utilizando UC
+
+- Arreglar muestreo al AGC
+
+
 - Revisar restriccion de suma de dpk = flujos
 
 - Realizar simulaciones para confirmar valores de flujo DC
-
-- Añadir el tranmssion switching con perdidas
-    - Usar SF con ploss
 
 - Añadir factor de seguridad a FMax
 
 - Revisar restricciones de complementaridad y exclusividad
 
 - Falta añadir la probabilidad de ocurrencia de las contigencnias en la función objetivo
-
-- Añadir generadores estaticos.
 
 - Que tomar como perdidas? Solo líneas o tambien los trafos?? Se consideran ambos! No se pueden añadir perdidas en simulaciones 
 
@@ -43,12 +49,10 @@
 
 - Idea: Solo extraer la información de los generadores que participan en el AGC.
 
-- Añadir perturbaciones de demanda.
 - Eliminar carpetas y archivos innecesarios.
 
 ### Considerar
 
-- Añadir muestreo al AGC
 
 - Se tuvo que ajustar el parámetro IntFeasTol del modelo para que las restricciones Big-M 
 https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_guide.html#dealing-with-big-m-constraints
@@ -65,7 +69,7 @@ https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_gu
 
 ### questions
 
-- Que pasa si el CPF lleva al generador por encima o bajo el límite de potencia?
+- Que hacer con la parte reactiva de las cargas. El txt solo tiene un dato, que considere como potencia activa
 
 ### Progreso
 

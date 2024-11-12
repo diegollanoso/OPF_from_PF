@@ -1,0 +1,212 @@
+\ Model Modelo Variable AGC_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ Balance[0]: Pg_inc[0] + Pg_inc[1] + Pg_inc[2] + Pg_inc[3] + Pg_inc[4]
+   + Pg_inc[5] + Pg_inc[6] + Pg_inc[7] + Pg_inc[8] + Pg_inc[9] + Pg_inc[10]
+   + Pg_inc[11] + Pg_inc[12] + P_ens[0] + P_ens[1] + P_ens[2] + P_ens[3]
+   + P_ens[4] + P_ens[5] + P_ens[6] + P_ens[7] + P_ens[8] + P_ens[9]
+   + P_ens[10] + P_ens[11] + P_ens[12] + P_ens[13] + P_ens[14] + P_ens[15]
+   + P_ens[16] + P_ens[17] + P_ens[18] + P_ens[19] + P_ens[20] + P_ens[21]
+   + P_ens[22] + P_ens[23] + P_ens[24] + P_ens[25] + P_ens[26] + P_ens[27]
+   + P_ens[28] + P_ens[29] + P_ens[30] + P_ens[31] + P_ens[32] + P_ens[33]
+   + P_ens[34] + P_ens[35] + P_ens[36] + P_ens[37] + P_ens[38] + P_ens[39]
+   + P_ens[40] + P_ens[41] + P_ens[42] + P_ens[43] + P_ens[44] + P_ens[45]
+   + P_ens[46] + P_ens[47] + P_ens[48] + P_ens[49] - Pg_dec[0] - Pg_dec[1]
+   - Pg_dec[2] - Pg_dec[3] - Pg_dec[4] - Pg_dec[5] - Pg_dec[6] - Pg_dec[7]
+   - Pg_dec[8] - Pg_dec[9] - Pg_dec[10] - Pg_dec[11] - Pg_dec[12]
+   - losses[0] - losses[1] - losses[2] - losses[3] - losses[4] - losses[5]
+   - losses[6] - losses[7] - losses[8] - losses[9] - losses[10]
+   - losses[11] - losses[12] - losses[13] - losses[14] - losses[15]
+   - losses[16] - losses[17] - losses[18] - losses[19] - losses[20]
+   - losses[21] - losses[22] - losses[23] - losses[24] - losses[25]
+   - losses[26] - losses[27] - losses[28] - losses[29] - losses[30]
+   - losses[31] - losses[32] - losses[33] - losses[34] - losses[35]
+   - losses[36] - losses[37] - losses[38] - losses[39] - losses[40]
+   - losses[41] - losses[42] - losses[43] - losses[44] - losses[45]
+   - losses[46] - losses[47] - losses[48] - losses[49] - losses[50]
+   - losses[51] - losses[52] - losses[53] - losses[54] - losses[55]
+   - losses[56] - losses[57] - losses[58] - losses[59] - losses[60]
+   - losses[61] = 766.978147326029
+ flujos[47]: - Pg_inc[0] - Pg_inc[1] - Pg_inc[2] - Pg_inc[3] - Pg_inc[4]
+   - Pg_inc[5] - Pg_inc[6] - Pg_inc[7] - Pg_inc[8] - Pg_inc[9] - Pg_inc[10]
+   - Pg_inc[11] - Pg_inc[12] - P_ens[0] - P_ens[1] - P_ens[2] - P_ens[3]
+   - P_ens[4] - P_ens[5] - P_ens[6] - P_ens[7] - P_ens[8] - P_ens[9]
+   - P_ens[10] - P_ens[11] - P_ens[12] - P_ens[13] - P_ens[14] - P_ens[15]
+   - P_ens[16] - P_ens[17] - P_ens[18] - P_ens[19] - P_ens[21] - P_ens[22]
+   - P_ens[23] - P_ens[24] - P_ens[25] - P_ens[26] - P_ens[27] - P_ens[28]
+   - P_ens[29] - P_ens[30] - P_ens[31] - P_ens[32] - P_ens[33] - P_ens[34]
+   - P_ens[35] - P_ens[36] - P_ens[37] - P_ens[38] - P_ens[39] - P_ens[40]
+   - P_ens[41] - P_ens[42] - P_ens[43] - P_ens[44] - P_ens[45] - P_ens[46]
+   - P_ens[47] - P_ens[48] - P_ens[49] + Pg_dec[0] + Pg_dec[1] + Pg_dec[2]
+   + Pg_dec[3] + Pg_dec[4] + Pg_dec[5] + Pg_dec[6] + Pg_dec[7] + Pg_dec[8]
+   + Pg_dec[9] + Pg_dec[10] + Pg_dec[11] + Pg_dec[12] + flujo[47]
+   + losses[0] + losses[1] + losses[2] + losses[3] + losses[4] + losses[5]
+   + losses[6] + losses[7] + losses[8] + losses[9] + losses[10]
+   + losses[11] + losses[12] + losses[13] + losses[14] + losses[15]
+   + losses[16] + losses[17] + losses[18] + losses[19] + losses[20]
+   + losses[21] + losses[22] + losses[23] + losses[24] + losses[25]
+   + losses[26] + losses[27] + losses[28] + losses[29] + losses[30]
+   + losses[31] + losses[32] + losses[33] + losses[34] + losses[35]
+   + losses[36] + losses[37] + losses[38] + losses[39] + losses[40]
+   + losses[41] + losses[42] + losses[43] + losses[44] + losses[45]
+   + losses[46] + 0.5 losses[47] + losses[48] + losses[49] + losses[50]
+   + losses[51] + losses[52] + losses[53] + losses[54] + losses[55]
+   + losses[56] + losses[57] + losses[58] + losses[59] + losses[60]
+   + losses[61] = -2.290228466390772
+ f[47]: flujo[47] - fp[47] + fn[47] = 0
+ SumaDpk[47]: fp[47] + fn[47] - dpk[47,0] - dpk[47,1] - dpk[47,2]
+   - dpk[47,3] - dpk[47,4] - dpk[47,5] - dpk[47,6] - dpk[47,7] - dpk[47,8]
+   - dpk[47,9] - dpk[47,10] = 0
+ Ploss[47]: losses[47] - 1.63636e-08 dpk[47,0] - 4.90909e-08 dpk[47,1]
+   - 8.18182e-08 dpk[47,2] - 1.14545e-07 dpk[47,3] - 1.47273e-07 dpk[47,4]
+   - 1.8e-07 dpk[47,5] - 2.12727e-07 dpk[47,6] - 2.45455e-07 dpk[47,7]
+   - 2.78182e-07 dpk[47,8] - 3.10909e-07 dpk[47,9] - 3.43636e-07 dpk[47,10]
+   = 0
+ fp+[47]: - fp[47] >= -9
+ R2677: - P_ens[20] >= 0
+Bounds
+ Pg_inc[0] free
+ Pg_inc[1] free
+ Pg_inc[2] free
+ Pg_inc[3] free
+ Pg_inc[4] free
+ Pg_inc[5] free
+ Pg_inc[6] free
+ Pg_inc[7] free
+ Pg_inc[8] free
+ Pg_inc[9] free
+ Pg_inc[10] free
+ Pg_inc[11] free
+ Pg_inc[12] free
+ P_ens[0] free
+ P_ens[1] free
+ P_ens[2] free
+ P_ens[3] free
+ P_ens[4] free
+ P_ens[5] free
+ P_ens[6] free
+ P_ens[7] free
+ P_ens[8] free
+ P_ens[9] free
+ P_ens[10] free
+ P_ens[11] free
+ P_ens[12] free
+ P_ens[13] free
+ P_ens[14] free
+ P_ens[15] free
+ P_ens[16] free
+ P_ens[17] free
+ P_ens[18] free
+ P_ens[19] free
+ P_ens[20] free
+ P_ens[21] free
+ P_ens[22] free
+ P_ens[23] free
+ P_ens[24] free
+ P_ens[25] free
+ P_ens[26] free
+ P_ens[27] free
+ P_ens[28] free
+ P_ens[29] free
+ P_ens[30] free
+ P_ens[31] free
+ P_ens[32] free
+ P_ens[33] free
+ P_ens[34] free
+ P_ens[35] free
+ P_ens[36] free
+ P_ens[37] free
+ P_ens[38] free
+ P_ens[39] free
+ P_ens[40] free
+ P_ens[41] free
+ P_ens[42] free
+ P_ens[43] free
+ P_ens[44] free
+ P_ens[45] free
+ P_ens[46] free
+ P_ens[47] free
+ P_ens[48] free
+ P_ens[49] free
+ Pg_dec[0] free
+ Pg_dec[1] free
+ Pg_dec[2] free
+ Pg_dec[3] free
+ Pg_dec[4] free
+ Pg_dec[5] free
+ Pg_dec[6] free
+ Pg_dec[7] free
+ Pg_dec[8] free
+ Pg_dec[9] free
+ Pg_dec[10] free
+ Pg_dec[11] free
+ Pg_dec[12] free
+ flujo[47] free
+ fp[47] free
+ losses[0] free
+ losses[1] free
+ losses[2] free
+ losses[3] free
+ losses[4] free
+ losses[5] free
+ losses[6] free
+ losses[7] free
+ losses[8] free
+ losses[9] free
+ losses[10] free
+ losses[11] free
+ losses[12] free
+ losses[13] free
+ losses[14] free
+ losses[15] free
+ losses[16] free
+ losses[17] free
+ losses[18] free
+ losses[19] free
+ losses[20] free
+ losses[21] free
+ losses[22] free
+ losses[23] free
+ losses[24] free
+ losses[25] free
+ losses[26] free
+ losses[27] free
+ losses[28] free
+ losses[29] free
+ losses[30] free
+ losses[31] free
+ losses[32] free
+ losses[33] free
+ losses[34] free
+ losses[35] free
+ losses[36] free
+ losses[37] free
+ losses[38] free
+ losses[39] free
+ losses[40] free
+ losses[41] free
+ losses[42] free
+ losses[43] free
+ losses[44] free
+ losses[45] free
+ losses[46] free
+ losses[47] free
+ losses[48] free
+ losses[49] free
+ losses[50] free
+ losses[51] free
+ losses[52] free
+ losses[53] free
+ losses[54] free
+ losses[55] free
+ losses[56] free
+ losses[57] free
+ losses[58] free
+ losses[59] free
+ losses[60] free
+ losses[61] free
+ dpk[47,0] free
+ dpk[47,1] free
+End
