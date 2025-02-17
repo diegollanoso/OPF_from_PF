@@ -1,5 +1,8 @@
 import gurobipy as gp
 import numpy as np
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Modelo():
     def __init__(self):
@@ -22,6 +25,7 @@ class Modelo():
         self.costo_ts = 0
 
     def __call__(self,data,simm):
+        logging.info("Initializing optimization model")
         self.L = data.L
         self.pg_inc = self.m.addMVar((data.n_gen_agc, data.Ns, data.Nt), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
         self.vg_inc = self.m.addMVar(data.n_gen_agc, vtype=self.gp.GRB.BINARY, name='vg_inc')
@@ -49,9 +53,10 @@ class Modelo():
             self.s_ts = self.m.addMVar((len(data.pos_ts),data.Ns, data.Nt), vtype=self.gp.GRB.BINARY, name='s_ts')                                    # variable binaria de TS
             self.f_ts = self.m.addMVar((len(data.pos_ts),data.Ns, data.Nt),vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=-self.gp.GRB.INFINITY, name='f_ts')
 
-
+        logging.info("Formulating objective function")
         self.ObjFunction(data)
 
+        logging.info("Adding constraints")
         for ti  in range(data.Nt):
             for s in range(data.Ns):
                 self.Balance(data, simm, s, ti)
@@ -70,9 +75,8 @@ class Modelo():
                     self.R_FlujoLosses(data, simm, ti, s, fp=0,fn=0,dpk=0)
                 
 
-
         self.m.write('OPF_DownPower.lp')
-
+        logging.info("Model formulation complete")
 
     def ObjFunction(self, data):
         if self.pot_down:
@@ -310,7 +314,7 @@ class Modelo():
                 self.m.addConstr(dpk[:,l,s,ti] >=0, name='d_f_Res_min_A_L')
             else:
                 self.m.addConstr(-dpk[:,l,s,ti] >=-n_a[:,s,ti,l-1]*data.FMax/self.L, name='d_f_Res_max_A_L-1')
-                self.m.addConstr(dpk[:,l,s,ti] >=n_a[:,s,ti,l]*data.FMax/self.L, name='d_f_Res_min_A_L-1')
+                self.m.addConstr(dpk[:,l,s,ti] >=n_a[:,s,ti,l]*(data.FMax/self.L), name='d_f_Res_min_A_L-1')
 
     def R_Generadores(self, data, simm, ti, s):
 
@@ -342,11 +346,14 @@ class Modelo():
         self.m.addConstr(-self.p_ens[:,s,ti] >= -simm.D_pfc[:,s,ti], 'LimENS  s='+str(s)+' c='+str(ti))
 
     def run(self):
+        logging.info("Starting optimization")
         self.m.optimize()
+        logging.info("Optimization complete")
 
     def Results(self, data, simm):
         status = self.m.Status
         if status == gp.GRB.Status.OPTIMAL:
+            logging.info("Optimal solution found")
             print('-----------------------------')
             #print('La demanda total del sistema es: %.2f (MW)' % (pf.dda_barra[:,ti].sum()*pf.Sb))
             
@@ -405,6 +412,7 @@ class Modelo():
         elif status == gp.GRB.Status.INF_OR_UNBD or \
             status == gp.GRB.Status.INFEASIBLE  or \
             status == gp.GRB.Status.UNBOUNDED:
+            logging.error("Model is infeasible or unbounded")
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP.ilp")
@@ -625,6 +633,7 @@ class PartialModel(object):
     def Results(self, data, big_optm, simm):
         status = self.m.Status
         if status == gp.GRB.Status.OPTIMAL:
+            logging.info("Optimal solution found")
             print('-----------------------------')
 
             print('Costo = %.2f' % (self.m.ObjVal))
@@ -644,6 +653,7 @@ class PartialModel(object):
         elif status == gp.GRB.Status.INF_OR_UNBD or \
             status == gp.GRB.Status.INFEASIBLE  or \
             status == gp.GRB.Status.UNBOUNDED:
+            logging.error("Model is infeasible or unbounded")
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP_partial.ilp")
@@ -727,6 +737,7 @@ class Model_UC(object):
 
         status = self.m.Status
         if status == gp.GRB.Status.OPTIMAL:
+            logging.info("Optimal solution found")
             print('-----------------------------')
             print('Costo = %.2f' % (self.m.ObjVal))
             print('num_Vars =  %d / num_Const =  %d / num_NonZeros =  %d' % (self.m.NumVars,self.m.NumConstrs,self.m.DNumNZs))
@@ -734,6 +745,7 @@ class Model_UC(object):
         elif status == gp.GRB.Status.INF_OR_UNBD or \
             status == gp.GRB.Status.INFEASIBLE  or \
             status == gp.GRB.Status.UNBOUNDED:
+            logging.error("Model is infeasible or unbounded")
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP_UC.ilp")
@@ -867,5 +879,3 @@ if False:
         self.m.addConstr(self.f[data.pos_nots,s,ti] == fe-f_loss_nc+fv)
 
         self.m.addConstr(-fp[:,s,ti] - fn[:,s,ti] - 0.5*self.ploss[:,s,ti] >= -data.FMax, name = 'suma_f')
-
-
