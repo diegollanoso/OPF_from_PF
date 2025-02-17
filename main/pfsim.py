@@ -17,7 +17,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # La matriz de shift factors se limpia y ordena
 # Return matriz de shif factors y indices con nombres de elementos
 def ShiftFactors(ptdf_dataframe):
-    logging.info("Cleaning and ordering shift factors matrix")
     ejes = ptdf_dataframe.axes
     ejes_corregidos = list()
 
@@ -103,6 +102,11 @@ class PowerFactorySim(object):
             except:
                 logging.error('Error in StudyCase name')
 
+
+        self.gen_agc = study_case.GetContents('Gen AGC.SetSelect')[0].All()
+        self.Gen_AGC = list(map(lambda x: x.loc_name, self.gen_agc))
+
+        gen_out = study_case.GetContents('Gen OUT.SetSelect')[0].All()
         self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
         #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
         self.Ns = len(self.Gen_Outages)
@@ -142,6 +146,7 @@ class PowerFactorySim(object):
     # Return pandas con matriz de Shift-factors
     # Return lista ordenada con barras 
     def export_csv(self, flujo:str = 'AC'):
+        logging.info("Exporting CSV with flujo: %s", flujo)
         sfactors = self.app.GetFromStudyCase('ComVstab')
         if flujo == 'AC':
             sfactors.iopt_method = 0 # 0 = AC; 2 = DC
@@ -205,10 +210,12 @@ class PowerFactorySim(object):
         ptdf_array_T = np.asarray(df)
         self.SF = np.transpose(ptdf_array_T).astype(float)
         self.indices_obj = df.axes[1]
+        logging.info("CSV export complete")
         
     # Return diccionarios de los elementos 
     # bus, carga, linea, trafo, gen, genstat
     def get_data(self):
+        logging.info("Getting data from PowerFactory simulation")
         self.ldf.Execute()
         self.dict_barras = dict()
         cont = 0
@@ -580,6 +587,7 @@ class PowerFactorySim(object):
 
 
         #return [nom_bus, nom_trf, nom_lin, nom_trf3, nom_cap, nom_ind]
+        logging.info("Data extraction complete")
         return (dict_lineas)
 
 
@@ -587,6 +595,7 @@ class PowerFactorySim(object):
     def prepare_dynamic_sim(self, monitored_variables,
                             sim_type='rms', start_time=0.0,
                             step_size=0.01):
+        logging.info("Preparing dynamic simulation with sim_type: %s", sim_type)
         # get result file
         # select results variables to monitor
         for elm_name, var_names in monitored_variables.items():
@@ -605,13 +614,18 @@ class PowerFactorySim(object):
         self.inc.dtgrd = step_size
         # set initial conditions
         self.inc.Execute()
+        logging.info("Dynamic simulation prepared")
     
     def run_dynamic_sim(self, end_sim = 49.9):
         self.sim.tstop = end_sim
-        return bool(self.sim.Execute())
+        logging.info("Running dynamic simulation until time: %.2f", end_sim)
+        result = bool(self.sim.Execute())
+        logging.info("Dynamic simulation complete with result: %s", result)
+        return result
 
 
     def get_dynamic_results(self, elm_name, var_name):
+        logging.info("Getting dynamic results for element: %s, variable: %s", elm_name, var_name)
         # get network element of interest
         element = self.app.GetCalcRelevantObjects(elm_name)[0]
         # load results from file
@@ -628,12 +642,12 @@ class PowerFactorySim(object):
             time.append(self.app.ResGetData(self.res, i, -1)[1])
             var_values.append(
                 self.app.ResGetData(self.res, i, col_index)[1])
-            
         return time, var_values
 
 
     # Check results
     def check_results(self, gen_eff, genstat_eff, p_g, p_gstat, f_line):
+        logging.info("Checking results")
         cont = 0
         for gen in self.generadores:
             if gen.loc_name in gen_eff:
@@ -655,15 +669,18 @@ class PowerFactorySim(object):
             if line.loc_name in f_line[0]:
                 print('%s ; Gurobi (DC) = %.3f [MW]; DIgSILENT (AC) = %.3f [MW]' % (line.loc_name, float(f_line[1][np.where(f_line[0] == line.loc_name)])*self.Sb, (-line.GetAttribute(self.potencia_ac2)+line.GetAttribute(self.potencia_ac))/2))
                 cont += 1
+        logging.info("Results check complete")
 
 
     def ChangeMaxLine(self, obj:list, value:list):
+        logging.info("Changing max line values for objects: %s with values: %s", obj, value)
         for line in self.lineas:
             if line.loc_name in obj:
                 line.typ_id.sline = value[obj.index(line.loc_name)]/1000
                 
 
     def extract_data(self, elem: str, variable: str, return_time: bool = True, start_time: float = None):
+        logging.info("Extracting data for element: %s, variable: %s", elem, variable)
         element = self.app.GetCalcRelevantObjects(elem)[0]
         self.app.ResLoadData(self.res)
         col_index = self.app.ResGetIndex(self.res, element, variable)
@@ -678,7 +695,7 @@ class PowerFactorySim(object):
             if return_time:
                 time.append(current_time)
             var_values.append(self.app.ResGetData(self.res, i, col_index)[1])
-    
+        logging.info("Data extraction complete")
         #if variable == 's:pt':
         #    p_nominal = element.typ_id.sgn
         #    var_values = np.array(var_values)*p_nominal
@@ -691,6 +708,7 @@ class PowerFactorySim(object):
 
 class Simulacion(object):
     def __init__(self, data, t_initial=0, tstop_cpf=30):
+        logging.info("Initializing simulation with t_initial: %d, tstop_cpf: %d", t_initial, tstop_cpf)
         # Elementos a monitorear
         bus_freq = data.app.GetCalcRelevantObjects('Term_10_4.ElmTerm')
         #Inercia
@@ -798,6 +816,7 @@ class Simulacion(object):
                 #self.P_out_f[cont,ti] = rocof
 
                 #self.P_out_f[cont,ti] = -2*H*rocof
+        logging.info("Simulation initialized")
 
 
 
@@ -806,6 +825,7 @@ class Simulacion(object):
 
 class ShortSim(object):
     def __init__(self, data, big_optm, simm, new_SF, gen_out, ti):
+        logging.info("Initializing short simulation for gen_out: %s, ti: %d", gen_out, ti)
         #count=0
         #for gen in pf.Gen_AGC:
         #    evt2 = simm.events_folder[simm.name_events.index(signal_list[count])]
@@ -856,10 +876,12 @@ class ShortSim(object):
             p_lv = trafo.GetAttribute('m:P:buslv')/data.Sb
             perdida = abs(p_hv + p_lv)
             self.PL[new_SF.all_branch.index(trafo.loc_name)] = perdida
+        logging.info("Short simulation initialized")
 
 
 class new_SF(object):
     def __init__(self, pf, m_optm, ti, scen):
+        logging.info("Initializing new shift factors for ti: %d, scen: %d", ti, scen)
         N_ts = int(sum(1-m_optm.s_ts.x[:,scen,ti]))
 
         self.new_n_elem = pf.n_elem - N_ts # N° de líneas + trf2 - Líneas TS
@@ -914,8 +936,10 @@ class new_SF(object):
         SFR[:,pf.noslack] = BfR[:, pf.noslack].todense()*np.linalg.inv(BbusR[np.ix_(pf.noslack, pf.noslack)].todense())    
 
         self.SF = SFR
+        logging.info("New shift factors initialized")
 
 def CreateEvents_line(data, optm, scen, ti, tstop_cpf):
+    logging.info("Creating events for lines with scen: %d, ti: %d", scen, ti)
     for line in data.lineas:
         if line.loc_name in data.TS_lines:
             index = data.all_line.index(line.loc_name)
@@ -933,9 +957,11 @@ def CreateEvents_line(data, optm, scen, ti, tstop_cpf):
                     evento.p_target = line
                     evento.i_what = 0
                     evento.time = tstop_cpf 
+    logging.info("Events for lines created")
 
 
 def CreateEvents_gen(data, optm, gen, value, ti):
+    logging.info("Creating events for generator: %s, ti: %d", gen, ti)
     cont=0
     for gen in data.name_gen_agc_list:
         name_event =  'Evt Gamma ' + str(gen) + ' - ' + str(ti)
@@ -951,8 +977,10 @@ def CreateEvents_gen(data, optm, gen, value, ti):
 
             evento.p_target = data.Name_all_gen[gen]
         cont+=1
+    logging.info("Events for generator created")
 
 def Set_param_agc(pf, t_int, part_factors, previous_part_factors=None):
+    logging.info("Setting AGC parameters for t_int: %d", t_int)
     if previous_part_factors is None:
         previous_part_factors = [0.0] * len(part_factors)
 
@@ -987,6 +1015,7 @@ def Set_param_agc(pf, t_int, part_factors, previous_part_factors=None):
                 evento.time = t_int%60
             evento.p_target = pf.dsl_agc_bloques
         cont+=1
+    logging.info("AGC parameters set")
 
 #class LpGurobi(object):
 #    def __init__(self):

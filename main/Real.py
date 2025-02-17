@@ -9,13 +9,11 @@ import logging
 
 logging.basicConfig(filename='Main.log',
                     filemode='a',
-                    level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+level=logging.INFO,
+format='%(asctime)s - %(levelname)s - %(message)s')
 
 def setup_simulation(estudio):
-    """
-    Set up the simulation parameters based on the study type.
-    """
+    logging.info("Setting up simulation with estudio: %d", estudio)
     params = {
         'VOLL': 2500,
         'Pot_Down': 0,
@@ -48,31 +46,26 @@ def setup_simulation(estudio):
                        'Costo_ts': 10, 
                        'TS': 1})
 
+    logging.info("Simulation parameters: %s", params)
     return params
 
 def change_max_line_values(pf, lines, values):
-    """
-    Change the maximum line values in the PowerFactory simulation.
-    """
+    logging.info("Changing max line values for lines: %s with values: %s", lines, values)
     logging.info("Changing max line values")
     pf.ChangeMaxLine(lines, values)
 
 def export_simulation_data(pf, estudio):
-    """
-    Export simulation data to CSV.
-    """
+    logging.info("Exporting simulation data for estudio: %d", estudio)
     logging.info("Exporting CSV")
     #if estudio == 0:
     #    pf.export_csv('DC')
-    #else:
+        #else:
     #    pf.export_csv('AC')
     pf.export_csv('AC')
 
 
 def run_optimization_model(pf, sim, params):
-    """
-    Run the optimization model.
-    """
+    logging.info("Running optimization model with params: %s", params)
     logging.info("Running optimization model")
     m_optm = optm.Modelo()
     m_optm.pot_down = params['Pot_Down']
@@ -87,9 +80,11 @@ def run_optimization_model(pf, sim, params):
     m_optm.run()
     m_optm.Results(pf, sim)
 
+    logging.info("Optimization model results: %s", m_optm)
     return m_optm
 
 def extract_data_fullsim(pf):
+    logging.info("Extracting full simulation data")
     pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
 
     # Extrer datos de cada generador
@@ -135,7 +130,7 @@ def extract_data_fullsim(pf):
         lineas_name.append(linea.loc_name)
         list_line_values[cont] = np.array(var_values)/1000
         cont+=1
-    
+
     trafos_name = list()
     list_trafos_values= np.zeros((len(pf.trafos), len(pf_time)))
     cont=0
@@ -159,12 +154,14 @@ def extract_data_fullsim(pf):
 
     data = pd.DataFrame(np.vstack((pf_time, freq_values, list_gens_values, list_load_values, list_line_values, list_trafos_values, sum_loads)).T, 
                         columns=['Time', 'Freq'] + pf.all_gen + pf.all_genstat + pf.all_pv + cargas_name + lineas_name + trafos_name + ['Sum Total Loads'])
-    
+
 
     data.to_excel('generator_load_data.xlsx', index=False)
+logging.info("Data extraction complete, saved to generator_load_data.xlsx")
 
 
 def Variabilidad(pf, sim, m_optm, t_initial, tstop_cpf, t_final):
+    logging.info("Starting variability analysis")
     # Tiempo entre cada simulación
     t_step = 4
     n_step = len(range(tstop_cpf+t_step, t_final, t_step))
@@ -283,6 +280,7 @@ def Variabilidad(pf, sim, m_optm, t_initial, tstop_cpf, t_final):
                         columns=['Time', 'Freq', 'SumAGC', 'SumNOagc', 'SumLoad', 'SumLoss', 'SumP', 'P_Change'])
 
     data.to_excel('data_short_sim.xlsx', index=False)
+    logging.info("Variability analysis complete, saved to data_short_sim.xlsx")
 
 
 
@@ -326,6 +324,7 @@ def Variabilidad(pf, sim, m_optm, t_initial, tstop_cpf, t_final):
 
 
 def main():
+    logging.info("Starting main function")
     estudio = 6
     nt = 1  # N° de escenarios
     params = setup_simulation(estudio)
@@ -383,86 +382,104 @@ def main():
 
         # Extract data
         # Extraer frecuencia
-        pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
+    pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
 
-        # Extrer datos de cada generador
-        cont=0
-        return_time = False
-        list_gens_values = np.zeros((pf.ngen+pf.ngenstat+pf.ngenpv, len(pf_time)))
-        #list_pt_values = np.zeros((pf.ngen, len(pf_time)))
-        #list_pgt_values = np.zeros((pf.ngen, len(pf_time)))
-        for gen in pf.all_gen:
-            var_values = pf.extract_data(gen+'.ElmSym', 'm:Psum:bus1', return_time)
-            list_gens_values[cont] = var_values
-            #list_pt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pt', return_time)
-            #list_pgt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pgt', return_time)
-            cont+=1
+    # Extrer datos de cada generador
+    cont=0
+    return_time = False
+    list_gens_values = np.zeros((pf.ngen+pf.ngenstat+pf.ngenpv, len(pf_time)))
+    #list_pt_values = np.zeros((pf.ngen, len(pf_time)))
+    #list_pgt_values = np.zeros((pf.ngen, len(pf_time)))
+    for gen in pf.all_gen:
+        var_values = pf.extract_data(gen+'.ElmSym', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        #list_pt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pt', return_time)
+        #list_pgt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pgt', return_time)
+        cont+=1
 
-        for gen in pf.all_genstat:
-            var_values = pf.extract_data(gen+'.ElmGenstat', 'm:Psum:bus1', return_time)
-            list_gens_values[cont] = var_values
-            cont+=1
+    for gen in pf.all_genstat:
+        var_values = pf.extract_data(gen+'.ElmGenstat', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
 
-        for gen in pf.all_pv:
-            var_values = pf.extract_data(gen+'.ElmPvsys', 'm:Psum:bus1', return_time)
-            list_gens_values[cont] = var_values
-            cont+=1
-
-
-        # Extraer datos de todos las demandas
-        cargas_name = list()
-        list_load_values = np.zeros((len(pf.cargas), len(pf_time)))
-        cont=0
-        for carga in pf.cargas:
-            var_values = pf.extract_data(carga.loc_name+'.ElmLod', 'm:Psum:bus1', return_time)
-            cargas_name.append(carga.loc_name)
-            list_load_values[cont] = var_values
-            cont+=1
-
-        # Extraer datos de todas las líneas
-        lineas_name = list()
-        list_line_values = np.zeros((len(pf.lineas), len(pf_time)))
-        cont=0
-        for linea in pf.lineas:
-            var_values = pf.extract_data(linea.loc_name+'.ElmLne', 'c:Losses', return_time)
-            lineas_name.append(linea.loc_name)
-            list_line_values[cont] = np.array(var_values)/1000
-            cont+=1
-
-        trafos_name = list()
-        list_trafos_values= np.zeros((len(pf.trafos), len(pf_time)))
-        cont=0
-        for trafo in pf.trafos:
-            trafos_name.append(trafo.loc_name)
-            trafo_name = trafo.loc_name
-            var_hv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:bushv', return_time)
-            var_lv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:buslv', return_time)
-            list_trafos_values[cont] = abs(np.array(var_hv)+np.array(var_lv))
-            cont+=1
-
-        sum_gens = np.zeros(len(pf_time))
-        for tiempo in range(len(pf_time)):
-            sum_gens[tiempo] = list_gens_values[:,tiempo].sum()
-
-        sum_loads = np.zeros(len(pf_time))
-        for tiempo in range(len(pf_time)):
-            sum_loads[tiempo] = list_line_values[:,tiempo].sum()
-            sum_loads[tiempo] += list_trafos_values[:,tiempo].sum()
-            sum_loads[tiempo] += list_load_values[:,tiempo].sum()
+    for gen in pf.all_pv:
+        var_values = pf.extract_data(gen+'.ElmPvsys', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
 
 
-        data = pd.DataFrame(np.vstack((pf_time, freq_values, list_gens_values, list_load_values, list_line_values, list_trafos_values, sum_loads)).T, 
-                            columns=['Time', 'Freq'] + pf.all_gen + pf.all_genstat + pf.all_pv + cargas_name + lineas_name + trafos_name + ['Sum Total Loads'])
+    # Extraer datos de todos las demandas
+    cargas_name = list()
+    list_load_values = np.zeros((len(pf.cargas), len(pf_time)))
+    cont=0
+    for carga in pf.cargas:
+        var_values = pf.extract_data(carga.loc_name+'.ElmLod', 'm:Psum:bus1', return_time)
+        cargas_name.append(carga.loc_name)
+        list_load_values[cont] = var_values
+        cont+=1
+
+    # Extraer datos de todas las líneas
+    lineas_name = list()
+    list_line_values = np.zeros((len(pf.lineas), len(pf_time)))
+    cont=0
+    for linea in pf.lineas:
+        var_values = pf.extract_data(linea.loc_name+'.ElmLne', 'c:Losses', return_time)
+        lineas_name.append(linea.loc_name)
+        list_line_values[cont] = np.array(var_values)/1000
+        cont+=1
+    
+    trafos_name = list()
+    list_trafos_values= np.zeros((len(pf.trafos), len(pf_time)))
+    cont=0
+    for trafo in pf.trafos:
+        trafos_name.append(trafo.loc_name)
+        trafo_name = trafo.loc_name
+        var_hv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:bushv', return_time)
+        var_lv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:buslv', return_time)
+        list_trafos_values[cont] = abs(np.array(var_hv)+np.array(var_lv))
+        cont+=1
+
+    sum_gens = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_gens[tiempo] = list_gens_values[:,tiempo].sum()
+
+    sum_loads = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_loads[tiempo] = list_line_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_trafos_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_load_values[:,tiempo].sum()
 
 
-        data.to_excel('generator_load_data.xlsx', index=False)
+    data = pd.DataFrame(np.vstack((pf_time, freq_values, list_gens_values, list_load_values, list_line_values, list_trafos_values, sum_loads)).T, 
+                        columns=['Time', 'Freq'] + pf.all_gen + pf.all_genstat + pf.all_pv + cargas_name + lineas_name + trafos_name + ['Sum Total Loads'])
+    
+
+    data.to_excel('generator_load_data.xlsx', index=False)
 
 
-    Variabilidad(pf, sim, m_optm, t_initial, tstop_cpf, t_final)
 
-    extract_data_fullsim(pf, sim, m_optm, tstop_cpf, t_final)
+# Extrer datos de cada generador
+#return_time = True
+#for gen in pf.all_gen:
+#    if return_time:
+#        pf_time, var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#    else:
+#        var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+            
+#return_time = True
+#for gen in pf.all_genstat:
+#    if return_time:
+#        pf_time, var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#    else:
+#        var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)#
 
-
+#return_time = True
+#for gen in pf.all_pv:
+#    if return_time:
+#        pf_time, var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#    else:
+#        var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#
 
     if True:
         t4 = time.time()
@@ -474,9 +491,9 @@ def main():
         NamePPre_all = NamePPre_all[0:nt]
         for ti in range(nt):
             PgenPre_all.append(pf.Pgen_pre[pf.pos_gen_agc_list,ti]*pf.Sb)
-        
-        if m_optm.pot_down:
-            Datos_gen = [all_gen[pf.pos_gen_agc_list], pf.Cvar_gen[pf.pos_gen_agc_list], pf.Ccte_gen[pf.pos_gen_agc_list], pf.Pmin_gen[pf.pos_gen_agc_list]*pf.Sb,pf.Pmax_gen[pf.pos_gen_agc_list]*pf.Sb,pf.Ramp_gen[pf.pos_gen_agc_list]*pf.Sb] + PgenPre_all + [m_optm.vg_inc.x, m_optm.vg_dec.x]
+            
+            if m_optm.pot_down:
+                Datos_gen = [all_gen[pf.pos_gen_agc_list], pf.Cvar_gen[pf.pos_gen_agc_list], pf.Ccte_gen[pf.pos_gen_agc_list], pf.Pmin_gen[pf.pos_gen_agc_list]*pf.Sb,pf.Pmax_gen[pf.pos_gen_agc_list]*pf.Sb,pf.Ramp_gen[pf.pos_gen_agc_list]*pf.Sb] + PgenPre_all + [m_optm.vg_inc.x, m_optm.vg_dec.x]
             datos_gen = pd.DataFrame(np.array(Datos_gen).T, columns=['Gen', 'C_fuel', 'C_AGC', 'P min', 'P max', 'Rampa'] + NamePPre_all + ['v_inc', 'v_dec'])
             datos_gen = datos_gen.sort_values(by = 'Gen', key = lambda col:col.str[3]+col.str[1])
 
@@ -522,7 +539,7 @@ def main():
                         delta = delta_inc
         
                     scenarios = pd.DataFrame(np.vstack((all_gen,pf.Pgen_pre[:,ti],sim.Pgen_pfc[:,scen,ti], delta,pf.Pgen_pre[:,ti] + delta_inc ,sim.Gen_on_AGC[ti,:,scen], m_optm.T_Sfc * pf.Ramp_gen)).T, 
-                                         columns=['Gen', 'Potencia Previa', 'Potencia PFC', 'Aumento', 'Potencia SFC', 'Gen en AGC', 'Rampa'])
+                                        columns=['Gen', 'Potencia Previa', 'Potencia PFC', 'Aumento', 'Potencia SFC', 'Gen en AGC', 'Rampa'])
                     name_hoja = 'D' + str(ti) + '_E ' + str(scen) + '--' + pf.Gen_Outages[scen]
                     scenarios.to_excel(writer, sheet_name= name_hoja,index=False)
         
@@ -607,17 +624,17 @@ def main():
                         delta = delta_inc - delta_dec
                     else:
                         delta = delta_inc
-
+        
                     P_final = pf.Pgen_pre[:,ti] + delta
                     P_final[list(all_gen).index(pf.Gen_Outages[scen])] = 0
                     Res_gen_export = pd.DataFrame(np.vstack((all_gen,result_gen[:,scen,ti],P_final*pf.Sb)).T, columns=['Gen', 'P_PF', 'P_Py'])
                     name_hoja = 'D' + str(ti) + '_E' + str(scen) + ' ' + pf.Gen_Outages[scen]
                     Res_gen_export.to_excel(writer, sheet_name= name_hoja,index=False)
-
+        
                     if m_optm.flujos:
                         Res_line_export = pd.DataFrame(np.vstack((pf.all_line,results_line[:,scen,ti],m_optm.f[pf.pos_line,scen,ti].x*pf.Sb, pf.FMax[pf.pos_line]*pf.Sb)).T, columns=['Linea', 'P_PF', 'P_Py', 'FMax'])
                         Res_line_export.to_excel(writer, sheet_name= name_hoja,index=False, startcol = 6)
-
+        
         escenariosPy_col = ['Py_peak', 'Py_media', 'Py_valle']
         escenariosPF_col = ['PF_peak', 'PF_media', 'PF_valle']
         
@@ -683,8 +700,11 @@ def main():
             
 
 
+    logging.info("Simulation complete")
     print('finish!')
-    #  %% Comprobación de resultados
+#  %% Comprobación de resultados
 
 if __name__ == "__main__":
     main()
+    
+    

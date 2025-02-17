@@ -9,6 +9,7 @@ logging.basicConfig(filename='Main.log',
 
 class Modelo():
     def __init__(self):
+        logging.info("Initializing optimization model")
         self.gp = gp
         self.m = gp.Model('Modelo AGC')
         #m.setParam('DualReductions', 0)
@@ -26,9 +27,10 @@ class Modelo():
         self.Voll = 500
         self.TS = False
         self.costo_ts = 0
+        logging.info("Optimization model initialized")
 
     def __call__(self,data,simm):
-        logging.info("Initializing optimization model")
+        logging.info("Formulating optimization model")
         self.L = data.L
         self.pg_inc = self.m.addMVar((data.n_gen_agc, data.Ns, data.Nt), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
         self.vg_inc = self.m.addMVar(data.n_gen_agc, vtype=self.gp.GRB.BINARY, name='vg_inc')
@@ -82,6 +84,7 @@ class Modelo():
         logging.info("Model formulation complete")
 
     def ObjFunction(self, data):
+        logging.info("Setting objective function")
         if self.pot_down:
             self.Csfc = data.Ccte_gen[data.pos_gen_agc_list] @ (self.vg_inc + self.vg_dec)            
 
@@ -125,8 +128,10 @@ class Modelo():
         f_obj = self.Csfc + (self.Cop + self.Cue + self.Cpl + self.Cts)/data.Ns
 
         self.m.setObjective(f_obj,self.gp.GRB.MINIMIZE)
+        logging.info("Objective function set")
 
     def Balance(self, data, simm, s, ti):    
+        logging.info("Adding balance constraint for s: %d, ti: %d", s, ti)
         # Con perdidas y gen pueden bajar potencia
         if self.pot_down:
             self.m.addConstr(self.pg_inc[:,s,ti].sum() - self.pg_dec[:,s,ti].sum() + self.p_ens[:,s].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum() - simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
@@ -142,10 +147,10 @@ class Modelo():
         # Sin Perdidas / Inc potencia
         else:
             self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == simm.P_out[s,ti], name ='Balance')
-
+        logging.info("Balance constraint added")
 
     def R_FlujoLosses(self, data, simm, ti, s, fp, fn, dpk):
-
+        logging.info("Adding flow losses constraint for s: %d, ti: %d", s, ti)
         if self.pot_down:
             inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
 
@@ -196,10 +201,11 @@ class Modelo():
         else:
             self.m.addConstr(-self.f[:,s,ti] >= -data.FMax, name = 'fMax+ s='+str(s)+' c='+str(ti))
             self.m.addConstr(self.f[:,s,ti] >= -data.FMax, name = 'fMax- s='+str(s)+' c='+str(ti))
+        logging.info("Flow losses constraint added")
 
     #def Flujos_TS(self ,data ,simm, ti, s, f_ts, dpk, fp, fn, M = 1e6):
     def Flujos_TS(self ,data ,simm, ti, s, dpk, fp, fn, M = 100):
-
+        logging.info("Adding transmission switching flow constraint for s: %d, ti: %d", s, ti)
         if self.pot_down:
             inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
 
@@ -301,10 +307,11 @@ class Modelo():
 
         self.m.addConstr(self.f[data.pos_ts,s,ti] == f1-f_loss_c-f2)
         self.m.addConstr(self.f[data.pos_nots,s,ti] == fe-f_loss_nc+fv)
+        logging.info("Transmission switching flow constraint added")
 
 
     def R_FlujoLossesPlus(self, data, fp, fn, n_l, n_a , dpk, ti, s):
-
+        logging.info("Adding additional flow losses constraint for s: %d, ti: %d", s, ti)
         self.m.addConstr(-fp[:,s,ti] >= -n_l[:,s,ti]*data.FMax, name='fp_n  s='+str(s)+' c='+str(ti))   #flujo positvo-restriccion de complementaridad
         self.m.addConstr(-fn[:,s,ti] >= (1-n_l[:,s,ti])*(-data.FMax), name='fn_n  s='+str(s)+' c='+str(ti)) #flujo nefativo-restriccion de complementaridad
         
@@ -318,9 +325,10 @@ class Modelo():
             else:
                 self.m.addConstr(-dpk[:,l,s,ti] >=-n_a[:,s,ti,l-1]*data.FMax/self.L, name='d_f_Res_max_A_L-1')
                 self.m.addConstr(dpk[:,l,s,ti] >=n_a[:,s,ti,l]*(data.FMax/self.L), name='d_f_Res_min_A_L-1')
+        logging.info("Additional flow losses constraint added")
 
     def R_Generadores(self, data, simm, ti, s):
-
+        logging.info("Adding generator constraints for s: %d, ti: %d", s, ti)
         self.m.addConstr(-self.pg_inc[:,s,ti] >= -self.vg_inc * (data.Pmax_gen[data.pos_gen_agc_list] * data.ngen_par[data.pos_gen_agc_list] - data.Pgen_pre[data.pos_gen_agc_list,ti]), name = 'PMax  s='+str(s)+' c='+str(ti))
         if self.pot_down:
             self.m.addConstr(-self.pg_dec[:,s,ti] >= -self.vg_dec * (data.Pgen_pre[data.pos_gen_agc_list,ti] - data.Pmin_gen[data.pos_gen_agc_list]  * data.ngen_par[data.pos_gen_agc_list]), name = 'PMin  s='+str(s)+' c='+str(ti))
@@ -345,6 +353,7 @@ class Modelo():
 
 
         self.m.addConstr(-self.p_ens[:,s,ti] >= -simm.D_pfc[:,s,ti], 'LimENS  s='+str(s)+' c='+str(ti))
+        logging.info("Generator constraints added")
 
     def run(self):
         logging.info("Starting optimization")
@@ -352,6 +361,7 @@ class Modelo():
         logging.info("Optimization complete")
 
     def Results(self, data, simm):
+        logging.info("Extracting results")
         status = self.m.Status
         if status == gp.GRB.Status.OPTIMAL:
             logging.info("Optimal solution found")
@@ -417,10 +427,12 @@ class Modelo():
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP.ilp")
+        logging.info("Results extraction complete")
 
 
 class PartialModel(object):
     def __init__(self, data, big_optm, simm, short_sim, data_SF, P_change, scen, ti, t_int):
+        logging.info("Initializing partial model for t_int: %d", t_int)
         self.gp = gp
         self.m = gp.Model('Modelo Variable AGC')
         self.m.Params.MIPGap = 1e-7
@@ -472,9 +484,11 @@ class PartialModel(object):
 
         ## Resulatdos 
         self.Results(data, big_optm, simm)
+        logging.info("Partial model initialized")
 
 
     def ObjFunction(self, data, big_optm):
+        logging.info("Setting objective function for partial model")
         f_obj = 0
 
         self.Cpl = 0
@@ -495,8 +509,10 @@ class PartialModel(object):
         f_obj = self.Cop + self.Cue + self.Cpl
 
         self.m.setObjective(f_obj,self.gp.GRB.MINIMIZE)
+        logging.info("Objective function set for partial model")
 
     def Balance(self, data, big_optm, simm, short_sim, P_change, scen, ti):    
+        logging.info("Adding balance constraint for partial model for s: %d, ti: %d", scen, ti)
         # Con perdidas y gen pueden bajar potenciati
         if big_optm.pot_down:
             #self.P_agc = self.pg_inc.sum() - self.pg_dec.sum() + self.p_ens.sum()
@@ -518,9 +534,10 @@ class PartialModel(object):
         # Sin Perdidas / Inc potencia
         else:
             self.m.addConstr(self.pg_inc.sum() + self.p_ens.sum() == simm.P_out[scen], name ='Balance')
+        logging.info("Balance constraint added for partial model")
 
     def R_FlujoLosses(self, data, data_SF, big_optm, simm, short_sim, fp, fn, dpk, s, ti):
-
+        logging.info("Adding flow losses constraint for partial model for s: %d, ti: %d", s, ti)
         if big_optm.pot_down:
             inc = self.pg_inc - self.pg_dec
 
@@ -584,9 +601,10 @@ class PartialModel(object):
         else:
             self.m.addConstr(-self.f >= -data_SF.new_FMax, name = 'fMax+')
             self.m.addConstr(self.f >= -data_SF.new_FMax, name = 'fMax-')
+        logging.info("Flow losses constraint added for partial model")
 
     def R_FlujoLossesPlus(self, data_SF, big_optm, fp, fn, n_l, n_a , dpk):
-
+        logging.info("Adding additional flow losses constraint for partial model")
         self.m.addConstr(-fp >= -n_l*data_SF.new_FMax, name='fp_n')   #flujo positvo-restriccion de complementaridad
         self.m.addConstr(-fn >= (1-n_l)*(-data_SF.new_FMax), name='fn_n') #flujo nefativo-restriccion de complementaridad
         
@@ -600,9 +618,10 @@ class PartialModel(object):
             else:
                 self.m.addConstr(-dpk[:,l] >=-n_a[:,l-1]*data_SF.new_FMax/big_optm.L, name='d_f_Res_max_A_L-1')
                 self.m.addConstr(dpk[:,l] >=n_a[:,l]*data_SF.new_FMax/big_optm.L, name='d_f_Res_min_A_L-1')
+        logging.info("Additional flow losses constraint added for partial model")
 
     def R_Generadores(self, data, big_optm, simm, s, ti):
-
+        logging.info("Adding generator constraints for partial model for s: %d, ti: %d", s, ti)
         self.m.addConstr(-self.pg_inc >= -self.vg_inc * (data.Pmax_gen [data.pos_gen_agc_list]* data.ngen_par[data.pos_gen_agc_list] - data.Pgen_pre[data.pos_gen_agc_list,ti]), name = 'PMax')
         if big_optm.pot_down:
             self.m.addConstr(-self.pg_dec >= -self.vg_dec * (data.Pgen_pre[data.pos_gen_agc_list,ti] - data.Pmin_gen [data.pos_gen_agc_list]* data.ngen_par[data.pos_gen_agc_list]), name = 'PMin')
@@ -626,9 +645,11 @@ class PartialModel(object):
 
 
         self.m.addConstr(-self.p_ens >= -simm.D_pfc[:,s,ti], 'LimENS')
+        logging.info("Generator constraints added for partial model")
 
 
     def Results(self, data, big_optm, simm):
+        logging.info("Extracting results for partial model")
         status = self.m.Status
         if status == gp.GRB.Status.OPTIMAL:
             logging.info("Optimal solution found")
@@ -655,11 +676,13 @@ class PartialModel(object):
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP_partial.ilp")
+        logging.info("Results extraction complete for partial model")
 
 
   
 class Model_UC(object):
     def __init__(self, data):
+        logging.info("Initializing unit commitment model")
         self.gp = gp
         self.m = gp.Model('Modelo UC')
         self.m.Params.MIPGap = 1e-7
@@ -747,10 +770,12 @@ class Model_UC(object):
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP_UC.ilp")
+        logging.info("Unit commitment model initialized")
 
 
 class Model_CTF(object):
     def __init__(self, data, simm, big_optm, short_sim, data_SF, scen, ti):
+        logging.info("Initializing control terciario de frecuencia model for s: %d, ti: %d", scen, ti)
         self.gp = gp
         self.m = gp.Model('Modelo UC CTF')
         self.m.Params.MIPGap = 1e-7
@@ -773,7 +798,7 @@ class Model_CTF(object):
 
             self.ploss = self.m.addMVar((data_SF.new_n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='losses') # Flujo por las líneas
             dpk = self.m.addMVar((data_SF.new_n_elem, big_optm.L), vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self)
-
+        
 
 
 
