@@ -2,16 +2,15 @@ import sys
 import pfsim
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import time
-import gurobipy as gp
-from gurobipy import *
 import optm
 
 #pf = pfsim.PowerFactorySim('IEEE 14-bus con PE y PV')
 #pf = pfsim.PowerFactorySim('Ejemplo Clase')
 #pf = pfsim.PowerFactorySim('Taller_AGClisto2207-BD-OP-COORD-DMAP')
 
-Sim_PF = False
+Sim_PF = True
 flujo_dc = 0
 
 Estudio = 6
@@ -30,7 +29,7 @@ if Estudio == 0: # Flujo DC
 
 
 
-if Estudio == 1: # Sin sistema de transmisión y VOLL = 150000
+if Estudio == 1: # Sin sistema de transmisión
     VOLL = 2500
     Pot_Down = 0
     Flujos = 0
@@ -70,7 +69,7 @@ elif Estudio == 6: # Transmission Switching con perdidas
     Pot_Down = 1
     Flujos = 1
     Perdidas = 1
-    PerdidasPlus = 1
+    PerdidasPlus = 0
 
     Costo_ts = 10
     TS = 1
@@ -78,18 +77,21 @@ elif Estudio == 6: # Transmission Switching con perdidas
 
 t0 = time.time()
 #project_file = '3Bus_TS'
-project_file = 'Articulo2'
+#project_file = 'Articulo2'
+project_file = 'Articulo2 - TS'
 pf = pfsim.PowerFactorySim(project_file)
 
-#Gen_AGC = ['G2_1', 'G3_1', 'G4_1', 'G7_1', 'G2_3', 'G4_3', 'G6_3', 'G3_2', 'G4_2', 'G2_4', 'G3_4', 'G4_4', 'G6_4']
 
-#Gen_outages = ['G4_1', 'G5_1', 'G6_1', 'G2_2', 'G5_2']
-#Gen_outages = ['G4_1', 'G5_1', 'G6_1', 'G2_2', 'G5_2', 'G5_3', 'G3_4', 'G5_4', 'G7_4']
-
+# Valores originales
 #lines = ['Line3_1', 'Line3_3', 'Line3_4']
 #val = [600, 725, 590.2]
 
-#pf.ChangeMaxLine(lines, val)
+
+# Cambio para que ocurra el TS
+lines = ['Line3_1']
+val = [500]
+
+pf.ChangeMaxLine(lines, val)
 
 
 escenarios = ['peak', 'media', 'valle']
@@ -115,8 +117,17 @@ pf.use_sf = 1 # 1 = SF calculados con matrices;  0 = SF de PF
 
 dict_lineas = pf.get_data()
 
+#model_uc = optm.Model_UC(pf)
 
-# Dynamic Simulation until 50 seg - Finishing CPF
+#for gen,value in zip(pf.generadores, 100*model_uc.pg.x):
+#    gen.pgini = value
+#for gen,value in zip(pf.genstate, 100*model_uc.pg.x[pf.ngen:pf.ngen+pf.ngenstat]/pf.ngenstat_par):
+#    gen.pgini = value
+#for gen,value in zip(pf.pvsys, 100*model_uc.pg.x[pf.ngen+pf.ngenstat:pf.ngen+pf.ngenstat+pf.ngenpv]/pf.ngenpv_par):
+#    gen.pgini = value
+
+
+# Dynamic Simulation until 30 seg - Finishing CPF
 t_initial = 0 # Tiempo Perturbación
 t_final = 200 + t_initial # Tiempo total
 
@@ -149,79 +160,373 @@ m_optm.Results(pf, sim)
 print('=> Extract data time: %.4f (s)'% (t1-t0))
 print('=> Formulation time: %.4f (s)' % (t2-t1))
 print('=> Solution time: %.4f (s)' % (t3-t2))
+#for gen, pg in zip(pf.name_gen_agc_list,m_optm.pg_inc.x[:,0,0]):
+#    if pg != 0:
+#        print(gen + ' = ' + str(pg))
 
+
+#fp=np.zeros(pf.n_elem)
+#fn=np.zeros(pf.n_elem)
+#dpk=np.zeros((pf.n_elem,L))
+
+#for i in range(pf.n_elem):
+#    fp[i] = m_optm.m.getVarByName('fp[%d,0,0]'%(i)).x
+#    fn[i] = m_optm.m.getVarByName('fn[%d,0,0]'%(i)).x
+#    for l in range(L):
+#        dpk[i,l] = m_optm.m.getVarByName('dpk[%d,%d,0,0]'%(i,l)).x
 
 pf.app.ResetCalculation()
 
-# Tiempo entre cada simulación
-t_step = 4
-n_step = int((t_final-tstop_cpf)/t_step  +1)
+if False:
+    pfsim.Set_param_agc(pf, tstop_cpf, m_optm.part_factors[:,0,0])
+
+    # Do simulación
+    Monitored_vars = {'*.ElmSym': ['m:Psum:bus1'],
+                      '*.ElmGenstat': ['m:Psum:bus1'],
+                      '*.ElmPvsys': ['m:Psum:bus1'],
+                      '*.ElmLod': ['m:Psum:bus1'],
+                      '*.ElmLne': ['c:Losses'],
+                      '*.ElmTr2':['m:P:bushv','m:P:buslv']}
+
+    pf.prepare_dynamic_sim(Monitored_vars, 'rms')
+    pf.run_dynamic_sim(end_sim=t_final)
+
+    # Extract data
+    # Extraer frecuencia
+    pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
+
+    # Extrer datos de cada generador
+    cont=0
+    return_time = False
+    list_gens_values = np.zeros((pf.ngen+pf.ngenstat+pf.ngenpv, len(pf_time)))
+    #list_pt_values = np.zeros((pf.ngen, len(pf_time)))
+    #list_pgt_values = np.zeros((pf.ngen, len(pf_time)))
+    for gen in pf.all_gen:
+        var_values = pf.extract_data(gen+'.ElmSym', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        #list_pt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pt', return_time)
+        #list_pgt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pgt', return_time)
+        cont+=1
+
+    for gen in pf.all_genstat:
+        var_values = pf.extract_data(gen+'.ElmGenstat', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
+
+    for gen in pf.all_pv:
+        var_values = pf.extract_data(gen+'.ElmPvsys', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
 
 
-part_factors = np.zeros((pf.n_gen_agc,n_step,pf.Nt))
+    # Extraer datos de todos las demandas
+    cargas_name = list()
+    list_load_values = np.zeros((len(pf.cargas), len(pf_time)))
+    cont=0
+    for carga in pf.cargas:
+        var_values = pf.extract_data(carga.loc_name+'.ElmLod', 'm:Psum:bus1', return_time)
+        cargas_name.append(carga.loc_name)
+        list_load_values[cont] = var_values
+        cont+=1
 
-# Variabilidad
-for ti in range(pf.Nt): 
-    pf.scens[ti].Activate()
-    scen = -1
-    for gen_out in pf.Gen_Outages:
-        scen += 1
-        
-        #Desactivar todos los eventos
-        events_folder = pf.IntEvt.GetContents()
-        for e in events_folder:
-                e.outserv = 1
-        
-        ### NUEVO SF Con TRANSMISSION SWITCHING
-        new_SF = pfsim.new_SF(pf, m_optm, ti, scen)
+    # Extraer datos de todas las líneas
+    lineas_name = list()
+    list_line_values = np.zeros((len(pf.lineas), len(pf_time)))
+    cont=0
+    for linea in pf.lineas:
+        var_values = pf.extract_data(linea.loc_name+'.ElmLne', 'c:Losses', return_time)
+        lineas_name.append(linea.loc_name)
+        list_line_values[cont] = np.array(var_values)/1000
+        cont+=1
+
+    trafos_name = list()
+    list_trafos_values= np.zeros((len(pf.trafos), len(pf_time)))
+    cont=0
+    for trafo in pf.trafos:
+        trafos_name.append(trafo.loc_name)
+        trafo_name = trafo.loc_name
+        var_hv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:bushv', return_time)
+        var_lv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:buslv', return_time)
+        list_trafos_values[cont] = abs(np.array(var_hv)+np.array(var_lv))
+        cont+=1
+
+    sum_gens = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_gens[tiempo] = list_gens_values[:,tiempo].sum()
+
+    sum_loads = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_loads[tiempo] = list_line_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_trafos_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_load_values[:,tiempo].sum()
+
+
+    data = pd.DataFrame(np.vstack((pf_time, freq_values, list_gens_values, list_load_values, list_line_values, list_trafos_values, sum_loads)).T, 
+                        columns=['Time', 'Freq'] + pf.all_gen + pf.all_genstat + pf.all_pv + cargas_name + lineas_name + trafos_name + ['Sum Total Loads'])
+
+
+    data.to_excel('generator_load_data.xlsx', index=False)
+
+
+# VARIABILIDAD
+if True:
+    # Tiempo entre cada simulación
+    t_step = 4
+    n_step = len(range(tstop_cpf+t_step, t_final, t_step))
+
+    part_factors = np.zeros((pf.n_gen_agc,n_step+1,pf.Nt))
+
+
+    # Variabilidad
+    for ti in range(pf.Nt): 
+        pf.scens[ti].Activate()
+        scen = -1
+        for gen_out in pf.Gen_Outages:
+            scen += 1
+
+            #Desactivar todos los eventos
+            events_folder = pf.IntEvt.GetContents()
+            for e in events_folder:
+                    e.outserv = 1
+
+            ### NUEVO SF con TRANSMISSION SWITCHING
+            new_SF = pfsim.new_SF(pf, m_optm, ti, scen)
+
+            ### Eventos de desconexiones de líneas al inicio del CSF
+            pfsim.CreateEvents_line(pf, m_optm, scen, ti, tstop_cpf)
+            #pfsim.Set_param_agc(pf, tstop_cpf, m_optm.part_factors[:,0,0])
+
+
+            events_folder = pf.IntEvt.GetContents()
+
+            evt = events_folder[sim.name_events.index('Salida Gen')]
+            evt.outserv = 0
+            evt.time = t_initial
+            evt.p_target = pf.generadores[list(pf.dict_gen).index(gen_out)]
+
+
+            Pout_origin = sim.P_out[scen,ti]-pf.dda_barra[:,ti].sum() + sim.D_pfc[:,scen,ti].sum() - sim.PL_pre_line[ti]
+            Pout_real = sim.P_out[0,0]-pf.dda_barra[:,0].sum()
+
+            P_ens = np.zeros(n_step)
+            
+            Pb_genAGC = pf.Pgen_pre[m_optm.pos_gen_csf,ti].sum()
+            Pb_genNOagc = -sim.P_out[0,0] + pf.Pgen_pre[:,ti].sum() - Pb_genAGC + pf.Pgenstat_pre[:,ti].sum() + pf.Ppv_pre[:,ti].sum()
+            Pb_load = sim.D_pfc[:,scen,ti].sum()
+            Pb_losses = sim.PL_pre_line[ti]
+
+            Precp_original = np.zeros(n_step)
+            Precp = np.zeros(n_step)
+            P_change_list = np.zeros(n_step)
+            
+            Pn_genAGC_list= np.zeros(n_step)
+            Pn_genNOagc_list= np.zeros(n_step)
+            Pn_load_list= np.zeros(n_step)
+            Pn_losses_list= np.zeros(n_step)
+            freq_list = np.zeros(n_step)
+            j = -1
+            previous_part_factors = np.zeros(pf.n_gen_agc)
+            sum_p_model_list = np.zeros(n_step)
+            for t_int in range(tstop_cpf+t_step, t_final, t_step):
+                j+=1
+
+                print('Simulación - t_int: ' + str(t_int))
+                ShortSim = pfsim.ShortSim(pf, m_optm, sim, new_SF, gen_out, t_int)
+
+                #t_sim, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True, start_time=t_int)
+
+                freq = pf.app.GetCalcRelevantObjects('Term_10_4.ElmTerm')[0].GetAttribute('m:fehz')
+
+                freq_list[j] = freq
+
+                Pn_genAGC = ShortSim.p_genAGC
+                Pn_genNOagc = ShortSim.p_gen.sum() - Pn_genAGC + ShortSim.p_genstat.sum() + ShortSim.pv_gen.sum()
+                Pn_load = ShortSim.D_t.sum()
+                Pn_losses = ShortSim.PL.sum()
+
+                Pn_genAGC_list[j] = Pn_genAGC
+                Pn_genNOagc_list[j] = Pn_genNOagc
+                Pn_load_list[j] = Pn_load
+                Pn_losses_list[j] = Pn_losses
+
+                Precp_original[j] = Pout_origin + Pn_losses
+                Precp[j] = Pout_origin + Pn_losses - Pn_genAGC 
+
+
+                P_change = -Pn_genNOagc + Pb_genNOagc
+                P_change_list[j] = P_change
+
+                P_change2 = Pout_real - P_change
+
+
+                PartialModel = optm.PartialModel(pf, m_optm, sim, ShortSim, new_SF, P_change ,scen, ti, t_int)
                 
-        ### Eventos de desconexiones de líneas al inicio del CSF
-        pfsim.CreateEvents_line(pf, m_optm, scen, ti)
-
-        events_folder = pf.IntEvt.GetContents()
-
-        evt = events_folder[sim.name_events.index('Salida Gen')]
-        evt.outserv = 0
-        evt.time = t_initial
-        evt.p_target = pf.generadores[list(pf.dict_gen).index(gen_out)]
+                print('P_partialModel = ' + str(-PartialModel.pg_dec.x.sum()+PartialModel.pg_inc.x.sum()))
 
 
-        P_rec = 0
-        for t_int in range(tstop_cpf, t_final, t_step):
-            if t_int == tstop_cpf:
-                P_before = sim.Pgen_pfc[:,scen,ti].sum() - sim.D_pfc[:,scen,ti].sum()
+                part_factors[:,int((t_int-tstop_cpf)/t_step),ti] = PartialModel.part_factors
+                #print('Part Factors: ' + str([factor for factor in PartialModel.part_factors if factor != 0]))
+
+                sum_p_model = PartialModel.pg_inc.x.sum() - PartialModel.pg_dec.x.sum() + PartialModel.p_ens.x.sum()    
+                #print('P_ens: ' + str(PartialModel.p_ens.x.sum()))
+                if PartialModel.p_ens.x.sum() > 0:
+                    print('Error: P_ens > 0')
+                    P_ens[j] = PartialModel.p_ens.x.sum()
+
+                pfsim.Set_param_agc(pf, t_int, PartialModel.part_factors, previous_part_factors)
+
+                previous_part_factors = PartialModel.part_factors.copy()
+
+
+            # Control Terciario de frecuencia
+
+            # Realizar optimización
+
+            # Simulación
+
+    data = pd.DataFrame(np.vstack((range(tstop_cpf+t_step, t_final, t_step), freq_list, Pn_genAGC_list, Pn_genNOagc_list, Pn_load_list, Pn_losses_list, sum_p_model_list, P_change_list)).T, 
+                        columns=['Time', 'Freq', 'SumAGC', 'SumNOagc', 'SumLoad', 'SumLoss', 'SumP', 'P_Change'])
+
+    data.to_excel('data_short_sim.xlsx', index=False)
+
+
+
+
+    # Plotting the results in 4 figures
+    fig, axs = plt.subplots(2, 2, figsize=(15, 10))
+
+    axs[0, 0].plot(Pn_genAGC_list, label='Pb_genAGC')
+    axs[0, 0].axhline(y=Pb_genAGC, color='r', linestyle='--', label='Pb_genAGC Line')
+    axs[0, 0].set_title('Pb_genAGC')
+    axs[0, 0].set_xlabel('Time Step')
+    axs[0, 0].set_ylabel('Power (MW)')
+    axs[0, 0].grid(True)
+
+    axs[0, 1].plot(Pn_genNOagc_list, label='Pb_genNOagc')
+    axs[0, 1].axhline(y=Pb_genNOagc, color='r', linestyle='--', label='Pb_genAGC Line')
+    axs[0, 1].set_title('Pb_genNOagc')
+    axs[0, 1].set_xlabel('Time Step')
+    axs[0, 1].set_ylabel('Power (MW)')
+    axs[0, 1].grid(True)
+
+    axs[1, 0].plot(Pn_load_list, label='Pb_load')
+    axs[1, 0].axhline(y=Pb_load, color='r', linestyle='--', label='Pb_genAGC Line')
+    axs[1, 0].set_title('Pb_load')
+    axs[1, 0].set_xlabel('Time Step')
+    axs[1, 0].set_ylabel('Power (MW)')
+    axs[1, 0].grid(True)
+
+    axs[1, 1].plot(Pn_losses_list, label='Pb_losses')
+    axs[1, 1].axhline(y=Pb_losses, color='r', linestyle='--', label='Pb_genAGC Line')
+    axs[1, 1].set_title('Pb_losses')
+    axs[1, 1].set_xlabel('Time Step')
+    axs[1, 1].set_ylabel('Power (MW)')
+    axs[1, 1].grid(True)
+
+    # Save the figure
+    plt.tight_layout()
+    plt.savefig('power_generation_and_load.png')
+    plt.close()
+
+
+if True:
+    pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
+
+    # Extrer datos de cada generador
+    cont=0
+    return_time = False
+    list_gens_values = np.zeros((pf.ngen+pf.ngenstat+pf.ngenpv, len(pf_time)))
+    #list_pt_values = np.zeros((pf.ngen, len(pf_time)))
+    #list_pgt_values = np.zeros((pf.ngen, len(pf_time)))
+    for gen in pf.all_gen:
+        var_values = pf.extract_data(gen+'.ElmSym', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        #list_pt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pt', return_time)
+        #list_pgt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pgt', return_time)
+        cont+=1
+
+    for gen in pf.all_genstat:
+        var_values = pf.extract_data(gen+'.ElmGenstat', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
+
+    for gen in pf.all_pv:
+        var_values = pf.extract_data(gen+'.ElmPvsys', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
+
+
+    # Extraer datos de todos las demandas
+    cargas_name = list()
+    list_load_values = np.zeros((len(pf.cargas), len(pf_time)))
+    cont=0
+    for carga in pf.cargas:
+        var_values = pf.extract_data(carga.loc_name+'.ElmLod', 'm:Psum:bus1', return_time)
+        cargas_name.append(carga.loc_name)
+        list_load_values[cont] = var_values
+        cont+=1
+
+    # Extraer datos de todas las líneas
+    lineas_name = list()
+    list_line_values = np.zeros((len(pf.lineas), len(pf_time)))
+    cont=0
+    for linea in pf.lineas:
+        var_values = pf.extract_data(linea.loc_name+'.ElmLne', 'c:Losses', return_time)
+        lineas_name.append(linea.loc_name)
+        list_line_values[cont] = np.array(var_values)/1000
+        cont+=1
+    
+    trafos_name = list()
+    list_trafos_values= np.zeros((len(pf.trafos), len(pf_time)))
+    cont=0
+    for trafo in pf.trafos:
+        trafos_name.append(trafo.loc_name)
+        var_hv = pf.extract_data(trafo.loc_name+'.ElmTr2', 'm:P:bushv', return_time)
+        var_lv = pf.extract_data(trafo.loc_name+'.ElmTr2', 'm:P:buslv', return_time)
+        list_trafos_values[cont] = abs(np.array(var_hv)+np.array(var_lv))
+        cont+=1
+
+    sum_gens = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_gens[tiempo] = list_gens_values[:,tiempo].sum()
+
+    sum_loads = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_loads[tiempo] = list_line_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_trafos_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_load_values[:,tiempo].sum()
+
+
+    data = pd.DataFrame(np.vstack((pf_time, freq_values, list_gens_values, list_load_values, list_line_values, list_trafos_values, sum_loads)).T, 
+                        columns=['Time', 'Freq'] + pf.all_gen + pf.all_genstat + pf.all_pv + cargas_name + lineas_name + trafos_name + ['Sum Total Loads'])
+    
+
+    data.to_excel('generator_load_data.xlsx', index=False)
+
+
+
+# Extrer datos de cada generador
+#return_time = True
+#for gen in pf.all_gen:
+#    if return_time:
+#        pf_time, var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#    else:
+#        var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
             
-            ShortSim = pfsim.ShortSim(pf, m_optm, sim, gen_out, t_int)
-            
-            P_rec += ShortSim.p_gen.sum() - ShortSim.D_t.sum() - P_before
-            P_before = ShortSim.p_gen.sum() - ShortSim.D_t.sum()
-            
-            PartialModel = optm.PartialModel(pf,m_optm,sim,ShortSim,new_SF, scen, ti)
+#return_time = True
+#for gen in pf.all_genstat:
+#    if return_time:
+#        pf_time, var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#    else:
+#        var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)#
 
-            part_factors[:,int((t_int-tstop_cpf)/t_step),ti] = PartialModel.part_factors
-
-            
-            previous_part_factors = np.zeros_like(PartialModel.part_factors)
-
-            cont=0
-            for gen in pf.gen_agc:
-                name_event =  'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int)
-                if (not name_event in pf.IntEvt.GetContents() and 
-                    float(PartialModel.part_factors[cont]) != 0.0 and
-                    float(PartialModel.part_factors[cont]) != float(previous_part_factors[cont])):
-                    
-                    evento = pf.IntEvt.CreateObject('EvtParam', 'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int))    
-                    evento.variable = pf.signal_list[cont]
-                    evento.time = t_int
-                    evento.p_target = pf.dsl_agc_bloques
-                    evento.value = str(PartialModel.part_factors[cont])
-                cont+=1
-
-            previous_part_factors = PartialModel.part_factors.copy()
-            
-                #PartialModel.part_factors[gen] 
-            
-
+#return_time = True
+#for gen in pf.all_pv:
+#    if return_time:
+#        pf_time, var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#    else:
+#        var_values = pf.extract_data(gen.loc_name, 'm:Psum:bus1', return_time)
+#
 
 if True:
     t4 = time.time()
@@ -295,7 +600,7 @@ if True:
 
 
     
-    #PowerFactor
+    # Simulación PowerFactory
     results_line = np.zeros((len(dict_lineas),pf.Ns,Nt))
     result_gen = np.zeros((pf.ngen,pf.Ns,Nt))
     if Sim_PF:
@@ -374,12 +679,13 @@ if True:
                         count += 1
                     cont = 0
                     line_sim_out = list()
-                    for line in pf.lineas:
-                        if line.loc_name in pf.TS_lines:
-                            if m_optm.s_ts.x[cont,scen,ti] == 0:
-                                line.outserv = 1
-                                line_sim_out.append(line)
-                        cont += 1
+                    for obj in pf.indices_obj:
+                        for line in pf.lineas:
+                            if obj in pf.TS_lines and line.loc_name == obj:
+                                if m_optm.s_ts.x[cont,scen,ti] == 0:
+                                    line.outserv = 1
+                                    line_sim_out.append(line)
+                                cont += 1
 
                     pf.prepare_dynamic_sim({}, 'rms')
                     pf.run_dynamic_sim(end_sim=t_final)

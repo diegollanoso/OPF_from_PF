@@ -10,7 +10,10 @@ def read_data(file_path):
     x = []
     y = []
     with open(file_path, 'r') as file:
-        for line in file:
+        lines = file.readlines()
+        if len(lines[0].split()) == 1:
+            lines = lines[1:]
+        for line in lines:
             data = line.split()
             x.append(float(data[0]))
             y.append(float(data[1]))
@@ -49,6 +52,7 @@ def plot_data(x, y=None, title='Plot'):
     plt.grid(True)
     #plt.show()
     plt.savefig(filename)  # Guardar la figura como un archivo de imagen
+    plt.close()
     os.startfile(filename)  # Abrir el archivo de imagen guardado con el visor de imágenes predeterminado
 
 
@@ -125,19 +129,24 @@ def write_array_to_file(array, file_path):
 
 # Función principal
 def main():
-    path = r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\main'  # Replace with your file path
+    #path = r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\Code\main'  # Replace with your file path
+    path = r'C:\Users\lldie\OneDrive - Universidad Técnica Federico Santa María\Universidad\Memoria\AGC\Escenarios\Salida ERNC'  # Replace with your file path
+
+    name_file = r'\CHCs.txt'
+
     path_full = path + r'\Demanda.txt'
     path_short = path + r'\DatosDda\150.txt'
     #plot_data(*read_data(path_full), title='Full Data')
     #modify_x_data(path + r'\DatosDda\150.txt')
 
+    plot_data(*read_data(path + name_file), title='Salida_CHCs')
 
 
     # Generar ruido adaptativo y guardarlo en un archivo
-    points = 1250
-    y = adaptative_noise(read_data(path_full)[1], points)
-    write_array_to_file(y, path + '\\DatosDda\\' + str(points) + '_noise.txt')
-    plot_data(y, title='Adaptative Noise' + str(points))
+    value = 110
+    y = adaptative_noise(read_data(path_full)[1], value)
+    write_array_to_file(y, path + '\\DatosDda\\' + str(value) + '_noise.txt')
+    plot_data(y, title='Adaptative Noise' + str(value))
     #plot_data(*read_data(path_short))
     
 

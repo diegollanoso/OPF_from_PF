@@ -3,7 +3,7 @@
 Minimize
  
 Subject To
- Balance[0]: Pg_inc[0] + Pg_inc[1] + Pg_inc[2] + Pg_inc[3] + Pg_inc[4]
+ Balance: Pg_inc[0] + Pg_inc[1] + Pg_inc[2] + Pg_inc[3] + Pg_inc[4]
    + Pg_inc[5] + Pg_inc[6] + Pg_inc[7] + Pg_inc[8] + Pg_inc[9] + Pg_inc[10]
    + Pg_inc[11] + Pg_inc[12] + P_ens[0] + P_ens[1] + P_ens[2] + P_ens[3]
    + P_ens[4] + P_ens[5] + P_ens[6] + P_ens[7] + P_ens[8] + P_ens[9]
@@ -13,59 +13,72 @@ Subject To
    + P_ens[28] + P_ens[29] + P_ens[30] + P_ens[31] + P_ens[32] + P_ens[33]
    + P_ens[34] + P_ens[35] + P_ens[36] + P_ens[37] + P_ens[38] + P_ens[39]
    + P_ens[40] + P_ens[41] + P_ens[42] + P_ens[43] + P_ens[44] + P_ens[45]
-   + P_ens[46] + P_ens[47] + P_ens[48] + P_ens[49] - Pg_dec[0] - Pg_dec[1]
-   - Pg_dec[2] - Pg_dec[3] - Pg_dec[4] - Pg_dec[5] - Pg_dec[6] - Pg_dec[7]
-   - Pg_dec[8] - Pg_dec[9] - Pg_dec[10] - Pg_dec[11] - Pg_dec[12]
-   - losses[0] - losses[1] - losses[2] - losses[3] - losses[4] - losses[5]
-   - losses[6] - losses[7] - losses[8] - losses[9] - losses[10]
-   - losses[11] - losses[12] - losses[13] - losses[14] - losses[15]
-   - losses[16] - losses[17] - losses[18] - losses[19] - losses[20]
-   - losses[21] - losses[22] - losses[23] - losses[24] - losses[25]
-   - losses[26] - losses[27] - losses[28] - losses[29] - losses[30]
-   - losses[31] - losses[32] - losses[33] - losses[34] - losses[35]
-   - losses[36] - losses[37] - losses[38] - losses[39] - losses[40]
-   - losses[41] - losses[42] - losses[43] - losses[44] - losses[45]
-   - losses[46] - losses[47] - losses[48] - losses[49] - losses[50]
-   - losses[51] - losses[52] - losses[53] - losses[54] - losses[55]
-   - losses[56] - losses[57] - losses[58] - losses[59] - losses[60]
-   - losses[61] = 766.978147326029
- flujos[47]: - Pg_inc[0] - Pg_inc[1] - Pg_inc[2] - Pg_inc[3] - Pg_inc[4]
+   + P_ens[46] + P_ens[47] + P_ens[48] + P_ens[49] + P_ens[50] + P_ens[51]
+   + P_ens[52] + P_ens[53] + P_ens[54] + P_ens[55] + P_ens[56] + P_ens[57]
+   + P_ens[58] + P_ens[59] + P_ens[60] + P_ens[61] + P_ens[62] + P_ens[63]
+   + P_ens[64] + P_ens[65] + P_ens[66] + P_ens[67] + P_ens[68] + P_ens[69]
+   + P_ens[70] + P_ens[71] + P_ens[72] + P_ens[73] + P_ens[74] + P_ens[75]
+   + P_ens[76] + P_ens[77] + P_ens[78] + P_ens[79] + P_ens[80] + P_ens[81]
+   - Pg_dec[0] - Pg_dec[1] - Pg_dec[2] - Pg_dec[3] - Pg_dec[4] - Pg_dec[5]
+   - Pg_dec[6] - Pg_dec[7] - Pg_dec[8] - Pg_dec[9] - Pg_dec[10]
+   - Pg_dec[11] - Pg_dec[12] - losses[0] - losses[1] - losses[2]
+   - losses[3] - losses[4] - losses[5] - losses[6] - losses[7] - losses[8]
+   - losses[9] - losses[10] - losses[11] - losses[12] - losses[13]
+   - losses[14] - losses[15] - losses[16] - losses[17] - losses[18]
+   - losses[19] - losses[20] - losses[21] - losses[22] - losses[23]
+   - losses[24] - losses[25] - losses[26] - losses[27] - losses[28]
+   - losses[29] - losses[30] - losses[31] - losses[32] - losses[33]
+   - losses[34] - losses[35] - losses[36] - losses[37] - losses[38]
+   - losses[39] - losses[40] - losses[41] - losses[42] - losses[43]
+   - losses[44] - losses[45] - losses[46] - losses[47] - losses[48]
+   - losses[49] - losses[50] - losses[51] - losses[52] - losses[53]
+   - losses[54] - losses[55] - losses[56] - losses[57] - losses[58]
+   - losses[59] - losses[60] - losses[61] - losses[62] - losses[63]
+   - losses[64] - losses[65] - losses[66] - losses[67] - losses[68]
+   - losses[69] - losses[70] - losses[71] - losses[72] - losses[73]
+   - losses[74] - losses[75] - losses[76] - losses[77] - losses[78]
+   - losses[79] - losses[80] - losses[81] - losses[82] - losses[83]
+   - losses[84] - losses[85] - losses[86] - losses[87] - losses[88]
+   = -17.22567189707998
+ flujos[58]: - Pg_inc[0] - Pg_inc[1] - Pg_inc[2] - Pg_inc[3] - Pg_inc[4]
    - Pg_inc[5] - Pg_inc[6] - Pg_inc[7] - Pg_inc[8] - Pg_inc[9] - Pg_inc[10]
    - Pg_inc[11] - Pg_inc[12] - P_ens[0] - P_ens[1] - P_ens[2] - P_ens[3]
    - P_ens[4] - P_ens[5] - P_ens[6] - P_ens[7] - P_ens[8] - P_ens[9]
    - P_ens[10] - P_ens[11] - P_ens[12] - P_ens[13] - P_ens[14] - P_ens[15]
-   - P_ens[16] - P_ens[17] - P_ens[18] - P_ens[19] - P_ens[21] - P_ens[22]
-   - P_ens[23] - P_ens[24] - P_ens[25] - P_ens[26] - P_ens[27] - P_ens[28]
-   - P_ens[29] - P_ens[30] - P_ens[31] - P_ens[32] - P_ens[33] - P_ens[34]
-   - P_ens[35] - P_ens[36] - P_ens[37] - P_ens[38] - P_ens[39] - P_ens[40]
-   - P_ens[41] - P_ens[42] - P_ens[43] - P_ens[44] - P_ens[45] - P_ens[46]
-   - P_ens[47] - P_ens[48] - P_ens[49] + Pg_dec[0] + Pg_dec[1] + Pg_dec[2]
-   + Pg_dec[3] + Pg_dec[4] + Pg_dec[5] + Pg_dec[6] + Pg_dec[7] + Pg_dec[8]
-   + Pg_dec[9] + Pg_dec[10] + Pg_dec[11] + Pg_dec[12] + flujo[47]
-   + losses[0] + losses[1] + losses[2] + losses[3] + losses[4] + losses[5]
-   + losses[6] + losses[7] + losses[8] + losses[9] + losses[10]
-   + losses[11] + losses[12] + losses[13] + losses[14] + losses[15]
-   + losses[16] + losses[17] + losses[18] + losses[19] + losses[20]
-   + losses[21] + losses[22] + losses[23] + losses[24] + losses[25]
-   + losses[26] + losses[27] + losses[28] + losses[29] + losses[30]
-   + losses[31] + losses[32] + losses[33] + losses[34] + losses[35]
-   + losses[36] + losses[37] + losses[38] + losses[39] + losses[40]
-   + losses[41] + losses[42] + losses[43] + losses[44] + losses[45]
-   + losses[46] + 0.5 losses[47] + losses[48] + losses[49] + losses[50]
-   + losses[51] + losses[52] + losses[53] + losses[54] + losses[55]
-   + losses[56] + losses[57] + losses[58] + losses[59] + losses[60]
-   + losses[61] = -2.290228466390772
- f[47]: flujo[47] - fp[47] + fn[47] = 0
- SumaDpk[47]: fp[47] + fn[47] - dpk[47,0] - dpk[47,1] - dpk[47,2]
-   - dpk[47,3] - dpk[47,4] - dpk[47,5] - dpk[47,6] - dpk[47,7] - dpk[47,8]
-   - dpk[47,9] - dpk[47,10] = 0
- Ploss[47]: losses[47] - 1.63636e-08 dpk[47,0] - 4.90909e-08 dpk[47,1]
-   - 8.18182e-08 dpk[47,2] - 1.14545e-07 dpk[47,3] - 1.47273e-07 dpk[47,4]
-   - 1.8e-07 dpk[47,5] - 2.12727e-07 dpk[47,6] - 2.45455e-07 dpk[47,7]
-   - 2.78182e-07 dpk[47,8] - 3.10909e-07 dpk[47,9] - 3.43636e-07 dpk[47,10]
-   = 0
- fp+[47]: - fp[47] >= -9
- R2677: - P_ens[20] >= 0
+   - P_ens[16] - P_ens[17] - P_ens[18] - P_ens[19] - P_ens[20] - P_ens[21]
+   - P_ens[22] - P_ens[23] - P_ens[24] - P_ens[25] - P_ens[26] - P_ens[27]
+   - P_ens[28] - P_ens[29] - P_ens[30] - P_ens[31] - P_ens[32] - P_ens[33]
+   - P_ens[34] - P_ens[35] - P_ens[36] - P_ens[37] - P_ens[38] - P_ens[39]
+   - P_ens[40] - P_ens[41] - P_ens[42] - P_ens[43] - P_ens[44] - P_ens[45]
+   - P_ens[46] - P_ens[47] - P_ens[48] - P_ens[49] - P_ens[50] - P_ens[51]
+   - P_ens[52] - P_ens[53] - P_ens[54] - P_ens[55] - P_ens[56] - P_ens[57]
+   - P_ens[58] - P_ens[59] - P_ens[60] - P_ens[61] - P_ens[62] - P_ens[63]
+   - P_ens[64] - P_ens[65] - P_ens[66] - P_ens[67] - P_ens[68] - P_ens[69]
+   - P_ens[70] - P_ens[71] - P_ens[72] - P_ens[73] - P_ens[74] - P_ens[75]
+   - P_ens[76] - P_ens[77] - P_ens[78] - P_ens[79] - P_ens[81] + Pg_dec[0]
+   + Pg_dec[1] + Pg_dec[2] + Pg_dec[3] + Pg_dec[4] + Pg_dec[5] + Pg_dec[6]
+   + Pg_dec[7] + Pg_dec[8] + Pg_dec[9] + Pg_dec[10] + Pg_dec[11]
+   + Pg_dec[12] + flujo[58] + losses[0] + losses[1] + losses[2] + losses[3]
+   + losses[4] + losses[5] + losses[6] + losses[7] + losses[8] + losses[9]
+   + losses[10] + losses[11] + losses[12] + losses[13] + losses[14]
+   + losses[15] + losses[16] + losses[17] + losses[18] + losses[19]
+   + losses[20] + losses[21] + losses[22] + losses[23] + losses[24]
+   + losses[25] + losses[26] + losses[27] + losses[28] + losses[29]
+   + losses[30] + losses[31] + losses[32] + losses[33] + losses[34]
+   + losses[35] + losses[36] + losses[37] + losses[38] + losses[39]
+   + losses[40] + losses[41] + losses[42] + losses[43] + losses[44]
+   + losses[45] + losses[46] + losses[47] + losses[48] + losses[49]
+   + losses[50] + losses[51] + losses[52] + losses[53] + losses[54]
+   + losses[55] + losses[56] + losses[57] + 0.5 losses[58] + losses[59]
+   + losses[60] + losses[61] + losses[62] + losses[63] + losses[64]
+   + losses[65] + losses[66] + losses[67] + losses[68] + losses[69]
+   + losses[70] + losses[71] + losses[72] + losses[73] + losses[74]
+   + losses[75] + losses[76] + losses[77] + losses[78] + losses[79]
+   + losses[80] + losses[81] + losses[82] + losses[83] + losses[84]
+   + losses[85] + losses[86] + losses[87] + losses[88]
+   = -4.166097776388597
+ f[58]: flujo[58] - fp[58] + fn[58] = 0
+ fp+fn[58]: - fp[58] - fn[58] - 0.5 losses[58] >= -9
 Bounds
  Pg_inc[0] free
  Pg_inc[1] free
@@ -130,6 +143,37 @@ Bounds
  P_ens[47] free
  P_ens[48] free
  P_ens[49] free
+ P_ens[50] free
+ P_ens[51] free
+ P_ens[52] free
+ P_ens[53] free
+ P_ens[54] free
+ P_ens[55] free
+ P_ens[56] free
+ P_ens[57] free
+ P_ens[58] free
+ P_ens[59] free
+ P_ens[60] free
+ P_ens[61] free
+ P_ens[62] free
+ P_ens[63] free
+ P_ens[64] free
+ P_ens[65] free
+ P_ens[66] free
+ P_ens[67] free
+ P_ens[68] free
+ P_ens[69] free
+ P_ens[70] free
+ P_ens[71] free
+ P_ens[72] free
+ P_ens[73] free
+ P_ens[74] free
+ P_ens[75] free
+ P_ens[76] free
+ P_ens[77] free
+ P_ens[78] free
+ P_ens[79] free
+ P_ens[81] free
  Pg_dec[0] free
  Pg_dec[1] free
  Pg_dec[2] free
@@ -143,8 +187,8 @@ Bounds
  Pg_dec[10] free
  Pg_dec[11] free
  Pg_dec[12] free
- flujo[47] free
- fp[47] free
+ flujo[58] free
+ fn[58] free
  losses[0] free
  losses[1] free
  losses[2] free
@@ -207,6 +251,31 @@ Bounds
  losses[59] free
  losses[60] free
  losses[61] free
- dpk[47,0] free
- dpk[47,1] free
+ losses[62] free
+ losses[63] free
+ losses[64] free
+ losses[65] free
+ losses[66] free
+ losses[67] free
+ losses[68] free
+ losses[69] free
+ losses[70] free
+ losses[71] free
+ losses[72] free
+ losses[73] free
+ losses[74] free
+ losses[75] free
+ losses[76] free
+ losses[77] free
+ losses[78] free
+ losses[79] free
+ losses[80] free
+ losses[81] free
+ losses[82] free
+ losses[83] free
+ losses[84] free
+ losses[85] free
+ losses[86] free
+ losses[87] free
+ losses[88] free
 End

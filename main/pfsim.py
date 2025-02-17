@@ -54,13 +54,14 @@ class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
         # Start PowerFactory
         self.app = pf.GetApplication()
-        #self.app.Show()
+        self.app.Show()
         # Activate project
         self.app.ActivateProject(project_name)
         folder_scens = self.app.GetProjectFolder('scen')
         self.scens = folder_scens.GetContents()
         self.scens.sort(key=lambda x: x.loc_name[0])
-        self.scens[0].Activate()
+        if self.scens:
+            self.scens[0].Activate()
 
         # Objetos relevantes
         self.lineas = self.app.GetCalcRelevantObjects('*.ElmLne')
@@ -74,11 +75,17 @@ class PowerFactorySim(object):
         self.genstate = self.app.GetCalcRelevantObjects('*.ElmGenstat')
         self.asincronicos = self.app.GetCalcRelevantObjects('*.ElmAsm')
         self.shunt = self.app.GetCalcRelevantObjects('*.ElmShnt')
-        
+        self.pvsys = self.app.GetCalcRelevantObjects('*.ElmPvsys')
+
+
         self.ldf = self.app.GetFromStudyCase('ComLdf')
         self.ldf.iopt_net = 0
+        
+        if 'Articulo2' in project_name:
+            self.dsl_agc_bloques = self.app.GetCalcRelevantObjects('agc_bloques.ElmDsl')[0]
+        elif '3Bus_TS' == project_name:
+            self.dsl_agc_bloques = self.app.GetCalcRelevantObjects('AGC Control.ElmDsl')[0]
 
-        self.dsl_agc_bloques = self.app.GetCalcRelevantObjects('agc_bloques.ElmDsl')[0]
         self.IntEvt = self.app.GetFromStudyCase('IntEvt')
         self.res = self.app.GetFromStudyCase('Results.ElmRes')
         self.events_folder = self.IntEvt.GetContents()
@@ -97,10 +104,10 @@ class PowerFactorySim(object):
 
         gen_out = study_case.GetContents('Gen OUT.SetSelect')[0].All()
         self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
-        #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[-1:]
+        #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
         self.Ns = len(self.Gen_Outages)
 
-        self.use_sf = False
+        self.use_sf = False # 1 = SF calculados con matrices;  0 = SF de PF
 
         self.TS = False
         self.Nt = 3
@@ -132,8 +139,8 @@ class PowerFactorySim(object):
 
         self.Sb = 100
         self.raiz3 = 1.73205080757
-        self.kV_fm = 110            # Tensiones menores, tendrán Fm = 1e9
-
+        self.kV_fm = 10            # Tensiones menores, tendrán Fm = 1e9
+        self.L = 11
 
     # Return pandas con matriz de Shift-factors
     # Return lista ordenada con barras 
@@ -247,7 +254,7 @@ class PowerFactorySim(object):
             if t.typ_id.r1pu == 0:      # Checkear R1 trafo 2 dev
                 r = 1e-8
             else:
-                r = t.typ_id.r1pu
+                r = t.typ_id.r1pu/1000  # Cooper losses en kW
             
             if t.outserv == 0:      # Trafo en servicio
                 if t.bushv.cterm.uknom < self.kV_fm:
@@ -290,22 +297,47 @@ class PowerFactorySim(object):
         # name generador = (N° Barra, N° Gen paralelo,
         #                   Outserv, Pmin, Pmax, Pref,
         #                   costos var, costo fijo, rampa)
-        dict_genstat = dict()
+        self.dict_genstat = dict()
+        self.Name_all_genstat = dict()
         for gen in self.genstate:
-            if gen.ip_ctrl == 1:    # Buscar barra slack
-                self.bus_slack = gen.bus1.cterm.loc_name
+            self.Name_all_genstat[gen.loc_name] = gen
+            #if gen.ip_ctrl == 1:    # Buscar barra slack
+            #    self.bus_slack = gen.bus1.cterm.loc_name
             if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                potencia = gen.GetAttribute(self.potencia_ac)
                 # name generador = (N° Barra, N° Gen paralelo,
-                #                   Outserv, Pmin, Pmax, Pref,
+                #                   Outserv, Pmin, Pmax,
                 #                   costos var, costo fijo, rampa)
-                dict_genstat[gen.loc_name] = (self.dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          0, gen.Pmin_uc, gen.Pmax_uc, gen.pgini,
-                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
+                self.dict_genstat[gen.loc_name] = [self.dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          0, gen.Pmin_uc, gen.Pmax_uc,
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp,
+                                          potencia, 0, 0]
             else:
-                dict_genstat[gen.loc_name] = (self.dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
-                                          1, gen.Pmin_uc, gen.Pmax_uc, 0,
-                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp)
+                self.dict_genstat[gen.loc_name] = [self.dict_barras[gen.bus1.cterm.loc_name], gen.ngnum,
+                                          1, gen.Pmin_uc, gen.Pmax_uc,
+                                          gen.penaltyCosts, gen.fixedCosts, gen.limRampUp,
+                                          0, 0, 0]
 
+
+        # PV generadores
+        self.dict_pv = dict()
+        self.Name_all_pv = dict()
+        for pv in self.pvsys:
+            self.Name_all_pv[pv.loc_name] = pv
+            if pv.outserv == 0 and  pv.bus1.cpCB.on_off == 1:
+                potencia = pv.GetAttribute(self.potencia_ac)
+                # name generador = (N° Barra, N° Gen paralelo,
+                #                   Outserv, Pmin, Pmax,
+                #                   costos var, costo fijo, rampa)
+                self.dict_pv[pv.loc_name] = [self.dict_barras[pv.bus1.cterm.loc_name], pv.ngnum,
+                                          0, pv.Pmin_uc, pv.Pmax_uc,
+                                          pv.penaltyCosts, pv.fixedCosts, pv.limRampUp,
+                                          potencia, 0, 0]
+            else:
+                self.dict_pv[pv.loc_name] = [self.dict_barras[pv.bus1.cterm.loc_name], pv.ngnum,
+                                          1, pv.Pmin_uc, pv.Pmax_uc,
+                                          pv.penaltyCosts, pv.fixedCosts, pv.limRampUp,
+                                          0, 0, 0]
         #FALTAN
         # TRAFOS 3 DEVANADOS
         # CAPACITORES SERIE
@@ -341,6 +373,8 @@ class PowerFactorySim(object):
         for i in self.inductores:
             nom_ind.append(i.loc_name)
 
+
+
         for sc in range(1,self.Nt):
             self.scens[sc].Activate()
             self.ldf.Execute()
@@ -357,6 +391,21 @@ class PowerFactorySim(object):
                     potencia = 0
                 self.dict_gen[gen.loc_name][sc+8] = potencia
 
+            for gen in self.genstate:
+                if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                    potencia = gen.GetAttribute(self.potencia_ac)
+                else:
+                    potencia = 0
+                self.dict_genstat[gen.loc_name][sc+8] = potencia
+
+            for pv in self.pvsys:
+                if pv.outserv == 0 and  pv.bus1.cpCB.on_off == 1:
+                    potencia = pv.GetAttribute(self.potencia_ac)
+                else:
+                    potencia = 0
+                self.dict_pv[pv.loc_name][sc+8] = potencia
+
+
         # Demanda por barra
         self.Nb = len(self.indices_bus)
         self.dda_barra = np.zeros((self.Nb, self.Nt))
@@ -371,10 +420,10 @@ class PowerFactorySim(object):
 
         self.pos_gen = np.zeros(self.ngen).astype(int)
         self.ngen_par = np.zeros(self.ngen)
-        self.Cvar_gen = np.zeros(self.n_gen_agc)
-        self.Ccte_gen = np.zeros(self.n_gen_agc)
-        self.Pmin_gen = np.zeros(self.n_gen_agc)
-        self.Pmax_gen =np.zeros(self.n_gen_agc)
+        self.Cvar_gen = np.zeros(self.ngen)
+        self.Ccte_gen = np.zeros(self.ngen)
+        self.Pmin_gen = np.zeros(self.ngen)
+        self.Pmax_gen =np.zeros(self.ngen)
         self.Gen_on_AGC = np.zeros(self.ngen)
         self.pos_gen_agc_list = list()
         self.name_gen_agc_list = list()
@@ -387,6 +436,10 @@ class PowerFactorySim(object):
             self.all_gen.append(gen)
             self.pos_gen[cont] = self.dict_gen[gen][0]
             self.ngen_par[cont] = self.dict_gen[gen][1]
+            self.Pmin_gen[cont] = self.dict_gen[gen][3]/self.Sb
+            self.Pmax_gen[cont] = self.dict_gen[gen][4]/self.Sb
+            self.Cvar_gen[cont] = self.dict_gen[gen][5]
+            self.Ccte_gen[cont] = self.dict_gen[gen][6]
             self.Ramp_gen[cont] = self.dict_gen[gen][7]/self.Sb
             for ti in range(self.Nt):
                 self.Pgen_pre[cont,ti] = self.dict_gen[gen][8+ti]/self.Sb
@@ -394,15 +447,63 @@ class PowerFactorySim(object):
                 self.Gen_on_AGC[cont] = 1
                 self.pos_gen_agc_list.append(cont)
                 self.name_gen_agc_list.append(gen)
-                self.Pmin_gen[cont2] = self.dict_gen[gen][3]/self.Sb
-                self.Pmax_gen[cont2] = self.dict_gen[gen][4]/self.Sb
-                self.Cvar_gen[cont2] = self.dict_gen[gen][5]
-                self.Ccte_gen[cont2] = self.dict_gen[gen][6]
+
                 cont2 += 1
 
             cont+=1
 
 
+        # Generadores estaticos
+
+        self.ngenstat = len(self.dict_genstat)
+        self.pos_genstat = np.zeros(self.ngenstat).astype(int)
+        self.ngenstat_par = np.zeros(self.ngenstat)
+        self.Cvar_genstat = np.zeros(self.ngenstat)
+        self.Ccte_genstat = np.zeros(self.ngenstat)
+        self.Pmin_genstat = np.zeros(self.ngenstat)
+        self.Pmax_genstat =np.zeros(self.ngenstat)
+        self.Pgenstat_pre = np.zeros((self.ngenstat,self.Nt))
+        self.Ramp_genstat = np.zeros(self.ngenstat)
+        self.all_genstat = list()
+        cont=0
+        for gen in self.dict_genstat:
+            self.all_genstat.append(gen)
+            self.pos_genstat[cont] = self.dict_genstat[gen][0]
+            self.ngenstat_par[cont] = self.dict_genstat[gen][1]
+            self.Pmin_genstat[cont] = self.dict_genstat[gen][3]/self.Sb
+            self.Pmax_genstat[cont] = self.dict_genstat[gen][4]/self.Sb
+            self.Cvar_genstat[cont] = self.dict_genstat[gen][5]
+            self.Ccte_genstat[cont] = self.dict_genstat[gen][6]
+            self.Ramp_genstat[cont] = self.dict_genstat[gen][7]/self.Sb
+            for ti in range(self.Nt):
+                self.Pgenstat_pre[cont,ti] = self.dict_genstat[gen][8+ti]/self.Sb
+            cont+=1
+
+        # PV Generadores
+
+        self.ngenpv = len(self.dict_pv)
+        self.pos_pv = np.zeros(self.ngenpv).astype(int)
+        self.ngenpv_par = np.zeros(self.ngenpv)
+        self.Cvar_pv = np.zeros(self.ngenpv)
+        self.Ccte_pv = np.zeros(self.ngenpv)
+        self.Pmin_pv = np.zeros(self.ngenpv)
+        self.Pmax_pv =np.zeros(self.ngenpv)
+        self.Ppv_pre = np.zeros((self.ngenpv,self.Nt))
+        self.Ramp_pv = np.zeros(self.ngenpv)
+        self.all_pv = list()
+        cont=0
+        for pv in self.dict_pv:
+            self.all_pv.append(pv)
+            self.pos_pv[cont] = self.dict_pv[pv][0]
+            self.ngenpv_par[cont] = self.dict_pv[pv][1]
+            self.Pmin_pv[cont] = self.dict_pv[pv][3]/self.Sb
+            self.Pmax_pv[cont] = self.dict_pv[pv][4]/self.Sb
+            self.Cvar_pv[cont] = self.dict_pv[pv][5]
+            self.Ccte_pv[cont] = self.dict_pv[pv][6]
+            self.Ramp_pv[cont] = self.dict_pv[pv][7]/self.Sb
+            for ti in range(self.Nt):
+                self.Ppv_pre[cont,ti] = self.dict_pv[pv][8+ti]/self.Sb
+            cont+=1
 
         self.n_elem = len(self.indices_obj)   # N° de líneas + 'trf2'
         # Obtención de fmax, R y X
@@ -570,6 +671,32 @@ class PowerFactorySim(object):
                 line.typ_id.sline = value[obj.index(line.loc_name)]/1000
                 
 
+    def extract_data(self, elem: str, variable: str, return_time: bool = True, start_time: float = None):
+        element = self.app.GetCalcRelevantObjects(elem)[0]
+        self.app.ResLoadData(self.res)
+        col_index = self.app.ResGetIndex(self.res, element, variable)
+        n_rows = self.app.ResGetValueCount(self.res, 0)
+        time = []
+        var_values = []
+        for i in range(n_rows):
+            current_time = self.app.ResGetData(self.res, i, -1)[1]
+            # skip data points before start_time
+            if (start_time is not None) and (current_time < start_time):
+                continue
+            if return_time:
+                time.append(current_time)
+            var_values.append(self.app.ResGetData(self.res, i, col_index)[1])
+    
+        #if variable == 's:pt':
+        #    p_nominal = element.typ_id.sgn
+        #    var_values = np.array(var_values)*p_nominal
+
+        if return_time:
+            return time, var_values
+        else:
+            return var_values
+
+
 class Simulacion(object):
     def __init__(self, data, t_initial=0, tstop_cpf=30):
         # Elementos a monitorear
@@ -585,10 +712,11 @@ class Simulacion(object):
             e.outserv = 1   
 
         self.D_pfc = np.zeros((data.Nb, data.Ns, data.Nt)) # Demanda al finaliza el CPF
-        self.PL_pre_line = np.zeros(data.Nt) # Perdidas al finalizar el CPF
+        self.PL_pre_line = np.zeros(data.Nt) # Perdidas antes de la contingencia
         #PL_pre_trafo2 = np.zeros((len(dict_trafos),Ns))
         self.Pgen_pfc = np.zeros((data.ngen, data.Ns, data.Nt))
-        #self.Pgenstat_pfc = np.zeros((ngenstat_eff, Ns, Nt))
+        self.Pgenstat_pfc = np.zeros((data.ngenstat, data.Ns, data.Nt))
+        self.PgenPV_pfc = np.zeros((data.ngenpv, data.Ns, data.Nt))
         self.Gen_on_AGC = np.tile(data.Gen_on_AGC,(data.Ns,1)).T
         self.Gen_on_AGC = np.stack([self.Gen_on_AGC]*3,axis=0)
         #self.Genstat_on_AGC = np.tile(data.Genstat_on_AGC,(Ns,1)).T
@@ -618,8 +746,10 @@ class Simulacion(object):
                 evt.p_target = data.generadores[list(data.dict_gen).index(gen_out)]
 
                 data.prepare_dynamic_sim({}, 'rms')
+                
                 if self.PL_pre_line[ti] == 0: # Obtener perdidas solo una vez para cada contingencia y cada operación demanda
                     self.PL_pre_line[ti] = np.array(list(map(lambda x: x.GetAttribute('c:Losses'), data.lineas))).sum()/1000/data.Sb
+                
                 data.run_dynamic_sim(end_sim=tstop_cpf)
 
                 for load in list(map(lambda x: (x.GetAttribute(data.potencia_ac),data.dict_barras[x.bus1.cterm.loc_name]), data.cargas)):  # Demanda al final del CPF por carga
@@ -636,41 +766,57 @@ class Simulacion(object):
                     self.Pgen_pfc[list(data.all_gen).index(gen.loc_name),cont, ti] = potencia
 
                 for gen in data.genstate:
-                    self.Pgenstat_pfc[list(data.all_gen).index(gen.loc_name),cont, ti] = gen.GetAttribute(data.potencia_ac)/data.Sb
+                    if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
+                        potencia = gen.GetAttribute(data.potencia_ac)/data.Sb
+                    else:
+                        potencia = 0
+                    self.Pgenstat_pfc[list(data.all_genstat).index(gen.loc_name),cont, ti] = potencia
+
+                for pv in data.pvsys:
+                    if pv.outserv == 0 and  pv.bus1.cpCB.on_off == 1:
+                        potencia = pv.GetAttribute(data.potencia_ac)/data.Sb
+                    else:
+                        potencia = 0
+                    self.PgenPV_pfc[list(data.all_pv).index(pv.loc_name),cont, ti] = potencia
 
                 #Pgen_pfc[:,cont] = np.array(list(map(lambda x: x.GetAttribute(data.potencia_ac), data.generadores)))/data.Sb  # Potencia generadores al final del CPF
                 #Pgenstat_pfc[:,cont,ti] = np.array(list(map(lambda x: x.GetAttribute(data.potencia_ac), data.genstate)))/data.Sb  # Potencia generadores al final del CPF
 
-                if (gen_out in data.Gen_AGC) and (gen_out in data.dict_gen):
-                    self.Gen_on_AGC[ti, list(data.all_gen).index(gen_out),cont] = 0
+                #if (gen_out in data.Gen_AGC) and (gen_out in data.dict_gen):
+                #    self.Gen_on_AGC[ti, list(data.all_gen).index(gen_out),cont] = 0
 
                 #elif (gen_out in Gen_AGC) and (gen_out in dict_genstat_eff):
                 #    self.Genstat_on_AGC[ti, list(dict_genstat_eff.keys()).index(gen_out),cont] = 0
-                data.app.ResLoadData(data.res)
-                row_time = data.app.ResGetValueCount(data.res,0)
-                col_freq = data.app.ResGetIndex(data.res, bus_freq[0], 'm:fehz')
+                
+                
+                #data.app.ResLoadData(data.res)
+                #row_time = data.app.ResGetValueCount(data.res,0)
+                #col_freq = data.app.ResGetIndex(data.res, bus_freq[0], 'm:fehz')
 
-                time = []
-                freq_value = []
-                for i in range(row_time):
-                    time.append(data.app.ResGetData(data.res, i, -1)[1])
-                    freq_value.append(data.app.ResGetData(data.res, i, col_freq)[1])
+                #time = []
+                #freq_value = []
+                #for i in range(row_time):
+                #    time.append(data.app.ResGetData(data.res, i, -1)[1])
+                #    freq_value.append(data.app.ResGetData(data.res, i, col_freq)[1])
 
 
-                step_size = data.app.GetFromStudyCase('ComInc').dtgrd
+                #step_size = data.app.GetFromStudyCase('ComInc').dtgrd
 
                 #Rocof a las 500ms
-                delta_t = int(0.5/step_size)
-                rocof = (freq_value[t_initial+delta_t]-freq_value[t_initial])/0.5
+                #delta_t = int(0.5/step_size)
+                #rocof = (freq_value[t_initial+delta_t]-freq_value[t_initial])/0.5
 
-                self.P_out_f[cont,ti] = rocof
+                #self.P_out_f[cont,ti] = rocof
 
                 #self.P_out_f[cont,ti] = -2*H*rocof
 
-                print('x')
+
+
+
+
 
 class ShortSim(object):
-    def __init__(self, data, big_optm, simm, gen_out, ti):
+    def __init__(self, data, big_optm, simm, new_SF, gen_out, ti):
         #count=0
         #for gen in pf.Gen_AGC:
         #    evt2 = simm.events_folder[simm.name_events.index(signal_list[count])]
@@ -682,18 +828,45 @@ class ShortSim(object):
         data.run_dynamic_sim(end_sim=ti)
 
         # Potencia en cada generador
-        self.p_gen = np.zeros(len(data.generadores))
+        self.p_gen = np.zeros(data.ngen)
+        self.p_genAGC = 0
         i=0
         for gen in data.generadores:
             self.p_gen[i] = gen.GetAttribute('m:Psum:bus1')/data.Sb
             i += 1
+            if gen.loc_name in big_optm.gen_csf and gen.loc_name != gen_out:
+                self.p_genAGC += gen.GetAttribute('m:Psum:bus1')/data.Sb
+
+        self.p_genstat = np.zeros(data.ngenstat)
+        i=0
+        for gen in data.genstate:
+            self.p_genstat[i] = gen.GetAttribute('m:Psum:bus1')/data.Sb
+            i += 1
+        
+        self.pv_gen = np.zeros(data.ngenpv)
+        i=0
+        for pv in data.pvsys:
+            self.pv_gen[i] = pv.GetAttribute('m:Psum:bus1')/data.Sb
+            i += 1
+
 
         # Demanda en cada barra
         self.D_t = np.zeros(data.Nb)
         for load in list(map(lambda x: (x.GetAttribute('m:Psum:bus1'),data.dict_barras[x.bus1.cterm.loc_name]), data.cargas)):  # Demanda al final del CPF por carga
             self.D_t[load[1]] += load[0]/data.Sb
 
+        # Perdidas
 
+        self.PL = np.zeros(new_SF.new_n_elem)
+        for line in data.app.GetCalcRelevantObjects('*.ElmLne'):
+            if line.loc_name in new_SF.all_branch:
+                perdida = line.GetAttribute('c:Losses')/1000/data.Sb
+                self.PL[new_SF.all_branch.index(line.loc_name)] = perdida
+        for trafo in data.app.GetCalcRelevantObjects('*.ElmTr2'):
+            p_hv = trafo.GetAttribute('m:P:bushv')/data.Sb
+            p_lv = trafo.GetAttribute('m:P:buslv')/data.Sb
+            perdida = abs(p_hv + p_lv)
+            self.PL[new_SF.all_branch.index(trafo.loc_name)] = perdida
 
 
 class new_SF(object):
@@ -753,7 +926,7 @@ class new_SF(object):
 
         self.SF = SFR
 
-def CreateEvents_line(data, optm, scen,ti):
+def CreateEvents_line(data, optm, scen, ti, tstop_cpf):
     for line in data.lineas:
         if line.loc_name in data.TS_lines:
             index = data.all_line.index(line.loc_name)
@@ -763,12 +936,14 @@ def CreateEvents_line(data, optm, scen,ti):
                 name_evt = 'Evt '  + str(line.loc_name)
                 if name_evt in lista_eventos:
                     position = lista_eventos.index(name_evt)
-                    data.events_folder[position].outserv = 0
+                    evento = data.events_folder[position]
+                    evento.outserv = 0
+                    evento.time = tstop_cpf
                 else:
                     evento = data.IntEvt.CreateObject('EvtOutage', 'Evt ' + str(line.loc_name))   
                     evento.p_target = line
                     evento.i_what = 0
-                    evento.time = 30 
+                    evento.time = tstop_cpf 
 
 
 def CreateEvents_gen(data, optm, gen, value, ti):
@@ -778,9 +953,51 @@ def CreateEvents_gen(data, optm, gen, value, ti):
         if not name_event in data.IntEvt.GetContents():
             evento = data.IntEvt.CreateObject('EvtParam', 'Evt Gamma ' + str(gen) + ' - ' + str(ti))    
             evento.time = ti
+            evento.mtime = ti//60
+            print('Evento en minuto: ' + str(ti//60))
+            if ti//60 != 0:
+                evento.time = ti%60
+                print('Evento en segundo: ' + str(ti%60))
+            print('Evento en segundo: ' + str(ti%60))
+
             evento.p_target = data.Name_all_gen[gen]
         cont+=1
 
+def Set_param_agc(pf, t_int, part_factors, previous_part_factors=None):
+    if previous_part_factors is None:
+        previous_part_factors = [0.0] * len(part_factors)
+
+    cont=0
+    for gen in pf.gen_agc:
+        name_event =  'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int)
+        posicion = pf.name_gen_agc_list.index(gen.loc_name)
+        event_folder = pf.IntEvt.GetContents()
+        lista_eventos = list(map(lambda x: x.loc_name , event_folder))
+        if (name_event not in lista_eventos and 
+                float(part_factors[posicion]) != 0.0 and
+                float(part_factors[posicion]) != float(previous_part_factors[posicion])):
+            evento = pf.IntEvt.CreateObject('EvtParam', 'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int))    
+            evento.variable = pf.signal_list[cont]
+            evento.time = t_int
+            evento.mtime = t_int//60
+            if t_int//60 != 0:
+                evento.time = t_int%60
+            evento.p_target = pf.dsl_agc_bloques
+            evento.value = str(part_factors[posicion])
+
+        elif (name_event in lista_eventos and
+                float(part_factors[posicion]) != 0.0 and
+                float(part_factors[posicion]) != float(previous_part_factors[posicion])):
+            evento = event_folder[lista_eventos.index(name_event)]
+            evento.value = str(part_factors[posicion])
+            evento.outserv = 0
+            evento.variable = pf.signal_list[cont]
+            evento.time = t_int
+            evento.mtime = t_int//60
+            if t_int//60 != 0:
+                evento.time = t_int%60
+            evento.p_target = pf.dsl_agc_bloques
+        cont+=1
 
 #class LpGurobi(object):
 #    def __init__(self):

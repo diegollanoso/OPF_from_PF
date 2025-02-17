@@ -15,16 +15,27 @@
 
 ### TBD
 
-- Añadir la potencia entre áreas
+- Al añadir contingencia de carga, revisar la lista optm.gen_csf, crear dos listas. Una para vg_inc y otra para vg_dec
+
+- Fijar los factores de participación utilizando el modelo original en t=30s
+
+- Para las potencias de los generadores, extraer solo los que participan en el AGC. 
+
+
+- No convergencia dynamic model
+
+- P_agc = P_out + P_variacones
+
+- P_out debe disminuir
+
 
 - Revisar el valor de P_out de optm.py
+(Variaciones)
 
-- Añadir variabilidad en la generación renovable
-    - Añadir generadores estaticos
 
-- En gráfico de paper aparece potencia negativas
+- Variabilidad en demanda (alta, media y baja variación), definir por áres o mezclar
 
-- Anotar los valores de inercia que obtengo 
+- Datos de generación renovable
 
 - Añadir control terciario de frecuencia utilizando UC
 
@@ -53,6 +64,8 @@
 
 ### Considerar
 
+- Cuántos generadores estaticos? 50%
+aumentar la penetración con 2 + 1 + 1 ERV en cada área
 
 - Se tuvo que ajustar el parámetro IntFeasTol del modelo para que las restricciones Big-M 
 https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_guide.html#dealing-with-big-m-constraints
@@ -72,6 +85,10 @@ https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_gu
 - Que hacer con la parte reactiva de las cargas. El txt solo tiene un dato, que considere como potencia activa
 
 ### Progreso
+
+- Función eventos gamma generadores
+
+- Revisar Flujos de perdidas PartialModel
 
 - 9/9: Código de OPF diapositiva clases
 

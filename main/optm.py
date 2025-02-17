@@ -17,12 +17,12 @@ class Modelo():
         self.flujos = 0
         self.losses = 0
         self.losses_plus = 0
-        self.L = 11
         self.Voll = 500
         self.TS = False
         self.costo_ts = 0
 
     def __call__(self,data,simm):
+        self.L = data.L
         self.pg_inc = self.m.addMVar((data.n_gen_agc, data.Ns, data.Nt), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
         self.vg_inc = self.m.addMVar(data.n_gen_agc, vtype=self.gp.GRB.BINARY, name='vg_inc')
 
@@ -76,16 +76,14 @@ class Modelo():
 
     def ObjFunction(self, data):
         if self.pot_down:
-            self.Csfc = data.Ccte_gen @ (self.vg_inc + self.vg_dec)            
+            self.Csfc = data.Ccte_gen[data.pos_gen_agc_list] @ (self.vg_inc + self.vg_dec)            
 
         else:
-            self.Csfc = data.Ccte_gen @ (self.vg_inc)
+            self.Csfc = data.Ccte_gen[data.pos_gen_agc_list] @ (self.vg_inc)
 
         f_obj = 0
 
         self.Cts = 0 
-
-        
         self.Cop = 0
         self.Cue = 0
         self.Cpl = 0
@@ -100,14 +98,15 @@ class Modelo():
                 else:
                     inc = self.pg_inc[:,s,ti]
 
-                #Cop_s += ss.Gen_on_AGC[ti,:,s][ss.pos_gen_agc_list] * ss.Cvar_gen[ss.pos_gen_agc_list]*Sb @ (inc)
-                Cop_s += data.Cvar_gen*data.Sb @ (inc)
+                Cop_s += data.Cvar_gen[data.pos_gen_agc_list]*data.Sb @ (inc)
                 #if np.size(Cvar_genstat) != 0:
                 #    Cop_s += Genstat_on_AGC[:,s] * Cvar_genstat*sim.Sb @ pstatg_inc[:,s]
 
                 Cue_s += (self.Voll * self.p_ens[:,s,ti]).sum() * data.Sb
                 if self.losses and not self.losses_plus:
+                    #Cpl_s += (self.Voll * self.ploss[:,s,ti]).sum() * data.Sb
                     Cpl_s += (self.Voll * self.ploss[:,s,ti]).sum() * data.Sb
+
                 if self.TS:
                     Cts_s += self.costo_ts * (1 - self.s_ts[:,s,ti]).sum()
 
@@ -116,7 +115,7 @@ class Modelo():
             self.Cue += Cue_s
             self.Cpl += Cpl_s
 
-        f_obj = self.Csfc + self.Cop + self.Cue + self.Cpl + self.Cts
+        f_obj = self.Csfc + (self.Cop + self.Cue + self.Cpl + self.Cts)/data.Ns
 
         self.m.setObjective(f_obj,self.gp.GRB.MINIMIZE)
 
@@ -149,22 +148,28 @@ class Modelo():
 
         f_gen =  data.SF[:,data.pos_gen] @ data.Pgen_pre[:,ti]
         f_genstat = 0
-        #f_genstat =  SF[:,simm.pos_genstat] @ simm.Pgenstat_pre
+        if  data.ngenstat != 0:
+            f_genstat = data.SF[:,data.pos_genstat] @ data.Pgenstat_pre[:,ti]
+        f_pv = 0
+        if data.ngenpv != 0:
+            f_pv = data.SF[:,data.pos_pv] @ data.Ppv_pre[:,ti]
         f_ens =  data.SF @ self.p_ens[:,s,ti]
         f_gen_agc = data.SF[:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
-        #f_gen_agc = SF[:,simm.pos_g2] @ (inc)
-        f_genstat_agc = 0
-        #if np.size(Cvar_genstat) != 0:
-        #    f_genstat_agc = Genstat_on_AGC[:,s] * SF[:,pos_genstat] @ (pstatg_inc[:,s] - pstatg_dec[:,s])
         f_gen_out = data.SF[:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
-        #Flujo_dda = data.SF @ simm.D_pfc[:,s,ti]
         Flujo_dda = data.SF @ simm.D_pfc[:,s,ti]
+
+                
+        #print('f_gen = ' + str(f_gen[0]))
+        #print('Flujo_dda = ' + str(Flujo_dda[0]))
+        #print('f_gen_out = ' + str(f_gen_out[0]))
+
+
         if self.losses:
             f_loss = 0.5 * data.SF @ abs(data.A.T) @ self.ploss[:,s,ti]
         else:
             f_loss = 0
         
-        self.m.addConstr(self.f[:,s,ti] == f_gen + f_genstat + f_ens + f_gen_agc + f_genstat_agc - Flujo_dda - f_gen_out - f_loss, name='flujos') 
+        self.m.addConstr(self.f[:,s,ti] == f_gen + f_genstat + f_pv + f_ens + f_gen_agc - Flujo_dda - f_gen_out - f_loss, name='flujos') 
 
         if self.losses:
             self.m.addConstr(self.f[:,s,ti] == fp[:,s,ti] - fn[:,s,ti], name = 'f')
@@ -175,7 +180,7 @@ class Modelo():
                 kl[:,l] = (2*(l+1)-1)*(data.FMax)/self.L
             self.m.addConstr(self.ploss[:,s,ti] == data.G/(data.B**2)*(self.gp.quicksum(kl[:,i]*dpk[:,i,s,ti] for i in range(self.L))), name = 'Ploss')  
         
-            self.m.addConstr(-fp[:,s,ti] - fn[:,s,ti] - 0.5*self.ploss[:,s,ti] >= -data.FMax, name = 'fp s='+str(s)+' c='+str(ti))
+            self.m.addConstr(-fp[:,s,ti] - fn[:,s,ti] - 0.5*self.ploss[:,s,ti] >= -1.1*data.FMax, name = 'fp s='+str(s)+' c='+str(ti))
             self.m.addConstr(-fp[:,s,ti] >= -data.FMax, name = 'fp+  s='+str(s)+' c='+str(ti))
             self.m.addConstr(-fn[:,s,ti] >= -data.FMax, name = 'fn+  s='+str(s)+' c='+str(ti))
             for l in range(self.L):
@@ -185,8 +190,8 @@ class Modelo():
             self.m.addConstr(-self.f[:,s,ti] >= -data.FMax, name = 'fMax+ s='+str(s)+' c='+str(ti))
             self.m.addConstr(self.f[:,s,ti] >= -data.FMax, name = 'fMax- s='+str(s)+' c='+str(ti))
 
-    #def Flujos_TS(self,data,simm, ti, s, f_ts, dpk, fp, fn, M = 1e6):
-    def Flujos_TS(self,data,simm, ti, s, dpk, fp, fn, M = 100):
+    #def Flujos_TS(self ,data ,simm, ti, s, f_ts, dpk, fp, fn, M = 1e6):
+    def Flujos_TS(self ,data ,simm, ti, s, dpk, fp, fn, M = 100):
 
         if self.pot_down:
             inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
@@ -203,51 +208,85 @@ class Modelo():
             for l in range(self.L):
                 kl[:,l] = (2*(l+1)-1)*(data.FMax)/self.L
             
-            self.m.addConstr(self.ploss[:,s,ti] == data.G/(data.B**2)*(gp.quicksum(kl[:,i]*dpk[:,i,s,ti] for i in range(self.L))), name = 'TS_Ploss')  
+            self.m.addConstr(self.ploss[:,s,ti] == data.G/(data.B**2)*(self.gp.quicksum(kl[:,i]*dpk[:,i,s,ti] for i in range(self.L))), name = 'TS_Ploss')  
         
         
-            f_loss_nc = 0.5 * data.SF[data.pos_nots,:] @ abs(data.A[data.pos_nots,:].T) @ self.ploss[data.pos_nots,s,ti]
-            f_loss_c = 0.5 * data.SF[data.pos_ts,:] @ abs(data.A[data.pos_ts,:].T) @ self.ploss[data.pos_ts,s,ti]
+            f_loss_nc = 0.5 * data.SF[data.pos_nots,:] @ abs(data.A.T) @ self.ploss[:,s,ti]
+            f_loss_c = 0.5 * data.SF[data.pos_ts,:] @ abs(data.A.T) @ self.ploss[:,s,ti]
+
+            for l in range(self.L):
+                self.m.addConstr(-dpk[:,l,s,ti] >= -data.FMax/self.L, name = 'LimiteDpk')
 
 
 
         #Líneas NO candidatas
 
         fnots_gen = data.SF[data.pos_nots,:][:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        fnots_genstat = 0
+        if  data.ngenstat != 0:
+            fnots_genstat = data.SF[data.pos_nots,:][:,data.pos_genstat] @ data.Pgenstat_pre[:,ti]
+        fnots_pv = 0
+        if  data.ngenpv != 0:
+            fnots_pv = data.SF[data.pos_nots,:][:,data.pos_pv] @ data.Ppv_pre[:,ti]
         fnots_ens = data.SF[data.pos_nots,:] @ self.p_ens[:,s,ti]
+        fnots_gen_agc = 0
         if np.size(data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]]) !=0:
             fnots_gen_agc = data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
-        else:
-            fnots_gen_agc= 0
+        fnots_gen_out = 0
         if np.size(data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]) != 0:
             fnots_gen_out = data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
-        else:
-            fnots_gen_out =0
         fnots_dda = data.SF[data.pos_nots,:] @ simm.D_pfc[:,s,ti]
 
-        fe = fnots_gen + fnots_ens + fnots_gen_agc - fnots_dda - fnots_gen_out
+        #print('fnots_gen = ' + str(fnots_gen[44]))
+        #print('fnots_genstat = ' + str(fnots_genstat[44]))
+        #print('fnots_pv = ' + str(fnots_pv[44]))
+        #print('fnots_dda = ' + str(fnots_dda[44]))
+        #print('fnots_gen_out = ' + str(fnots_gen_out[44]))
+
+
+
+        fe = fnots_gen + fnots_genstat + fnots_pv + fnots_ens + fnots_gen_agc - fnots_dda - fnots_gen_out
 
         fv = (data.SF[data.pos_nots,:] @ data.A[data.pos_ts,:].T) @ self.f_ts[:,s,ti]
 
-        self.m.addConstr(-(fe-f_loss_nc+fv) >= -data.FMax[data.pos_nots], name = 'fe_p')
-        self.m.addConstr(fe-f_loss_nc+fv >= -data.FMax[data.pos_nots], name = 'fe_n')
+        #print('fe = ' + str(fe[44]))
+        #print('fv = ' + str(fv[44]))
+        #self.m.addConstr(-(fe-f_loss_nc+fv) >= -data.FMax[data.pos_nots], name = 'fe_p')
+        #self.m.addConstr(fe-f_loss_nc+fv >= -data.FMax[data.pos_nots], name = 'fe_n')
 
         #Líneas candidatas
         fts_gen = data.SF[data.pos_ts,:][:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        fts_genstat = 0
+        if data.ngenstat != 0:
+            fts_genstat = data.SF[data.pos_ts,:][:,data.pos_genstat] @ data.Pgenstat_pre[:,ti]
+        fts_pv = 0
+        if data.ngenpv != 0:
+            fts_pv = data.SF[data.pos_ts,:][:,data.pos_pv] @ data.Ppv_pre[:,ti]
         fts_ens = data.SF[data.pos_ts,:] @ self.p_ens[:,s,ti]        
         fts_gen_agc = data.SF[data.pos_ts,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
         fts_gen_out = data.SF[data.pos_ts,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
         fts_dda = data.SF[data.pos_ts,:] @ simm.D_pfc[:,s,ti]
 
 
-        f1 = fts_gen + fts_ens + fts_gen_agc - fts_dda - fts_gen_out
+        f1 = fts_gen + fts_genstat + fts_pv + fts_ens + fts_gen_agc - fts_dda - fts_gen_out
         f2 = self.f_ts[:,s,ti] - (data.SF[data.pos_ts,:] @ data.A[data.pos_ts,:].T) @ self.f_ts[:,s,ti]
-
-        self.m.addConstr(f1-f_loss_c-f2 <= (data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_p') # 1
-        self.m.addConstr(f1-f_loss_c-f2 >= -(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_n')
 
         self.m.addConstr(self.f_ts[:,s,ti] <= M*(1 - self.s_ts[:,s,ti]), name = 'fs2_p') # 2
         self.m.addConstr(self.f_ts[:,s,ti] >= -M*(1 - self.s_ts[:,s,ti]), name = 'fs2_n') # 2
+
+        # NO LOSSES
+        #self.m.addConstr(f1-f2 <= 1.1*(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1p_lc') # 1
+        #self.m.addConstr(f1-f2 >= -1.1*(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1n_lc')
+
+        #self.m.addConstr(fe+fv <= 1.1*data.FMax[data.pos_nots], name = 'fs1p_lnc') # 1
+        #self.m.addConstr(fe+fv >= -1.1*data.FMax[data.pos_nots], name = 'fs1n_lnc') # 1
+
+        # LOSSES
+        self.m.addConstr(f1-f_loss_c-f2 <= 1.1*(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_p') # 1
+        self.m.addConstr(f1-f_loss_c-f2 >= -1.1*(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1_n')
+
+        self.m.addConstr(-fp[data.pos_ts,s,ti] - fn[data.pos_ts,s,ti] - 0.5*self.ploss[data.pos_ts,s,ti] >= -1.1*(data.FMax[data.pos_ts]) * self.s_ts[:,s,ti], name = 'fs1')
+        self.m.addConstr(-fp[data.pos_nots,s,ti] - fn[data.pos_nots,s,ti] - 0.5*self.ploss[data.pos_nots,s,ti] >= -1.1*data.FMax[data.pos_nots], name = 'suma_f')
 
         self.m.addConstr(dpk[:,:,s,ti].sum(1) == fp[:,s,ti] + fn[:,s,ti], 'dpk')
 
@@ -256,7 +295,6 @@ class Modelo():
         self.m.addConstr(self.f[data.pos_ts,s,ti] == f1-f_loss_c-f2)
         self.m.addConstr(self.f[data.pos_nots,s,ti] == fe-f_loss_nc+fv)
 
-        self.m.addConstr(-fp[:,s,ti] - fn[:,s,ti] - 0.5*self.ploss[:,s,ti] >= -data.FMax, name = 'suma_f')
 
     def R_FlujoLossesPlus(self, data, fp, fn, n_l, n_a , dpk, ti, s):
 
@@ -276,9 +314,9 @@ class Modelo():
 
     def R_Generadores(self, data, simm, ti, s):
 
-        self.m.addConstr(-self.pg_inc[:,s,ti] >= -self.vg_inc * (data.Pmax_gen * data.ngen_par[data.pos_gen_agc_list] - data.Pgen_pre[data.pos_gen_agc_list,ti]), name = 'PMax  s='+str(s)+' c='+str(ti))
+        self.m.addConstr(-self.pg_inc[:,s,ti] >= -self.vg_inc * (data.Pmax_gen[data.pos_gen_agc_list] * data.ngen_par[data.pos_gen_agc_list] - data.Pgen_pre[data.pos_gen_agc_list,ti]), name = 'PMax  s='+str(s)+' c='+str(ti))
         if self.pot_down:
-            self.m.addConstr(-self.pg_dec[:,s,ti] >= -self.vg_dec * (data.Pgen_pre[data.pos_gen_agc_list,ti] - data.Pmin_gen * data.ngen_par[data.pos_gen_agc_list]), name = 'PMin  s='+str(s)+' c='+str(ti))
+            self.m.addConstr(-self.pg_dec[:,s,ti] >= -self.vg_dec * (data.Pgen_pre[data.pos_gen_agc_list,ti] - data.Pmin_gen[data.pos_gen_agc_list]  * data.ngen_par[data.pos_gen_agc_list]), name = 'PMin  s='+str(s)+' c='+str(ti))
         #Nueva Lista que solo tiene unidades participantes en el AGC / se quita de unidades participantes la unidad que sale de servicio
         pos_part_gen_agc_list = data.pos_gen_agc_list[:]
         x = list(range(data.n_gen_agc))
@@ -314,20 +352,20 @@ class Modelo():
             
             print_cts = ''
             if self.TS:
-                print_cts = ' + Cts = %.2f' % (self.Cts.getValue())
+                print_cts = ' + Cts = %.2f' % (self.Cts.getValue()/data.Nt)
 
 
             if self.losses and not self.losses_plus:
-                print ('Cost = %.2f ($) => Csfc = %.2f ($) + Cop = %.2f ($) + Cue = %.2f ($) + Cpl = %.2f ($)' % (self.m.objVal,self.Csfc.getValue(),self.Cop.getValue(),self.Cue.getValue(),self.Cpl.getValue()) + print_cts)
+                print ('Cost = %.2f ($) => Csfc = %.2f ($) + Cop = %.2f ($) + Cue = %.2f ($) + Cpl = %.2f ($)' % (self.m.objVal,self.Csfc.getValue()/data.Nt,self.Cop.getValue()/data.Nt,self.Cue.getValue()/data.Nt,self.Cpl.getValue()/data.Nt) + print_cts)
             
             else:
-                print ('Cost = %.2f ($) => Csfc = %.2f ($) + Cop = %.2f ($) + Cue = %.2f ($)' % (self.m.objVal,self.Csfc.getValue(),self.Cop.getValue(),self.Cue.getValue()) + print_cts)
+                print ('Cost = %.2f ($) => Csfc = %.2f ($) + Cop = %.2f ($) + Cue = %.2f ($)' % (self.m.objVal,self.Csfc.getValue()/data.Nt,self.Cop.getValue()/data.Nt,self.Cue.getValue()/data.Nt) + print_cts/data.Nt)
 
 
             print('num_Vars =  %d / num_Const =  %d / num_NonZeros =  %d' % (self.m.NumVars,self.m.NumConstrs,self.m.DNumNZs)) #print('num_Vars =  %d / num_Const =  %d' % (len(m.getVars()), len(m.getConstrs())))      
             #print ('Total P_loss = %.2f [MW]'%(pf.Sb*ploss.sum().getValue()))
             print('=> Solver time: %.4f (s)' % (self.m.Runtime))
-            print ('Costo => %.2f ($/h)' % self.m.objVal) 
+            #print ('Costo => %.2f ($/h)' % self.m.objVal) 
             #print ('Las perdidas son %.2f (MW)' % sum(pk_loss[i].X for i in range(len(pk_loss)))) 
 
             self.Post_gen_out = np.zeros((data.Ns,data.Nt))
@@ -353,6 +391,17 @@ class Modelo():
                     if self.pg_inc.x[gen,s,ti] != 0:
                         self.part_factors[gen,s,ti] = (self.pg_inc.x[gen,s,ti])/self.Post_gen_out[s,ti]
                    
+            
+            self.gen_csf = list()
+            self.pos_gen_csf = list()
+            cont=-1
+            for gen in data.name_gen_agc_list:
+                cont+=1
+                if float(self.vg_inc[cont].x + self.vg_dec[cont].x) != 0:
+                    self.gen_csf.append(gen)
+                    self.pos_gen_csf.append(data.pos_gen_agc_list[cont])
+        
+        
         elif status == gp.GRB.Status.INF_OR_UNBD or \
             status == gp.GRB.Status.INFEASIBLE  or \
             status == gp.GRB.Status.UNBOUNDED:
@@ -362,12 +411,14 @@ class Modelo():
 
 
 class PartialModel(object):
-    def __init__(self, data, big_optm, simm, short_sim, data_SF, scen, ti):
+    def __init__(self, data, big_optm, simm, short_sim, data_SF, P_change, scen, ti, t_int):
         self.gp = gp
         self.m = gp.Model('Modelo Variable AGC')
         self.m.Params.MIPGap = 1e-7
 
         self.vg_inc = big_optm.vg_inc.x
+        #self.vg_inc = np.array([0., 0., 1., 1., 0., 0., 0., 1., 1., 0., 0., 0., 0.])
+        #self.vg_inc = np.array([1, 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.])
         self.vg_dec = big_optm.vg_dec.x
 
         self.pg_inc = self.m.addMVar((data.n_gen_agc), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
@@ -394,7 +445,7 @@ class PartialModel(object):
 
         self.ObjFunction(data, big_optm)
 
-        self.Balance(data, big_optm, simm, scen, ti)
+        self.Balance(data, big_optm, simm, short_sim, P_change, scen, ti)
 
         self.R_FlujoLosses(data, data_SF, big_optm, simm, short_sim, fp, fn, dpk, scen, ti)
         
@@ -404,14 +455,14 @@ class PartialModel(object):
         self.R_Generadores(data, big_optm, simm, scen, ti)
 
         #####
-        self.m.write('OPF_partial_OPT.lp')
+        self.m.write('OPF_partial_OPT_' + str(t_int) + '.lp')
 
         ## OPTMIZAR
         self.m.optimize()
 
 
         ## Resulatdos 
-        self.Results(data, big_optm, simm, real_P_out=big_optm.Post_gen_out[scen,ti])
+        self.Results(data, big_optm, simm)
 
 
     def ObjFunction(self, data, big_optm):
@@ -424,7 +475,7 @@ class PartialModel(object):
         else:
             inc = self.pg_inc
 
-        self.Cop = data.Cvar_gen*data.Sb @ (inc)
+        self.Cop = data.Cvar_gen[data.pos_gen_agc_list]*data.Sb @ (inc)
         #if np.size(Cvar_genstat) != 0:
         #    Cop_s += Genstat_on_AGC[:,s] * Cvar_genstat*sim.Sb @ pstatg_inc[:,s]
 
@@ -436,11 +487,17 @@ class PartialModel(object):
 
         self.m.setObjective(f_obj,self.gp.GRB.MINIMIZE)
 
-    def Balance(self, data, big_optm, simm, scen, ti):    
-        # Con perdidas y gen pueden bajar potencia
+    def Balance(self, data, big_optm, simm, short_sim, P_change, scen, ti):    
+        # Con perdidas y gen pueden bajar potenciati
         if big_optm.pot_down:
-            self.m.addConstr(self.pg_inc.sum() - self.pg_dec.sum() + self.p_ens.sum() == simm.P_out[scen] - data.dda_barra.sum() + simm.D_pfc[:,scen,ti].sum() - simm.PL_pre_line[ti] + self.ploss.sum(), name ='Balance')
-
+            #self.P_agc = self.pg_inc.sum() - self.pg_dec.sum() + self.p_ens.sum()
+            self.m.addConstr(self.pg_inc.sum() - self.pg_dec.sum() + self.p_ens.sum() == P_change + simm.P_out[scen,ti] - data.dda_barra[:,ti].sum() + short_sim.D_t.sum() - simm.PL_pre_line[ti] + self.ploss.sum(), name ='Balance')
+            #print('P_out = ' + str(simm.P_out[scen,ti]))
+            #print('dda_barra = ' + str(data.dda_barra[:,ti].sum()))
+            #print('D_pfc = ' + str(simm.D_pfc[:,scen,ti].sum()))        
+            #print('PL_pre_line = ' + str(simm.PL_pre_line[ti]))        
+        
+        
         # Con perdidas 
         elif big_optm.flujos and big_optm.losses:
             self.m.addConstr(self.pg_inc.sum() + self.p_ens.sum() == simm.P_out[scen] - data.dda_barra.sum() + simm.D_pfc[:,scen,ti].sum()- simm.PL_pre_line[ti] + self.ploss.sum(), name ='Balance')
@@ -462,30 +519,48 @@ class PartialModel(object):
             inc = self.pg_inc
 
 
-        f_gen =  data_SF.SF[:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        #f_gen =  data_SF.SF[:,data.pos_gen] @ data.Pgen_pre[:,ti]
+        f_gen = data_SF.SF[:,data.pos_gen] @ short_sim.p_gen
         f_genstat = 0
+        if data.ngenstat != 0:
+            f_genstat =  data_SF.SF[:,data.pos_genstat] @ short_sim.p_genstat
+        f_pv = 0
+        if data.ngenpv != 0:
+            f_pv = data_SF.SF[:,data.pos_pv] @ short_sim.pv_gen
         #f_genstat =  SF[:,simm.pos_genstat] @ simm.Pgenstat_pre
         f_ens =  data_SF.SF @ self.p_ens
         f_gen_agc = data_SF.SF[:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
-        #f_gen_agc = SF[:,simm.pos_g2] @ (inc)
         f_genstat_agc = 0
-        #if np.size(Cvar_genstat) != 0:
-        #    f_genstat_agc = Genstat_on_AGC[:,s] * SF[:,pos_genstat] @ (pstatg_inc[:,s] - pstatg_dec[:,s])
         #f_gen_out = data_SF.SF[:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
         #Flujo_dda = data.SF @ simm.D_pfc[:,s,ti]
-        Flujo_dda = data_SF.SF @ simm.D_pfc[:,s,ti]
+        Flujo_dda = data_SF.SF @ short_sim.D_t
         if big_optm.losses:
             f_loss = 0.5 * data_SF.SF @ abs(data_SF.A.T) @ self.ploss
         else:
             f_loss = 0
         
-        #self.m.addConstr(self.f == f_gen + f_genstat + f_ens + f_gen_agc + f_genstat_agc - Flujo_dda - f_gen_out - f_loss, name='flujos') 
-        self.m.addConstr(self.f == f_gen + f_genstat + f_ens + f_gen_agc + f_genstat_agc - Flujo_dda - f_loss, name='flujos') 
+        #print('f_gen = ' + str(f_gen[0]))
+        #print('f_genstat = ' + str(f_genstat[0]))
+        #print('f_pv = ' + str(f_pv[0]))
+        #print('Flujo_dda = ' + str(Flujo_dda[0]))
 
+
+        #print('f_gen = ' + str(f_gen[79]))
+        #print('f_genstat = ' + str(f_genstat[79]))
+        #print('f_pv = ' + str(f_pv[79]))
+        #print('Flujo_dda = ' + str(Flujo_dda[79]))
+
+
+
+        #self.m.addConstr(self.f == f_gen + f_genstat + f_pv + f_ens + f_gen_agc + f_genstat_agc - Flujo_dda - f_gen_out - f_loss, name='flujos') 
+        self.m.addConstr(self.f == f_gen + f_genstat + f_pv + f_ens + f_gen_agc + f_genstat_agc - Flujo_dda - f_loss, name='flujos') 
+
+        #if False:
         if big_optm.losses:
             self.m.addConstr(self.f == fp - fn, name = 'f')
             self.m.addConstr(fp + fn == dpk.sum(1), name='SumaDpk')
-        
+            #self.m.addConstr(self.p_ens.sum() == 0)
+
             kl = np.zeros((data_SF.new_n_elem, big_optm.L))
             for l in range(big_optm.L):
                 kl[:,l] = (2*(l+1)-1)*(data_SF.new_FMax)/big_optm.L
@@ -498,7 +573,7 @@ class PartialModel(object):
                 self.m.addConstr(-dpk[:,l] >= -data_SF.new_FMax/big_optm.L, name = 'LimiteDpk')
 
         else:
-            self.m.addConstr(-self.f  >= -data_SF.new_FMax, name = 'fMax+')
+            self.m.addConstr(-self.f >= -data_SF.new_FMax, name = 'fMax+')
             self.m.addConstr(self.f >= -data_SF.new_FMax, name = 'fMax-')
 
     def R_FlujoLossesPlus(self, data_SF, big_optm, fp, fn, n_l, n_a , dpk):
@@ -519,9 +594,9 @@ class PartialModel(object):
 
     def R_Generadores(self, data, big_optm, simm, s, ti):
 
-        self.m.addConstr(-self.pg_inc >= -self.vg_inc * (data.Pmax_gen * data.ngen_par[data.pos_gen_agc_list] - data.Pgen_pre[data.pos_gen_agc_list,ti]), name = 'PMax')
+        self.m.addConstr(-self.pg_inc >= -self.vg_inc * (data.Pmax_gen [data.pos_gen_agc_list]* data.ngen_par[data.pos_gen_agc_list] - data.Pgen_pre[data.pos_gen_agc_list,ti]), name = 'PMax')
         if big_optm.pot_down:
-            self.m.addConstr(-self.pg_dec >= -self.vg_dec * (data.Pgen_pre[data.pos_gen_agc_list,ti] - data.Pmin_gen * data.ngen_par[data.pos_gen_agc_list]), name = 'PMin')
+            self.m.addConstr(-self.pg_dec >= -self.vg_dec * (data.Pgen_pre[data.pos_gen_agc_list,ti] - data.Pmin_gen [data.pos_gen_agc_list]* data.ngen_par[data.pos_gen_agc_list]), name = 'PMin')
         #Nueva Lista que solo tiene unidades participantes en el AGC / se quita de unidades participantes la unidad que sale de servicio
         pos_part_gen_agc_list = data.pos_gen_agc_list[:]
         x = list(range(data.n_gen_agc))
@@ -547,7 +622,7 @@ class PartialModel(object):
         self.m.addConstr(-self.p_ens >= -simm.D_pfc[:,s,ti], 'LimENS')
 
 
-    def Results(self, data, big_optm, simm, real_P_out):
+    def Results(self, data, big_optm, simm):
         status = self.m.Status
         if status == gp.GRB.Status.OPTIMAL:
             print('-----------------------------')
@@ -558,11 +633,13 @@ class PartialModel(object):
             for i in range(data.n_gen_agc):
                 if big_optm.pot_down:
                     inc = self.pg_inc[i].x - self.pg_dec[i].x
+                    self.P_agc = self.pg_inc.x.sum() - self.pg_dec.x.sum() + self.p_ens.x.sum()
                     if inc != 0:
-                        self.part_factors[i] = inc/real_P_out
+                        self.part_factors[i] = inc/self.P_agc
                 else:
                     if self.pg_inc[i].x != 0:
-                        self.part_factors[i] = self.pg_inc[i].x/real_P_out
+                        self.P_agc = self.pg_inc.x.sum() + self.p_ens.x.sum()
+                        self.part_factors[i] = self.pg_inc[i].x/self.P_agc
 
         elif status == gp.GRB.Status.INF_OR_UNBD or \
             status == gp.GRB.Status.INFEASIBLE  or \
@@ -570,7 +647,125 @@ class PartialModel(object):
             print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
             self.m.computeIIS() 
             self.m.write("GTCEP_partial.ilp")
+
+
+  
+class Model_UC(object):
+    def __init__(self, data):
+        self.gp = gp
+        self.m = gp.Model('Modelo UC')
+        self.m.Params.MIPGap = 1e-7
+
+        self.pg = self.m.addMVar((data.ngen + data.ngenstat + data.ngenpv), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
+        self.f = self.m.addMVar((data.n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=-self.gp.GRB.INFINITY, ub=self.gp.GRB.INFINITY, name='flujo') # Flujo por las líneas
+
+        fp = self.m.addMVar((data.n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='fp') # Flujo-p por las líneas
+        fn = self.m.addMVar((data.n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='fn') # Flujo-n por las líneas
+
+        dpk = self.m.addMVar((data.n_elem, data.L), vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='dpk')   # Perdidas por cada línea por cada tramo
+        self.ploss = self.m.addMVar((data.n_elem), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Ploss')
+
+        n_l = self.m.addMVar((data.n_elem), vtype=self.gp.GRB.BINARY, name='n_l')   # variable binaria complentaridad
+        n_a = self.m.addMVar((data.n_elem, data.L), vtype=self.gp.GRB.BINARY, name='n_a')  # variable binaria adyacencia
+
+        f_obj = 0
+        Cop = 0
+        Cop += data.Cvar_gen*data.Sb @ self.pg[:data.ngen]
+        Cop += data.Cvar_genstat*data.Sb @ self.pg[data.ngen:data.ngen+data.ngenstat]
+        Cop += data.Cvar_pv*data.Sb @ self.pg[data.ngen+data.ngenstat:data.ngen+data.ngenstat+data.ngenpv]
+        f_obj += Cop
+
+        self.m.setObjective(f_obj,self.gp.GRB.MINIMIZE)
         
+        #Balance
+        self.m.addConstr(self.pg.sum() == data.dda_barra[:,0].sum() + self.ploss.sum(), name ='Balance')
+
+        #Flujos
+        f_gen = data.SF[:,data.pos_gen] @ self.pg[:data.ngen]
+        f_genstat = data.SF[:,data.pos_genstat] @ self.pg[data.ngen:data.ngen+data.ngenstat]
+        f_pv = data.SF[:,data.pos_pv] @ self.pg[data.ngen+data.ngenstat:data.ngen+data.ngenstat+data.ngenpv]
+        Flujo_dda = data.SF @ data.dda_barra[:,0]
+        f_loss = 0.5 * data.SF @ abs(data.A.T) @ self.ploss
+
+        self.m.addConstr(self.f == f_gen + f_genstat + f_pv - Flujo_dda - f_loss, name='flujos')
+
+        self.m.addConstr(self.f == fp - fn, name = 'f')
+        self.m.addConstr(fp + fn == dpk.sum(1), name='SumaDpk')
+        self.m.addConstr(self.ploss == data.G/(data.B**2)*(self.gp.quicksum((2*(l+1)-1)*(data.FMax)/data.L*dpk[:,l] for l in range(data.L))), name = 'Ploss')
+
+        self.m.addConstr(-fp - fn- 0.5*self.ploss >= -0.9*data.FMax, name = 'fp+fn')
+        self.m.addConstr(-fp >= -data.FMax, name = 'fp+')
+        self.m.addConstr(-fn >= -data.FMax, name = 'fn+')
+
+        for l in range(data.L):
+            self.m.addConstr(-dpk[:,l] >= -data.FMax/data.L, name = 'LimiteDpk')
+
+        self.m.addConstr(-fp >= -n_l*data.FMax, name='fp_n')   #flujo positvo-restriccion de complementaridad
+        self.m.addConstr(-fn >= (1-n_l)*(-data.FMax), name='fn_n') #flujo nefativo-restriccion de complementaridad
+
+        for l in range(data.L):
+            if l==0:
+                self.m.addConstr(-dpk[:,l]>= -data.FMax/data.L, name='d_f_Res_max_A_l')
+                self.m.addConstr(dpk[:,l]>= n_a[:,l]*(data.FMax/data.L), name='d_f_Res_min_A_l')
+            elif l==data.L-1:
+                self.m.addConstr(-dpk[:,l] >=-n_a[:,l-1]*data.FMax/data.L, name='d_f_Res_max_A_L')
+                self.m.addConstr(dpk[:,l] >=0, name='d_f_Res_min_A_L')
+            else:
+                self.m.addConstr(-dpk[:,l] >=-n_a[:,l-1]*data.FMax/data.L, name='d_f_Res_max_A_L-1')
+                self.m.addConstr(dpk[:,l] >=n_a[:,l]*data.FMax/data.L, name='d_f_Res_min_A_L-1')
+
+        self.m.addConstr(self.pg[:data.ngen] >= data.Pmin_gen*data.ngen_par, name = 'PMin')
+        self.m.addConstr(self.pg[:data.ngen] <= data.Pmax_gen*data.ngen_par, name = 'PMax')
+
+        self.m.addConstr(self.pg[data.ngen:data.ngen+data.ngenstat] >= data.Pmin_genstat*data.ngenstat_par, name = 'PMinStat')
+        self.m.addConstr(self.pg[data.ngen:data.ngen+data.ngenstat] <= data.Pmax_genstat*data.ngenstat_par, name = 'PMaxStat')
+
+        self.m.addConstr(self.pg[data.ngen+data.ngenstat:data.ngen+data.ngenstat+data.ngenpv] >= data.Pmin_pv*data.ngenpv_par, name = 'PMinPV')
+        self.m.addConstr(self.pg[data.ngen+data.ngenstat:data.ngen+data.ngenstat+data.ngenpv] <= data.Pmax_pv*data.ngenpv_par, name = 'PMaxPV')
+
+        self.m.optimize()
+
+        status = self.m.Status
+        if status == gp.GRB.Status.OPTIMAL:
+            print('-----------------------------')
+            print('Costo = %.2f' % (self.m.ObjVal))
+            print('num_Vars =  %d / num_Const =  %d / num_NonZeros =  %d' % (self.m.NumVars,self.m.NumConstrs,self.m.DNumNZs))
+            print('=> Solver time: %.4f (s)' % (self.m.Runtime))
+        elif status == gp.GRB.Status.INF_OR_UNBD or \
+            status == gp.GRB.Status.INFEASIBLE  or \
+            status == gp.GRB.Status.UNBOUNDED:
+            print('The model cannot be solved because it is infeasible or unbounded => status "%d"' % status)
+            self.m.computeIIS() 
+            self.m.write("GTCEP_UC.ilp")
+
+
+class Model_CTF(object):
+    def __init__(self, data, simm, big_optm, short_sim, data_SF, scen, ti):
+        self.gp = gp
+        self.m = gp.Model('Modelo UC CTF')
+        self.m.Params.MIPGap = 1e-7
+
+        self.vg_inc = big_optm.vg_inc.x
+        self.vg_dec = big_optm.vg_dec.x
+
+        self.pg = self.m.addMVar((data.n_gen_agc), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_inc')
+
+        self.p_ens = self.m.addMVar((data.Nb), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='P_ens')
+
+        if big_optm.pot_down:
+            self.pg_dec = self.m.addMVar((data.n_gen_agc), vtype=self.gp.GRB.CONTINUOUS, ub=self.gp.GRB.INFINITY, lb=0, name='Pg_dec')
+        
+        self.f = self.m.addMVar((data_SF.new_n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=-self.gp.GRB.INFINITY, ub=self.gp.GRB.INFINITY, name='flujo') # Flujo por las líneas
+        
+        if big_optm.losses:
+            fp = self.m.addMVar((data_SF.new_n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='fp') # Flujo-p por las líneas
+            fn = self.m.addMVar((data_SF.new_n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='fn') # Flujo-n por las líneas
+
+            self.ploss = self.m.addMVar((data_SF.new_n_elem),vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self.gp.GRB.INFINITY, name='losses') # Flujo por las líneas
+            dpk = self.m.addMVar((data_SF.new_n_elem, big_optm.L), vtype=self.gp.GRB.CONTINUOUS, lb=0, ub=self)
+
+
+
 
 
 if False:
