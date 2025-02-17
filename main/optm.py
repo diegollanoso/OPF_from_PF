@@ -2,7 +2,10 @@ import gurobipy as gp
 import numpy as np
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='Main.log',
+                    filemode='a',
+                    level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Modelo():
     def __init__(self):
@@ -133,7 +136,7 @@ class Modelo():
             self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum()- simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
         
         # Sin Perdidas y con sistema de transmisión
-        elif self.flujos and not data.flujo_dc:
+        elif self.flujos:
             self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum(), name ='Balance')
 
         # Sin Perdidas / Inc potencia
@@ -330,10 +333,8 @@ class Modelo():
             self.m.addConstr(self.pg_inc[data.name_gen_agc_list.index(data.Gen_Outages[s]), s, ti] == 0, name = 'GenOut+  s='+str(s)+' c='+str(ti))
             if self.pot_down:
                 self.m.addConstr(self.pg_dec[data.name_gen_agc_list.index(data.Gen_Outages[s]), s, ti] == 0, name = 'GenOut-  s='+str(s)+' c='+str(ti))
-        if data.flujo_dc:
-            self.m.addConstr(-self.pg_inc[x, s, ti] >= -self.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] - (data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp+  s='+str(s)+' c='+str(ti))
-        else:
-            self.m.addConstr(-self.pg_inc[x, s, ti] >= -self.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] - (simm.Pgen_pfc[pos_part_gen_agc_list,s,ti] - data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp+  s='+str(s)+' c='+str(ti))
+        
+        self.m.addConstr(-self.pg_inc[x, s, ti] >= -self.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] - (simm.Pgen_pfc[pos_part_gen_agc_list,s,ti] - data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp+  s='+str(s)+' c='+str(ti))
         if self.pot_down:
             self.m.addConstr(-self.pg_dec[x, s, ti] >= -self.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] + (simm.Pgen_pfc[pos_part_gen_agc_list,s,ti] - data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp-  s='+str(s)+' c='+str(ti))
         #if np.size(Cvar_genstat) != 0:
@@ -511,7 +512,7 @@ class PartialModel(object):
             self.m.addConstr(self.pg_inc.sum() + self.p_ens.sum() == simm.P_out[scen] - data.dda_barra.sum() + simm.D_pfc[:,scen,ti].sum()- simm.PL_pre_line[ti] + self.ploss.sum(), name ='Balance')
         
         # Sin Perdidas y con sistema de transmisión
-        elif big_optm.flujos and not big_optm.flujo_dc:
+        elif big_optm.flujos:
             self.m.addConstr(self.pg_inc.sum() + self.p_ens.sum() == simm.P_out[scen] - data.dda_barra.sum() + simm.D_pfc[:,scen,ti].sum(), name ='Balance')
 
         # Sin Perdidas / Inc potencia
@@ -614,10 +615,7 @@ class PartialModel(object):
             self.m.addConstr(self.pg_inc[data.name_gen_agc_list.index(data.Gen_Outages[s])]== 0, name = 'GenOut+')
             if big_optm.pot_down:
                 self.m.addConstr(self.pg_dec[data.name_gen_agc_list.index(data.Gen_Outages[s])] == 0, name = 'GenOut-')
-        if data.flujo_dc:
-            self.m.addConstr(-self.pg_inc[x] >= -big_optm.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] - (data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp+')
-        else:
-            self.m.addConstr(-self.pg_inc[x] >= -big_optm.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] - (simm.Pgen_pfc[pos_part_gen_agc_list,s,ti] - data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp+')
+        self.m.addConstr(-self.pg_inc[x] >= -big_optm.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] - (simm.Pgen_pfc[pos_part_gen_agc_list,s,ti] - data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp+')
         if big_optm.pot_down:
             self.m.addConstr(-self.pg_dec[x] >= -big_optm.T_Sfc * data.Ramp_gen[pos_part_gen_agc_list] + (simm.Pgen_pfc[pos_part_gen_agc_list,s,ti] - data.Pgen_pre[pos_part_gen_agc_list,ti]), name = 'E' + str(ti+1) + '-' + data.Gen_Outages[s] +'_Ramp-')
         #if np.size(Cvar_genstat) != 0:

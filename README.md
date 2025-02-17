@@ -11,8 +11,6 @@
     VOLL = 150000
     No hay penalización por perdidas
 
-
-
 ### TBD
 
 - Al añadir contingencia de carga, revisar la lista optm.gen_csf, crear dos listas. Una para vg_inc y otra para vg_dec
@@ -21,17 +19,14 @@
 
 - Para las potencias de los generadores, extraer solo los que participan en el AGC. 
 
-
 - No convergencia dynamic model
 
 - P_agc = P_out + P_variacones
 
 - P_out debe disminuir
 
-
 - Revisar el valor de P_out de optm.py
 (Variaciones)
-
 
 - Variabilidad en demanda (alta, media y baja variación), definir por áres o mezclar
 
@@ -40,7 +35,6 @@
 - Añadir control terciario de frecuencia utilizando UC
 
 - Arreglar muestreo al AGC
-
 
 - Revisar restriccion de suma de dpk = flujos
 
@@ -77,7 +71,6 @@ https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_gu
         1.- Usar listas para las cargas y generadores.
         2.- Exportar datos de potencia de cargas y generadores e importarlos como tuplas.
 
-
 - Diferencias en las cargas, al final del CPF y se obtiene la demanda de las cargas durante la simulación, no se colocan condiciones. Mientras, que en el diccionario original se colocan 2 resitriccion, Out of Service / Circuit Breaker.
 
 ### questions
@@ -112,9 +105,40 @@ https://docs.gurobi.com/projects/optimizer/en/current/reference/misc/numerics_gu
 - 06/8: Añadir variación de demanda y perdidas por la variación de tensión. 
     - No olvidar la restricción de la potencia ENS <= DemandaPFC
 
-
 - 05/8: Se añadio la variación de demanda por la diferencia de tensión en las cargas.
 
 - 04/8: Se termino de añadir el efecto de disminución de potencia en unidades participantes del AGC de la formulación.
 
 - 30/7: Se comenzo a añadir el efecto de disminución de potencia en unidades participantes del AGC de la formulación.
+
+## Documentation
+
+### Real.py
+This script sets up and runs a power system simulation using PowerFactory and an optimization model. It includes functions for:
+- Setting up the simulation parameters (`setup_simulation`)
+- Changing line values (`change_max_line_values`)
+- Exporting data (`export_simulation_data`)
+- Running the optimization model (`run_optimization_model`)
+
+The `main` function orchestrates the entire process, including initializing the simulation, running the optimization model, and handling the results.
+
+### optm.py
+This file contains the optimization model classes used in the simulation:
+- `Modelo`: Main optimization model for the power system simulation.
+- `PartialModel`: A partial optimization model used for specific scenarios.
+- `Model_UC`: Unit commitment model.
+- `Model_CTF`: Control Terciario de Frecuencia model.
+
+Each class includes methods for setting up the model, defining the objective function, adding constraints, running the optimization, and extracting results.
+
+### pfsim.py
+This file contains the PowerFactory simulation classes and functions:
+- `ShiftFactors`: Function to clean and order the shift factors matrix.
+- `PowerFactorySim`: Class to handle the PowerFactory simulation, including methods for exporting data, getting simulation data, preparing and running dynamic simulations, and extracting results.
+- `Simulacion`: Class to handle the simulation process, including monitoring variables and handling events.
+- `ShortSim`: Class for short-term simulations.
+- `new_SF`: Class to handle new shift factors with transmission switching.
+- `CreateEvents_line` and `CreateEvents_gen`: Functions to create events for line and generator changes.
+- `Set_param_agc`: Function to set AGC parameters.
+
+The classes and functions in this file are used to manage the PowerFactory simulation, including setting up the simulation environment, running simulations, and extracting and processing results.

@@ -3,6 +3,7 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import *
 from scipy.sparse import csr_matrix as sparse, identity as sparseI
+import logging
 
 
 # Importar DIgSILENT
@@ -10,10 +11,13 @@ import sys
 sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2023 SP3A\Python\3.11')
 import powerfactory as pf
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 # La matriz de shift factors se limpia y ordena
 # Return matriz de shif factors y indices con nombres de elementos
 def ShiftFactors(ptdf_dataframe):
+    logging.info("Cleaning and ordering shift factors matrix")
     ejes = ptdf_dataframe.axes
     ejes_corregidos = list()
 
@@ -52,6 +56,7 @@ def ShiftFactors(ptdf_dataframe):
 
 class PowerFactorySim(object):
     def __init__(self, project_name='Project'):
+        logging.info("Initializing PowerFactory simulation for project: %s", project_name)
         # Start PowerFactory
         self.app = pf.GetApplication()
         self.app.Show()
@@ -96,13 +101,8 @@ class PowerFactorySim(object):
             try:
                 study_case = self.app.GetProjectFolder('study').GetContents('Study Case.IntCase')[0]
             except:
-                print('Error en nombre StudyCase')
+                logging.error('Error in StudyCase name')
 
-
-        self.gen_agc = study_case.GetContents('Gen AGC.SetSelect')[0].All()
-        self.Gen_AGC = list(map(lambda x: x.loc_name, self.gen_agc))
-
-        gen_out = study_case.GetContents('Gen OUT.SetSelect')[0].All()
         self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
         #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
         self.Ns = len(self.Gen_Outages)
@@ -112,9 +112,6 @@ class PowerFactorySim(object):
         self.TS = False
         self.Nt = 3
 
-        self.flujo_dc = 0
-        self.potencia_dc = 'm:P:bus1'
-        self.potencia_dc2 = 'm:P:bus2'
         self.potencia_ac = 'm:Psum:bus1'
         self.potencia_ac2 = 'm:Psum:bus2'
         
@@ -212,9 +209,6 @@ class PowerFactorySim(object):
     # Return diccionarios de los elementos 
     # bus, carga, linea, trafo, gen, genstat
     def get_data(self):
-        if self.flujo_dc:
-            self.potencia_ac = self.potencia_dc
-            self.potencia_ac2 = self.potencia_dc2
         self.ldf.Execute()
         self.dict_barras = dict()
         cont = 0
@@ -545,8 +539,6 @@ class PowerFactorySim(object):
             self.all_branch.append(i)
             self.FMax[cont] = Fmax_i/self.Sb
             self.R[cont] = R_i
-            if self.flujo_dc:
-                self.R[cont] = 0
             self.X[cont] = X_i
             self.i_buses[cont] = i_bus
             self.j_buses[cont] = j_bus
@@ -737,9 +729,6 @@ class Simulacion(object):
                 self.P_out[cont,ti] = data.dict_gen[gen_out][8+ti]/data.Sb
                 self.Barra_gen_out[cont] = data.dict_gen[gen_out][0]
                 
-                if data.flujo_dc:
-                    continue
-
                 evt = data.events_folder[self.name_events.index('Salida Gen')]
                 evt.outserv = 0
                 evt.time = t_initial
