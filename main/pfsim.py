@@ -990,24 +990,17 @@ def Set_param_agc(pf, t_int, part_factors, previous_part_factors=None):
         posicion = pf.name_gen_agc_list.index(gen.loc_name)
         event_folder = pf.IntEvt.GetContents()
         lista_eventos = list(map(lambda x: x.loc_name , event_folder))
-        if (name_event not in lista_eventos and 
-                float(part_factors[posicion]) != 0.0 and
-                float(part_factors[posicion]) != float(previous_part_factors[posicion])):
-            evento = pf.IntEvt.CreateObject('EvtParam', 'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int))    
-            evento.variable = pf.signal_list[cont]
-            evento.time = t_int
-            evento.mtime = t_int//60
-            if t_int//60 != 0:
-                evento.time = t_int%60
-            evento.p_target = pf.dsl_agc_bloques
-            evento.value = str(part_factors[posicion])
+        if  (float(part_factors[posicion]) != 0.0 and
+            float(part_factors[posicion]) != float(previous_part_factors[posicion])):
 
-        elif (name_event in lista_eventos and
-                float(part_factors[posicion]) != 0.0 and
-                float(part_factors[posicion]) != float(previous_part_factors[posicion])):
-            evento = event_folder[lista_eventos.index(name_event)]
-            evento.value = str(part_factors[posicion])
-            evento.outserv = 0
+            if (name_event not in lista_eventos):
+                evento = pf.IntEvt.CreateObject('EvtParam', 'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int))    
+                evento.variable = pf.signal_list[cont]
+
+            elif (name_event in lista_eventos):
+                evento = event_folder[lista_eventos.index(name_event)]
+                evento.outserv = 0
+            
             evento.variable = pf.signal_list[cont]
             evento.time = t_int
             evento.mtime = t_int//60
