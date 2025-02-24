@@ -11,7 +11,6 @@ import sys
 sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2023 SP3A\Python\3.11')
 import powerfactory as pf
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 # La matriz de shift factors se limpia y ordena
@@ -107,8 +106,8 @@ class PowerFactorySim(object):
         self.Gen_AGC = list(map(lambda x: x.loc_name, self.gen_agc))
 
         gen_out = study_case.GetContents('Gen OUT.SetSelect')[0].All()
-        self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
-        #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
+        #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
+        self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
         self.Ns = len(self.Gen_Outages)
 
         self.use_sf = False # 1 = SF calculados con matrices;  0 = SF de PF
@@ -824,8 +823,7 @@ class Simulacion(object):
 
 
 class ShortSim(object):
-    def __init__(self, data, big_optm, simm, new_SF, gen_out, ti):
-        logging.info("Initializing short simulation for gen_out: %s, ti: %d", gen_out, ti)
+    def __init__(self, data, gen_csf, simm, new_SF, gen_out, ti):
         #count=0
         #for gen in pf.Gen_AGC:
         #    evt2 = simm.events_folder[simm.name_events.index(signal_list[count])]
@@ -843,7 +841,7 @@ class ShortSim(object):
         for gen in data.generadores:
             self.p_gen[i] = gen.GetAttribute('m:Psum:bus1')/data.Sb
             i += 1
-            if gen.loc_name in big_optm.gen_csf and gen.loc_name != gen_out:
+            if gen.loc_name in gen_csf and gen.loc_name != gen_out:
                 self.p_genAGC += gen.GetAttribute('m:Psum:bus1')/data.Sb
 
         self.p_genstat = np.zeros(data.ngenstat)
@@ -876,12 +874,10 @@ class ShortSim(object):
             p_lv = trafo.GetAttribute('m:P:buslv')/data.Sb
             perdida = abs(p_hv + p_lv)
             self.PL[new_SF.all_branch.index(trafo.loc_name)] = perdida
-        logging.info("Short simulation initialized")
 
 
 class new_SF(object):
     def __init__(self, pf, m_optm, ti, scen):
-        logging.info("Initializing new shift factors for ti: %d, scen: %d", ti, scen)
         N_ts = int(sum(1-m_optm.s_ts.x[:,scen,ti]))
 
         self.new_n_elem = pf.n_elem - N_ts # N° de líneas + trf2 - Líneas TS
@@ -939,29 +935,37 @@ class new_SF(object):
         logging.info("New shift factors initialized")
 
 def CreateEvents_line(data, optm, scen, ti, tstop_cpf):
-    logging.info("Creating events for lines with scen: %d, ti: %d", scen, ti)
+    line_swtich = list()
+
     for line in data.lineas:
         if line.loc_name in data.TS_lines:
             index = data.all_line.index(line.loc_name)
             if optm.s_ts.x[index,scen,ti] == 0:
                 event_folder = data.IntEvt.GetContents()
                 lista_eventos = list(map(lambda x: x.loc_name , event_folder))
+                
                 name_evt = 'Evt '  + str(line.loc_name)
                 if name_evt in lista_eventos:
                     position = lista_eventos.index(name_evt)
-                    evento = data.events_folder[position]
+                    evento = event_folder[position]
                     evento.outserv = 0
-                    evento.time = tstop_cpf
                 else:
-                    evento = data.IntEvt.CreateObject('EvtOutage', 'Evt ' + str(line.loc_name))   
+                    evento = data.IntEvt.CreateObject('EvtOutage', name_evt)   
                     evento.p_target = line
                     evento.i_what = 0
-                    evento.time = tstop_cpf 
-    logging.info("Events for lines created")
+                
+                evento.time = tstop_cpf 
+                evento.mtime = 0
+                evento.hrtime = 0
 
+                
+                # Add switch lines to list
+                line_swtich.append(line.loc_name)
+
+    logging.info("Switched lines: %s", line_swtich)
+    return line_swtich
 
 def CreateEvents_gen(data, optm, gen, value, ti):
-    logging.info("Creating events for generator: %s, ti: %d", gen, ti)
     cont=0
     for gen in data.name_gen_agc_list:
         name_event =  'Evt Gamma ' + str(gen) + ' - ' + str(ti)
@@ -977,15 +981,14 @@ def CreateEvents_gen(data, optm, gen, value, ti):
 
             evento.p_target = data.Name_all_gen[gen]
         cont+=1
-    logging.info("Events for generator created")
 
 def Set_param_agc(pf, t_int, part_factors, previous_part_factors=None):
-    logging.info("Setting AGC parameters for t_int: %d", t_int)
     if previous_part_factors is None:
         previous_part_factors = [0.0] * len(part_factors)
 
-    cont=0
+    cont=-1
     for gen in pf.gen_agc:
+        cont+=1
         name_event =  'Evt Gamma ' + str(gen.loc_name) + ' - ' + str(t_int)
         posicion = pf.name_gen_agc_list.index(gen.loc_name)
         event_folder = pf.IntEvt.GetContents()
@@ -1002,13 +1005,107 @@ def Set_param_agc(pf, t_int, part_factors, previous_part_factors=None):
                 evento.outserv = 0
             
             evento.variable = pf.signal_list[cont]
+            evento.value = str(part_factors[posicion])
             evento.time = t_int
             evento.mtime = t_int//60
+            evento.hrtime = 0
             if t_int//60 != 0:
                 evento.time = t_int%60
             evento.p_target = pf.dsl_agc_bloques
+
+            logging.info("Event Gamma %s created with value %s", 
+                         gen.loc_name, part_factors[posicion])
+
+
+def extract_data_each_step(pf, t_final, tstop_cpf, part_factors):
+    #Set_param_agc(pf, tstop_cpf, part_factors)
+
+    # Do simulación
+    Monitored_vars = {'*.ElmSym': ['m:Psum:bus1'],
+                        '*.ElmGenstat': ['m:Psum:bus1'],
+                        '*.ElmPvsys': ['m:Psum:bus1'],
+                        '*.ElmLod': ['m:Psum:bus1'],
+                        '*.ElmLne': ['c:Losses'],
+                        '*.ElmTr2':['m:P:bushv','m:P:buslv']}
+
+    pf.prepare_dynamic_sim(Monitored_vars, 'rms')
+    pf.run_dynamic_sim(end_sim=t_final)
+
+    # Extract data
+    # Extraer frecuencia
+    pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
+
+    # Extrer datos de cada generador
+    cont=0
+    return_time = False
+    list_gens_values = np.zeros((pf.ngen+pf.ngenstat+pf.ngenpv, len(pf_time)))
+    #list_pt_values = np.zeros((pf.ngen, len(pf_time)))
+    #list_pgt_values = np.zeros((pf.ngen, len(pf_time)))
+    for gen in pf.all_gen:
+        var_values = pf.extract_data(gen+'.ElmSym', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        #list_pt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pt', return_time)
+        #list_pgt_values[cont] = pf.extract_data(gen+'.ElmSym', 's:pgt', return_time)
         cont+=1
-    logging.info("AGC parameters set")
+
+    for gen in pf.all_genstat:
+        var_values = pf.extract_data(gen+'.ElmGenstat', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
+
+    for gen in pf.all_pv:
+        var_values = pf.extract_data(gen+'.ElmPvsys', 'm:Psum:bus1', return_time)
+        list_gens_values[cont] = var_values
+        cont+=1
+
+
+    # Extraer datos de todos las demandas
+    cargas_name = list()
+    list_load_values = np.zeros((len(pf.cargas), len(pf_time)))
+    cont=0
+    for carga in pf.cargas:
+        var_values = pf.extract_data(carga.loc_name+'.ElmLod', 'm:Psum:bus1', return_time)
+        cargas_name.append(carga.loc_name)
+        list_load_values[cont] = var_values
+        cont+=1
+
+    # Extraer datos de todas las líneas
+    lineas_name = list()
+    list_line_values = np.zeros((len(pf.lineas), len(pf_time)))
+    cont=0
+    for linea in pf.lineas:
+        var_values = pf.extract_data(linea.loc_name+'.ElmLne', 'c:Losses', return_time)
+        lineas_name.append(linea.loc_name)
+        list_line_values[cont] = np.array(var_values)/1000
+        cont+=1
+
+    trafos_name = list()
+    list_trafos_values= np.zeros((len(pf.trafos), len(pf_time)))
+    cont=0
+    for trafo in pf.trafos:
+        trafos_name.append(trafo.loc_name)
+        trafo_name = trafo.loc_name
+        var_hv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:bushv', return_time)
+        var_lv = pf.extract_data(trafo_name +'.ElmTr2', 'm:P:buslv', return_time)
+        list_trafos_values[cont] = abs(np.array(var_hv)+np.array(var_lv))
+        cont+=1
+
+    sum_gens = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_gens[tiempo] = list_gens_values[:,tiempo].sum()
+
+    sum_loads = np.zeros(len(pf_time))
+    for tiempo in range(len(pf_time)):
+        sum_loads[tiempo] = list_line_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_trafos_values[:,tiempo].sum()
+        sum_loads[tiempo] += list_load_values[:,tiempo].sum()
+
+
+    data = pd.DataFrame(np.vstack((pf_time, freq_values, list_gens_values, list_load_values, list_line_values, list_trafos_values, sum_loads)).T, 
+                        columns=['Time', 'Freq'] + pf.all_gen + pf.all_genstat + pf.all_pv + cargas_name + lineas_name + trafos_name + ['Sum Total Loads'])
+
+
+    data.to_excel('generator_load_data.xlsx', index=False)
 
 #class LpGurobi(object):
 #    def __init__(self):

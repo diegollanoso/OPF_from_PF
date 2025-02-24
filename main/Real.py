@@ -250,7 +250,6 @@ def Variabilidad(pf, t_initial, t_final, tstop_cpf, sim, m_optm):
             Precp_original = np.zeros(n_step)
             Precp = np.zeros(n_step)
             P_change_list = np.zeros(n_step)
-            sum_p_model = np.zeros(n_step)
 
             Pn_genAGC_list= np.zeros(n_step)
             Pn_genNOagc_list= np.zeros(n_step)
@@ -258,7 +257,10 @@ def Variabilidad(pf, t_initial, t_final, tstop_cpf, sim, m_optm):
             Pn_losses_list= np.zeros(n_step)
             freq_list = np.zeros(n_step)
             previous_part_factors = np.zeros(pf.n_gen_agc)
-            sum_p_model_list = np.zeros(n_step)
+            sum_pinc_model = np.zeros(n_step)
+            sum_pdec_model = np.zeros(n_step)
+            sum_ploss_model = np.zeros(n_step)
+            P_faltante = np.zeros(n_step)
             P_ens = np.zeros(n_step)
             j = -1
             for t_int in range(tstop_cpf+t_step, t_final, t_step):
@@ -303,12 +305,18 @@ def Variabilidad(pf, t_initial, t_final, tstop_cpf, sim, m_optm):
 
                 PartialModel = optm.PartialModel(pf, m_optm, sim, ShortSim, new_SF, P_change_list[j] + Precp[j] ,scen, ti, t_int)
 
+                # Potencia Faltante
+
+                P_faltante[j] = P_change_list[j] + Precp[j] + sim.P_out[scen,ti] - pf.dda_barra[:,ti].sum() + ShortSim.D_t.sum() - sim.PL_pre_line[ti] + PartialModel.ploss.x.sum()
+
                 logging.debug("Potencia AGC por recuperar: %s" % (PartialModel.pg_inc.x.sum() - PartialModel.pg_dec.x.sum() + PartialModel.p_ens.x.sum())), 
 
                 part_factors[:,int((t_int-tstop_cpf)/t_step),ti] = PartialModel.part_factors
                 #print('Part Factors: ' + str([factor for factor in PartialModel.part_factors if factor != 0]))
 
-                sum_p_model[j] = PartialModel.pg_inc.x.sum() - PartialModel.pg_dec.x.sum() + PartialModel.p_ens.x.sum()    
+                sum_pinc_model[j] = PartialModel.pg_inc.x.sum()
+                sum_pdec_model[j] = PartialModel.pg_dec.x.sum() 
+                sum_ploss_model[j] = PartialModel.ploss.x.sum()
                 #print('P_ens: ' + str(PartialModel.p_ens.x.sum()))
                 if PartialModel.p_ens.x.sum() > 0:
                     logging.debug('Error: P_ens > 0')
@@ -325,11 +333,11 @@ def Variabilidad(pf, t_initial, t_final, tstop_cpf, sim, m_optm):
 
             # Simulación
 
-            logging.info("Simulation finished")
-            data = pd.DataFrame(np.vstack((range(tstop_cpf+t_step, t_final, t_step), freq_list, Pn_genAGC_list, Pn_genNOagc_list, Pn_load_list, Pn_losses_list, sum_p_model_list, P_change_list)).T, 
-                                columns=['Time', 'Freq', 'SumAGC', 'SumNOagc', 'SumLoad', 'SumLoss', 'SumP', 'P_Change'])
+            logging.info("Simulation finished for contigency: %s", gen_out)
+            data = pd.DataFrame(np.vstack((range(tstop_cpf+t_step, t_final, t_step), freq_list, Pn_genAGC_list, Pn_genNOagc_list, Pn_load_list, Pn_losses_list,P_faltante, P_change_list + Precp, sum_pinc_model, sum_pdec_model, sum_ploss_model)).T, 
+                                columns=['Time', 'Freq', 'SumAGC', 'SumNOagc', 'SumLoad', 'SumLoss', 'P_faltante', 'P_Change', 'SumPinc', 'SumPdec', 'SumLoss'])
 
-            data.to_excel(f'data_short_sim_{time.strftime("%Y%m%d-%H%M%S")}.xlsx', index=False)
+            data.to_excel(f'data_short_sim_{gen_out}_{time.strftime("%Y%m%d-%H%M%S")}.xlsx', index=False)
             logging.info("Data saved to data_short_sim.xlsx")
 
 
@@ -338,27 +346,31 @@ def Variabilidad(pf, t_initial, t_final, tstop_cpf, sim, m_optm):
 
             axs[0, 0].plot(Pn_genAGC_list, label='Pb_genAGC')
             axs[0, 0].axhline(y=Pb_genAGC, color='r', linestyle='--', label='Pb_genAGC Line')
+            axs[0, 0].axhline(y=Pn_genAGC, color='b', linestyle='--', label='Pn_genAGC Line')
             axs[0, 0].set_title('Pb_genAGC')
             axs[0, 0].set_xlabel('Time Step')
             axs[0, 0].set_ylabel('Power (MW)')
             axs[0, 0].grid(True)
 
             axs[0, 1].plot(Pn_genNOagc_list, label='Pb_genNOagc')
-            axs[0, 1].axhline(y=Pb_genNOagc, color='r', linestyle='--', label='Pb_genAGC Line')
+            axs[0, 1].axhline(y=Pb_genNOagc, color='r', linestyle='--', label='Pb_genNOagc Line')
+            axs[0, 1].axhline(y=Pn_genNOagc, color='b', linestyle='--', label='Pn_genNOagc Line')
             axs[0, 1].set_title('Pb_genNOagc')
             axs[0, 1].set_xlabel('Time Step')
             axs[0, 1].set_ylabel('Power (MW)')
             axs[0, 1].grid(True)
 
             axs[1, 0].plot(Pn_load_list, label='Pb_load')
-            axs[1, 0].axhline(y=Pb_load, color='r', linestyle='--', label='Pb_genAGC Line')
+            axs[1, 0].axhline(y=Pb_load, color='r', linestyle='--', label='Pb_load Line')
+            axs[1, 0].axhline(y=Pn_load, color='b', linestyle='--', label='Pn_load Line')
             axs[1, 0].set_title('Pb_load')
             axs[1, 0].set_xlabel('Time Step')
             axs[1, 0].set_ylabel('Power (MW)')
             axs[1, 0].grid(True)
 
             axs[1, 1].plot(Pn_losses_list, label='Pb_losses')
-            axs[1, 1].axhline(y=Pb_losses, color='r', linestyle='--', label='Pb_genAGC Line')
+            axs[1, 1].axhline(y=Pb_losses, color='r', linestyle='--', label='Pb_losses Line')
+            axs[1, 1].axhline(y=Pn_losses, color='b', linestyle='--', label='Pn_losses Line')
             axs[1, 1].set_title('Pb_losses')
             axs[1, 1].set_xlabel('Time Step')
             axs[1, 1].set_ylabel('Power (MW)')
@@ -366,7 +378,7 @@ def Variabilidad(pf, t_initial, t_final, tstop_cpf, sim, m_optm):
 
             # Save the figure
             plt.tight_layout()
-            plt.savefig(f'power_generation_and_load_{time.strftime("%Y%m%d-%H%M%S")}.png')
+            plt.savefig(f'power_generation_and_load_{gen_out}_{time.strftime("%Y%m%d-%H%M%S")}.png')
             plt.close()
             logging.info("Power generation and load plot saved to power_generation_and_load.png")
 
@@ -668,7 +680,7 @@ def main():
 
 
 
-    if True:
+    if False:
         pf_time, freq_values = pf.extract_data('Term_10_4.ElmTerm', 'm:fehz', return_time=True)
 
         # Extrer datos de cada generador

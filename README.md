@@ -13,6 +13,8 @@
 
 ### TBD
 
+- Se añadio restricción ENS = 0
+
 - Al añadir contingencia de carga, revisar la lista optm.gen_csf, crear dos listas. Una para vg_inc y otra para vg_dec
 
 - Fijar los factores de participación utilizando el modelo original en t=30s
