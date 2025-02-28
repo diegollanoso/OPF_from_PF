@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import gurobipy as gp
-from gurobipy import *
 from scipy.sparse import csr_matrix as sparse, identity as sparseI
 import logging
 
@@ -104,11 +102,18 @@ class PowerFactorySim(object):
 
         self.gen_agc = study_case.GetContents('Gen AGC.SetSelect')[0].All()
         self.Gen_AGC = list(map(lambda x: x.loc_name, self.gen_agc))
+        logging.debug("Generators AGC: %s", self.Gen_AGC)
+
 
         gen_out = study_case.GetContents('Gen OUT.SetSelect')[0].All()
-        #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
-        self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
+        gen_out = study_case.GetContents('Loads OUT.SetSelect')[0].All()
+
+        self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))
+        #self.Gen_Outages = list(map(lambda x: x.loc_name, gen_out))[:1]
+        self.Outages_types = list(map(lambda x: x.GetClassName(), gen_out))
         self.Ns = len(self.Gen_Outages)
+        logging.debug("Generators outages: %s", self.Gen_Outages)
+
 
         self.use_sf = False # 1 = SF calculados con matrices;  0 = SF de PF
 
@@ -121,8 +126,9 @@ class PowerFactorySim(object):
         try:
             line_ts = study_case.GetContents('Line TS.SetSelect')[0].All()
             self.TS_lines = list(map(lambda x: x.loc_name, line_ts))
+            logging.debug("TS lines: %s", self.TS_lines)
         except:
-            print('Not Found: Lineas candidatas a TS')
+            logging.error('Not Found: Lineas candidatas a TS')
 
 
         # Lista con N° gamma de cada generador en agc
@@ -224,12 +230,12 @@ class PowerFactorySim(object):
 
         # CARGAS - en servicio y switch cerrado
         # name carga = (N° barra, NombreBarra, Potencia peak MW, Potencia mean, Potencia valle)
-        dict_cargas = dict()                              
+        self.dict_cargas = dict()                              
         for c in self.cargas:
             if c.outserv == 0 and c.bus1.cpCB.on_off == 1:                  # carga en servicio y switch conectado
                 # name carga = (N° barra, Potencia MW, NombreBarra)
                 potencia = c.GetAttribute(self.potencia_ac)
-                dict_cargas[c.loc_name] = [self.dict_barras[c.bus1.cterm.loc_name], c.bus1.cterm.loc_name, potencia, 0, 0]
+                self.dict_cargas[c.loc_name] = [self.dict_barras[c.bus1.cterm.loc_name], c.bus1.cterm.loc_name, potencia, 0, 0]
 
 
         # LINEAS - en servicio
@@ -382,7 +388,7 @@ class PowerFactorySim(object):
                 #Agregar potencias de carga en otros escenarios.
 
             for carga in self.cargas:
-                dict_cargas[carga.loc_name][sc+2] = carga.GetAttribute(self.potencia_ac)
+                self.dict_cargas[carga.loc_name][sc+2] = carga.GetAttribute(self.potencia_ac)
 
             for gen in self.generadores:
                 if gen.outserv == 0 and  gen.bus1.cpCB.on_off == 1:
@@ -409,9 +415,9 @@ class PowerFactorySim(object):
         # Demanda por barra
         self.Nb = len(self.indices_bus)
         self.dda_barra = np.zeros((self.Nb, self.Nt))
-        for load in dict_cargas:
+        for load in self.dict_cargas:
             for ti in range(self.Nt):
-                self.dda_barra[dict_cargas[load][0], ti] += dict_cargas[load][ti+2]/self.Sb
+                self.dda_barra[self.dict_cargas[load][0], ti] += self.dict_cargas[load][ti+2]/self.Sb
 
 
         # Generadores
@@ -710,8 +716,6 @@ class Simulacion(object):
         logging.info("Initializing simulation with t_initial: %d, tstop_cpf: %d", t_initial, tstop_cpf)
         # Elementos a monitorear
         bus_freq = data.app.GetCalcRelevantObjects('Term_10_4.ElmTerm')
-        #Inercia
-        H=0.94
     
         # Switch event
         # Gen Out
@@ -743,13 +747,24 @@ class Simulacion(object):
                 sys.stdout.write(' - Generador Out: ' + gen_out)
                 sys.stdout.flush()
                 
-                self.P_out[cont,ti] = data.dict_gen[gen_out][8+ti]/data.Sb
-                self.Barra_gen_out[cont] = data.dict_gen[gen_out][0]
-                
-                evt = data.events_folder[self.name_events.index('Salida Gen')]
+                if data.Outages_types[cont] == 'ElmSym':
+                    self.Barra_gen_out[cont] = data.dict_gen[gen_out][0]
+                    self.P_out[cont,ti] = data.dict_gen[gen_out][8+ti]/data.Sb
+                elif data.Outages_types[cont] == 'ElmLod':
+                    self.Barra_gen_out[cont] = data.dict_cargas[gen_out][0]
+                    self.P_out[cont,ti] = -data.dict_cargas[gen_out][2+ti]/data.Sb
+
+                if data.Outages_types[cont] == 'ElmSym':
+                    evt = data.events_folder[self.name_events.index('Salida Gen')]
+                    evt.p_target = data.generadores[list(data.dict_gen).index(gen_out)]
+
+                elif data.Outages_types[cont] == 'ElmLod':
+                    evt = data.events_folder[self.name_events.index('Salida Load')]
+                    evt.p_target = data.cargas[list(data.dict_cargas).index(gen_out)]
                 evt.outserv = 0
                 evt.time = t_initial
-                evt.p_target = data.generadores[list(data.dict_gen).index(gen_out)]
+
+                logging.debug("Running dynamic simulation for contingency: %s", evt)
 
                 data.prepare_dynamic_sim({}, 'rms')
                 

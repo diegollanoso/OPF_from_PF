@@ -146,24 +146,35 @@ class Modelo():
 
     def Balance(self, data, simm, s, ti):    
         logging.info("Adding balance constraint for s: %d, ti: %d", s, ti)
+        # Se debe re-definir P_out para las contigencias de cargas. 
+        # La información de salida de carga se encuentar en D_pfc
+        if data.Outages_types[s] == 'ElmSym':
+            P_out = simm.P_out[s,ti]
+        elif data.Outages_types[s] == 'ElmLod': 
+            P_out = 0
+        
         # Con perdidas y gen pueden bajar potencia
         if self.pot_down:
-            self.m.addConstr(self.pg_inc[:,s,ti].sum() - self.pg_dec[:,s,ti].sum() + self.p_ens[:,s].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum() - simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
-        
+            self.m.addConstr(self.pg_inc[:,s,ti].sum() - self.pg_dec[:,s,ti].sum() + self.p_ens[:,s].sum() == P_out - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum() - simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
         # Con perdidas 
         elif self.flujos and self.losses:
-            self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum()- simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
+            self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == P_out - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum()- simm.PL_pre_line[ti] + self.ploss[:,s,ti].sum(), name ='Balance')
         
         # Sin Perdidas y con sistema de transmisión
         elif self.flujos and not data.flujo_dc:
-            self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum(), name ='Balance')
+            self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == P_out - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum(), name ='Balance')
 
         # Sin Perdidas / Inc potencia
         else:
-            self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == simm.P_out[s,ti], name ='Balance')
+            self.m.addConstr(self.pg_inc[:,s,ti].sum() + self.p_ens[:,s,ti].sum() == P_out, name ='Balance')
 
 
     def R_FlujoLosses(self, data, simm, ti, s, fp, fn, dpk):
+
+        if data.Outages_types[s] == 'ElmSym':
+            P_out = simm.P_out[s,ti]
+        elif data.Outages_types[s] == 'ElmLod': 
+            P_out = 0
 
         if self.pot_down:
             inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
@@ -181,7 +192,7 @@ class Modelo():
             f_pv = data.SF[:,data.pos_pv] @ data.Ppv_pre[:,ti]
         f_ens =  data.SF @ self.p_ens[:,s,ti]
         f_gen_agc = data.SF[:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
-        f_gen_out = data.SF[:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+        f_gen_out = data.SF[:,int(simm.Barra_gen_out[s])]*P_out
         Flujo_dda = data.SF @ simm.D_pfc[:,s,ti]
 
                 
@@ -218,6 +229,12 @@ class Modelo():
 
     #def Flujos_TS(self ,data ,simm, ti, s, f_ts, dpk, fp, fn, M = 1e6):
     def Flujos_TS(self ,data ,simm, ti, s, dpk, fp, fn, M = 100):
+
+        if data.Outages_types[s] == 'ElmSym':
+            P_out = simm.P_out[s,ti]
+        elif data.Outages_types[s] == 'ElmLod': 
+            P_out = 0
+
 
         if self.pot_down:
             inc = self.pg_inc[:,s,ti] - self.pg_dec[:,s,ti]
@@ -260,7 +277,7 @@ class Modelo():
             fnots_gen_agc = data.SF[data.pos_nots,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
         fnots_gen_out = 0
         if np.size(data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]) != 0:
-            fnots_gen_out = data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+            fnots_gen_out = data.SF[data.pos_nots,:][:,int(simm.Barra_gen_out[s])]*P_out
         fnots_dda = data.SF[data.pos_nots,:] @ simm.D_pfc[:,s,ti]
 
         #print('fnots_gen = ' + str(fnots_gen[44]))
@@ -290,7 +307,7 @@ class Modelo():
             fts_pv = data.SF[data.pos_ts,:][:,data.pos_pv] @ data.Ppv_pre[:,ti]
         fts_ens = data.SF[data.pos_ts,:] @ self.p_ens[:,s,ti]        
         fts_gen_agc = data.SF[data.pos_ts,:][:,data.pos_gen[data.pos_gen_agc_list]] @ (inc)
-        fts_gen_out = data.SF[data.pos_ts,:][:,int(simm.Barra_gen_out[s])]*simm.P_out[s,ti]
+        fts_gen_out = data.SF[data.pos_ts,:][:,int(simm.Barra_gen_out[s])]*P_out
         fts_dda = data.SF[data.pos_ts,:] @ simm.D_pfc[:,s,ti]
 
 
@@ -399,14 +416,19 @@ class Modelo():
             self.part_factors = np.zeros((data.n_gen_agc,data.Ns,data.Nt))
             for gen, s, ti in np.ndindex(self.pg_inc.x.shape):
                 
+                if data.Outages_types[s] == 'ElmSym':
+                    P_out = simm.P_out[s,ti]
+                elif data.Outages_types[s] == 'ElmLod': 
+                    P_out = 0
+
                 if self.losses:
-                    self.Post_gen_out[s, ti] = simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum() - simm.PL_pre_line[ti] + self.ploss[:,s,ti].x.sum()
+                    self.Post_gen_out[s, ti] = P_out - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum() - simm.PL_pre_line[ti] + self.ploss[:,s,ti].x.sum()
 
                 elif self.flujos:
-                    self.Post_gen_out[s, ti] = simm.P_out[s,ti] - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum()
+                    self.Post_gen_out[s, ti] = P_out - data.dda_barra[:,ti].sum() + simm.D_pfc[:,s,ti].sum()
                 
                 else:
-                    self.Post_gen_out[s, ti] = simm.P_out[s,ti]
+                    self.Post_gen_out[s, ti] = P_out
 
                 
                 if self.pot_down:

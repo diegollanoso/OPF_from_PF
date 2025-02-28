@@ -13,6 +13,15 @@
 
 ### TBD
 
+- Añadir contigencias de carga para variabilidad
+
+- Probar en el otro archivo con gen renovable
+- Añadir variabiliadd ERV y demanda
+- Hacer ajuste de filtro de AGC
+- AGC se activa solo para ciertas frecuencias
+
+- Añadir gráfico que muestre la frecuencia y la variación de potencia en los Gens, en particular, los del gen del csf
+
 - Se añadio restricción ENS = 0
 
 - Al añadir contingencia de carga, revisar la lista optm.gen_csf, crear dos listas. Una para vg_inc y otra para vg_dec

@@ -7,11 +7,6 @@ import time
 import optm
 import logging
 
-# logging.basicConfig(filename='report.log',
-#                     filemode='a',
-#                     level=logging.INFO,
-#                     format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 class PrintToLogger:
     """
@@ -482,11 +477,16 @@ def Revision_big_optm(params, project_file, pf, dict_lineas, t_initial, tstop_cp
                     e.outserv = 1   
                 print('Progreso: ' + str(scen+1+pf.Ns*ti) + '/' + str(pf.Ns*pf.Nt))
                 print('Generador Out: ' + pf.Gen_Outages[scen])
-                evt = pf.events_folder[sim.name_events.index('Salida Gen')]
+                
+                if pf.Outages_types[scen] == 'ElmSym':
+                    evt = pf.events_folder[sim.name_events.index('Salida Gen')]
+                    evt.p_target = pf.generadores[list(pf.dict_gen).index(pf.Gen_Outages[scen])]
+                elif pf.Outages_types[scen] == 'ElmLod':
+                    evt = pf.events_folder[sim.name_events.index('Salida Load')]
+                    evt.p_target = pf.cargas[list(pf.dict_cargas).index(pf.Gen_Outages[scen])]
+
                 evt.outserv = 0
                 evt.time = t_initial
-                evt.p_target = pf.generadores[list(pf.dict_gen).index(pf.Gen_Outages[scen])]
-                
                 pfsim.Set_param_agc(pf, tstop_cpf, m_optm.part_factors[:,scen,ti])
                 #count=0
                 #for gen in pf.Gen_AGC:
@@ -536,7 +536,8 @@ def Revision_big_optm(params, project_file, pf, dict_lineas, t_initial, tstop_cp
                     delta = delta_inc
 
                 P_final = pf.Pgen_pre[:,ti] + delta
-                P_final[list(all_gen).index(pf.Gen_Outages[scen])] = 0
+                if pf.Outages_types[scen] == 'ElmSym':
+                    P_final[list(all_gen).index(pf.Gen_Outages[scen])] = 0
                 Res_gen_export = pd.DataFrame(np.vstack((all_gen,result_gen[:,scen,ti],P_final*pf.Sb)).T, columns=['Gen', 'P_PF', 'P_Py'])
                 name_hoja = 'D' + str(ti) + '_E' + str(scen) + ' ' + pf.Gen_Outages[scen]
                 Res_gen_export.to_excel(writer, sheet_name= name_hoja,index=False)
@@ -570,12 +571,18 @@ def Revision_big_optm(params, project_file, pf, dict_lineas, t_initial, tstop_cp
                 else:
                     costo[scen] = pf.Cvar_gen[pf.pos_gen_agc_list]*pf.Sb @ (m_optm.pg_inc[:,scen,ti].x)
 
+                if pf.Outages_types[scen] == 'ElmSym':
+                    P_out = sim.P_out[scen,ti]
+                elif pf.Outages_types[scen] == 'ElmLod': 
+                    P_out = 0
+
+
                 if m_optm.losses:
-                    P_agc[scen] = sim.P_out[scen,ti] - pf.dda_barra[:,ti].sum() + sim.D_pfc[:,scen,ti].sum() - sim.PL_pre_line[ti] + m_optm.ploss[:,scen,ti].x.sum()
+                    P_agc[scen] = P_out - pf.dda_barra[:,ti].sum() + sim.D_pfc[:,scen,ti].sum() - sim.PL_pre_line[ti] + m_optm.ploss[:,scen,ti].x.sum()
                 elif m_optm.flujos:
-                    P_agc[scen] = sim.P_out[scen,ti] - pf.dda_barra[:,ti].sum() + sim.D_pfc[:,scen,ti].sum()
+                    P_agc[scen] = P_out - pf.dda_barra[:,ti].sum() + sim.D_pfc[:,scen,ti].sum()
                 else:
-                    P_agc[scen] = sim.P_out[scen,ti] 
+                    P_agc[scen] = P_out
 
             if m_optm.pot_down:
                 diff_power = np.array(m_optm.pg_inc.x[:,:,ti]-m_optm.pg_dec.x[:,:,ti])*pf.Sb

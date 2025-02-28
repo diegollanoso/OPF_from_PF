@@ -140,7 +140,7 @@
 2025-02-24 06:45:23 - INFO - New shift factors initialized
 2025-02-24 06:45:23 - INFO - Switched lines: []
 2025-02-24 06:45:23 - INFO - Generadores que participan en el CSF: ['G7_1' 'G4_3' 'G3_2' 'G4_2']
-2025-02-24 06:45:23 - INFO - Simulación - t_int: 34
+2025-02-24 06:45:23 - INFO - Simulaciï¿½n - t_int: 34
 2025-02-24 06:45:23 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:45:24 - INFO - Dynamic simulation prepared
 2025-02-24 06:45:24 - INFO - Running dynamic simulation until time: 34.00
@@ -180,7 +180,7 @@
 2025-02-24 06:45:29 - INFO - Event Gamma G4_2 created with value 0.3031728164512362
 2025-02-24 06:45:29 - INFO - Event Gamma G4_3 created with value 0.3031606413588643
 2025-02-24 06:45:30 - INFO - Event Gamma G7_1 created with value 0.31791390500228855
-2025-02-24 06:45:30 - INFO - Simulación - t_int: 38
+2025-02-24 06:45:30 - INFO - Simulaciï¿½n - t_int: 38
 2025-02-24 06:45:30 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:45:31 - INFO - Dynamic simulation prepared
 2025-02-24 06:45:31 - INFO - Running dynamic simulation until time: 38.00
@@ -220,7 +220,7 @@
 2025-02-24 06:45:35 - INFO - Event Gamma G4_2 created with value 0.3067847965652804
 2025-02-24 06:45:36 - INFO - Event Gamma G4_3 created with value 0.3067451739483391
 2025-02-24 06:45:36 - INFO - Event Gamma G7_1 created with value 0.35402264468472217
-2025-02-24 06:45:36 - INFO - Simulación - t_int: 42
+2025-02-24 06:45:36 - INFO - Simulaciï¿½n - t_int: 42
 2025-02-24 06:45:36 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:45:38 - INFO - Dynamic simulation prepared
 2025-02-24 06:45:38 - INFO - Running dynamic simulation until time: 42.00
@@ -260,7 +260,7 @@
 2025-02-24 06:45:42 - INFO - Event Gamma G4_2 created with value 0.30200432822886064
 2025-02-24 06:45:43 - INFO - Event Gamma G4_3 created with value 0.30205786533121776
 2025-02-24 06:45:44 - INFO - Event Gamma G7_1 created with value 0.37966694798435674
-2025-02-24 06:45:44 - INFO - Simulación - t_int: 46
+2025-02-24 06:45:44 - INFO - Simulaciï¿½n - t_int: 46
 2025-02-24 06:45:44 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:45:44 - INFO - Dynamic simulation prepared
 2025-02-24 06:45:45 - INFO - Running dynamic simulation until time: 46.00
@@ -299,7 +299,7 @@
 2025-02-24 06:45:49 - INFO - Event Gamma G4_2 created with value 0.2994380475574491
 2025-02-24 06:45:49 - INFO - Event Gamma G4_3 created with value 0.2994696205072871
 2025-02-24 06:45:50 - INFO - Event Gamma G7_1 created with value 0.4010923319352639
-2025-02-24 06:45:50 - INFO - Simulación - t_int: 50
+2025-02-24 06:45:50 - INFO - Simulaciï¿½n - t_int: 50
 2025-02-24 06:45:50 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:45:51 - INFO - Dynamic simulation prepared
 2025-02-24 06:45:51 - INFO - Running dynamic simulation until time: 50.00
@@ -338,7 +338,7 @@
 2025-02-24 06:45:56 - INFO - Event Gamma G4_2 created with value 0.30080933505761265
 2025-02-24 06:45:57 - INFO - Event Gamma G4_3 created with value 0.30081429437938295
 2025-02-24 06:45:58 - INFO - Event Gamma G7_1 created with value 0.3983763705630044
-2025-02-24 06:45:58 - INFO - Simulación - t_int: 54
+2025-02-24 06:45:58 - INFO - Simulaciï¿½n - t_int: 54
 2025-02-24 06:45:58 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:45:59 - INFO - Dynamic simulation prepared
 2025-02-24 06:45:59 - INFO - Running dynamic simulation until time: 54.00
@@ -377,7 +377,7 @@
 2025-02-24 06:46:05 - INFO - Event Gamma G4_2 created with value 0.30069441913138517
 2025-02-24 06:46:05 - INFO - Event Gamma G4_3 created with value 0.3006736566734585
 2025-02-24 06:46:06 - INFO - Event Gamma G7_1 created with value 0.3986319241951563
-2025-02-24 06:46:06 - INFO - Simulación - t_int: 58
+2025-02-24 06:46:06 - INFO - Simulaciï¿½n - t_int: 58
 2025-02-24 06:46:06 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:07 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:07 - INFO - Running dynamic simulation until time: 58.00
@@ -416,7 +416,7 @@
 2025-02-24 06:46:11 - INFO - Event Gamma G4_2 created with value 0.3004861754922892
 2025-02-24 06:46:12 - INFO - Event Gamma G4_3 created with value 0.30047102309985807
 2025-02-24 06:46:13 - INFO - Event Gamma G7_1 created with value 0.3990428014078528
-2025-02-24 06:46:13 - INFO - Simulación - t_int: 62
+2025-02-24 06:46:13 - INFO - Simulaciï¿½n - t_int: 62
 2025-02-24 06:46:13 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:14 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:14 - INFO - Running dynamic simulation until time: 62.00
@@ -455,7 +455,7 @@
 2025-02-24 06:46:19 - INFO - Event Gamma G4_2 created with value 0.30022178793728727
 2025-02-24 06:46:20 - INFO - Event Gamma G4_3 created with value 0.3001989717290748
 2025-02-24 06:46:21 - INFO - Event Gamma G7_1 created with value 0.399579240333638
-2025-02-24 06:46:21 - INFO - Simulación - t_int: 66
+2025-02-24 06:46:21 - INFO - Simulaciï¿½n - t_int: 66
 2025-02-24 06:46:21 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:23 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:23 - INFO - Running dynamic simulation until time: 66.00
@@ -494,7 +494,7 @@
 2025-02-24 06:46:28 - INFO - Event Gamma G4_2 created with value 0.2999825876934454
 2025-02-24 06:46:29 - INFO - Event Gamma G4_3 created with value 0.299961983308609
 2025-02-24 06:46:30 - INFO - Event Gamma G7_1 created with value 0.40005542899794566
-2025-02-24 06:46:30 - INFO - Simulación - t_int: 70
+2025-02-24 06:46:30 - INFO - Simulaciï¿½n - t_int: 70
 2025-02-24 06:46:30 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:31 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:31 - INFO - Running dynamic simulation until time: 70.00
@@ -533,7 +533,7 @@
 2025-02-24 06:46:38 - INFO - Event Gamma G4_2 created with value 0.299775618013058
 2025-02-24 06:46:39 - INFO - Event Gamma G4_3 created with value 0.29975344627664774
 2025-02-24 06:46:40 - INFO - Event Gamma G7_1 created with value 0.4004709357102943
-2025-02-24 06:46:40 - INFO - Simulación - t_int: 74
+2025-02-24 06:46:40 - INFO - Simulaciï¿½n - t_int: 74
 2025-02-24 06:46:40 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:41 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:41 - INFO - Running dynamic simulation until time: 74.00
@@ -572,7 +572,7 @@
 2025-02-24 06:46:47 - INFO - Event Gamma G4_2 created with value 0.29960105197164183
 2025-02-24 06:46:47 - INFO - Event Gamma G4_3 created with value 0.29958214044758075
 2025-02-24 06:46:48 - INFO - Event Gamma G7_1 created with value 0.40081680758077753
-2025-02-24 06:46:48 - INFO - Simulación - t_int: 78
+2025-02-24 06:46:48 - INFO - Simulaciï¿½n - t_int: 78
 2025-02-24 06:46:48 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:49 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:50 - INFO - Running dynamic simulation until time: 78.00
@@ -611,7 +611,7 @@
 2025-02-24 06:46:56 - INFO - Event Gamma G4_2 created with value 0.2994533387018532
 2025-02-24 06:46:57 - INFO - Event Gamma G4_3 created with value 0.29943433448598783
 2025-02-24 06:46:58 - INFO - Event Gamma G7_1 created with value 0.4011123268121591
-2025-02-24 06:46:58 - INFO - Simulación - t_int: 82
+2025-02-24 06:46:58 - INFO - Simulaciï¿½n - t_int: 82
 2025-02-24 06:46:58 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:46:59 - INFO - Dynamic simulation prepared
 2025-02-24 06:46:59 - INFO - Running dynamic simulation until time: 82.00
@@ -650,7 +650,7 @@
 2025-02-24 06:47:05 - INFO - Event Gamma G4_2 created with value 0.2993293101578294
 2025-02-24 06:47:05 - INFO - Event Gamma G4_3 created with value 0.29931411116709267
 2025-02-24 06:47:06 - INFO - Event Gamma G7_1 created with value 0.401356578675078
-2025-02-24 06:47:06 - INFO - Simulación - t_int: 86
+2025-02-24 06:47:06 - INFO - Simulaciï¿½n - t_int: 86
 2025-02-24 06:47:06 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:47:07 - INFO - Dynamic simulation prepared
 2025-02-24 06:47:07 - INFO - Running dynamic simulation until time: 86.00
@@ -689,7 +689,7 @@
 2025-02-24 06:47:14 - INFO - Event Gamma G4_2 created with value 0.299225103081029
 2025-02-24 06:47:14 - INFO - Event Gamma G4_3 created with value 0.29920872625027417
 2025-02-24 06:47:15 - INFO - Event Gamma G7_1 created with value 0.40156617066869693
-2025-02-24 06:47:15 - INFO - Simulación - t_int: 90
+2025-02-24 06:47:15 - INFO - Simulaciï¿½n - t_int: 90
 2025-02-24 06:47:15 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:47:16 - INFO - Dynamic simulation prepared
 2025-02-24 06:47:17 - INFO - Running dynamic simulation until time: 90.00
@@ -728,7 +728,7 @@
 2025-02-24 06:47:23 - INFO - Event Gamma G4_2 created with value 0.29913388983245515
 2025-02-24 06:47:24 - INFO - Event Gamma G4_3 created with value 0.2991240018112747
 2025-02-24 06:47:24 - INFO - Event Gamma G7_1 created with value 0.4017421083562701
-2025-02-24 06:47:24 - INFO - Simulación - t_int: 94
+2025-02-24 06:47:24 - INFO - Simulaciï¿½n - t_int: 94
 2025-02-24 06:47:24 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:47:25 - INFO - Dynamic simulation prepared
 2025-02-24 06:47:26 - INFO - Running dynamic simulation until time: 94.00
@@ -767,7 +767,7 @@
 2025-02-24 06:47:32 - INFO - Event Gamma G4_2 created with value 0.2990593510960068
 2025-02-24 06:47:33 - INFO - Event Gamma G4_3 created with value 0.2990414539207888
 2025-02-24 06:47:33 - INFO - Event Gamma G7_1 created with value 0.40189919498320437
-2025-02-24 06:47:33 - INFO - Simulación - t_int: 98
+2025-02-24 06:47:33 - INFO - Simulaciï¿½n - t_int: 98
 2025-02-24 06:47:33 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:47:35 - INFO - Dynamic simulation prepared
 2025-02-24 06:47:35 - INFO - Running dynamic simulation until time: 98.00
@@ -806,7 +806,7 @@
 2025-02-24 06:47:41 - INFO - Event Gamma G4_2 created with value 0.29898706623517296
 2025-02-24 06:47:42 - INFO - Event Gamma G4_3 created with value 0.2989918949154806
 2025-02-24 06:47:42 - INFO - Event Gamma G7_1 created with value 0.4020210388493466
-2025-02-24 06:47:42 - INFO - Simulación - t_int: 102
+2025-02-24 06:47:42 - INFO - Simulaciï¿½n - t_int: 102
 2025-02-24 06:47:42 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:47:44 - INFO - Dynamic simulation prepared
 2025-02-24 06:47:44 - INFO - Running dynamic simulation until time: 102.00
@@ -845,7 +845,7 @@
 2025-02-24 06:47:51 - INFO - Event Gamma G4_2 created with value 0.29894471356865177
 2025-02-24 06:47:51 - INFO - Event Gamma G4_3 created with value 0.29889442235487107
 2025-02-24 06:47:52 - INFO - Event Gamma G7_1 created with value 0.4021608640764772
-2025-02-24 06:47:52 - INFO - Simulación - t_int: 106
+2025-02-24 06:47:52 - INFO - Simulaciï¿½n - t_int: 106
 2025-02-24 06:47:52 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:47:53 - INFO - Dynamic simulation prepared
 2025-02-24 06:47:53 - INFO - Running dynamic simulation until time: 106.00
@@ -884,7 +884,7 @@
 2025-02-24 06:48:00 - INFO - Event Gamma G4_2 created with value 0.2988472455130257
 2025-02-24 06:48:01 - INFO - Event Gamma G4_3 created with value 0.29896918255259397
 2025-02-24 06:48:02 - INFO - Event Gamma G7_1 created with value 0.4021835719343803
-2025-02-24 06:48:02 - INFO - Simulación - t_int: 110
+2025-02-24 06:48:02 - INFO - Simulaciï¿½n - t_int: 110
 2025-02-24 06:48:02 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:48:03 - INFO - Dynamic simulation prepared
 2025-02-24 06:48:03 - INFO - Running dynamic simulation until time: 110.00
@@ -923,7 +923,7 @@
 2025-02-24 06:48:12 - INFO - Event Gamma G4_2 created with value 0.2989714896858788
 2025-02-24 06:48:12 - INFO - Event Gamma G4_3 created with value 0.2984942383448424
 2025-02-24 06:48:13 - INFO - Event Gamma G7_1 created with value 0.4025342719692788
-2025-02-24 06:48:13 - INFO - Simulación - t_int: 114
+2025-02-24 06:48:13 - INFO - Simulaciï¿½n - t_int: 114
 2025-02-24 06:48:13 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:48:14 - INFO - Dynamic simulation prepared
 2025-02-24 06:48:14 - INFO - Running dynamic simulation until time: 114.00
@@ -962,7 +962,7 @@
 2025-02-24 06:48:23 - INFO - Event Gamma G4_2 created with value 0.29825019914270434
 2025-02-24 06:48:23 - INFO - Event Gamma G4_3 created with value 0.300187951913672
 2025-02-24 06:48:24 - INFO - Event Gamma G7_1 created with value 0.4015618489436236
-2025-02-24 06:48:24 - INFO - Simulación - t_int: 118
+2025-02-24 06:48:24 - INFO - Simulaciï¿½n - t_int: 118
 2025-02-24 06:48:24 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:48:25 - INFO - Dynamic simulation prepared
 2025-02-24 06:48:25 - INFO - Running dynamic simulation until time: 118.00
@@ -1001,7 +1001,7 @@
 2025-02-24 06:48:33 - INFO - Event Gamma G4_2 created with value 0.30138661339731865
 2025-02-24 06:48:34 - INFO - Event Gamma G4_3 created with value 0.2922183988840185
 2025-02-24 06:48:35 - INFO - Event Gamma G7_1 created with value 0.4063949877186629
-2025-02-24 06:48:35 - INFO - Simulación - t_int: 122
+2025-02-24 06:48:35 - INFO - Simulaciï¿½n - t_int: 122
 2025-02-24 06:48:35 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:48:36 - INFO - Dynamic simulation prepared
 2025-02-24 06:48:36 - INFO - Running dynamic simulation until time: 122.00
@@ -1040,7 +1040,7 @@
 2025-02-24 06:48:44 - INFO - Event Gamma G4_2 created with value 0.28462416288945014
 2025-02-24 06:48:45 - INFO - Event Gamma G4_3 created with value 0.3336689870213314
 2025-02-24 06:48:46 - INFO - Event Gamma G7_1 created with value 0.3817068500892185
-2025-02-24 06:48:46 - INFO - Simulación - t_int: 126
+2025-02-24 06:48:46 - INFO - Simulaciï¿½n - t_int: 126
 2025-02-24 06:48:46 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:48:47 - INFO - Dynamic simulation prepared
 2025-02-24 06:48:47 - INFO - Running dynamic simulation until time: 126.00
@@ -1079,7 +1079,7 @@
 2025-02-24 06:48:55 - INFO - Event Gamma G4_2 created with value 0.3479434315075976
 2025-02-24 06:48:56 - INFO - Event Gamma G4_3 created with value 0.1748227229769315
 2025-02-24 06:48:57 - INFO - Event Gamma G7_1 created with value 0.4772338455154708
-2025-02-24 06:48:57 - INFO - Simulación - t_int: 130
+2025-02-24 06:48:57 - INFO - Simulaciï¿½n - t_int: 130
 2025-02-24 06:48:57 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:48:58 - INFO - Dynamic simulation prepared
 2025-02-24 06:48:58 - INFO - Running dynamic simulation until time: 130.00
@@ -1117,7 +1117,7 @@
 2025-02-24 06:49:05 - DEBUG - Potencia AGC por recuperar: 0.27847591008271555
 2025-02-24 06:49:07 - INFO - Event Gamma G4_2 created with value 0.16385227163743546
 2025-02-24 06:49:07 - INFO - Event Gamma G4_3 created with value 0.8361477283625646
-2025-02-24 06:49:08 - INFO - Simulación - t_int: 134
+2025-02-24 06:49:08 - INFO - Simulaciï¿½n - t_int: 134
 2025-02-24 06:49:08 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:49:08 - INFO - Dynamic simulation prepared
 2025-02-24 06:49:08 - INFO - Running dynamic simulation until time: 134.00
@@ -1155,7 +1155,7 @@
 2025-02-24 06:49:19 - DEBUG - Potencia AGC por recuperar: 0.3225789066097177
 2025-02-24 06:49:20 - INFO - Event Gamma G4_2 created with value 0.7851720918052384
 2025-02-24 06:49:21 - INFO - Event Gamma G4_3 created with value 0.2148279081947616
-2025-02-24 06:49:21 - INFO - Simulación - t_int: 138
+2025-02-24 06:49:21 - INFO - Simulaciï¿½n - t_int: 138
 2025-02-24 06:49:21 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:49:22 - INFO - Dynamic simulation prepared
 2025-02-24 06:49:22 - INFO - Running dynamic simulation until time: 138.00
@@ -1194,7 +1194,7 @@
 2025-02-24 06:49:31 - DEBUG - Potencia AGC por recuperar: 0.16696276063710408
 2025-02-24 06:49:33 - INFO - Event Gamma G4_2 created with value 0.36330897002395884
 2025-02-24 06:49:33 - INFO - Event Gamma G4_3 created with value 0.6366910299760411
-2025-02-24 06:49:33 - INFO - Simulación - t_int: 142
+2025-02-24 06:49:33 - INFO - Simulaciï¿½n - t_int: 142
 2025-02-24 06:49:33 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:49:34 - INFO - Dynamic simulation prepared
 2025-02-24 06:49:35 - INFO - Running dynamic simulation until time: 142.00
@@ -1231,7 +1231,7 @@
 2025-02-24 06:49:44 - INFO - Costo = 17532.73
 2025-02-24 06:49:44 - DEBUG - Potencia AGC por recuperar: 0.006059208892939404
 2025-02-24 06:49:45 - INFO - Event Gamma G4_2 created with value 1.0
-2025-02-24 06:49:45 - INFO - Simulación - t_int: 146
+2025-02-24 06:49:45 - INFO - Simulaciï¿½n - t_int: 146
 2025-02-24 06:49:45 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:49:46 - INFO - Dynamic simulation prepared
 2025-02-24 06:49:47 - INFO - Running dynamic simulation until time: 146.00
@@ -1267,7 +1267,7 @@
 2025-02-24 06:49:55 - INFO - -----------------------------
 2025-02-24 06:49:55 - INFO - Costo = 18830.38
 2025-02-24 06:49:55 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:49:56 - INFO - Simulación - t_int: 150
+2025-02-24 06:49:56 - INFO - Simulaciï¿½n - t_int: 150
 2025-02-24 06:49:56 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:49:57 - INFO - Dynamic simulation prepared
 2025-02-24 06:49:57 - INFO - Running dynamic simulation until time: 150.00
@@ -1303,7 +1303,7 @@
 2025-02-24 06:50:07 - INFO - -----------------------------
 2025-02-24 06:50:07 - INFO - Costo = 19812.81
 2025-02-24 06:50:07 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:50:08 - INFO - Simulación - t_int: 154
+2025-02-24 06:50:08 - INFO - Simulaciï¿½n - t_int: 154
 2025-02-24 06:50:08 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:50:09 - INFO - Dynamic simulation prepared
 2025-02-24 06:50:09 - INFO - Running dynamic simulation until time: 154.00
@@ -1339,7 +1339,7 @@
 2025-02-24 06:50:19 - INFO - -----------------------------
 2025-02-24 06:50:19 - INFO - Costo = 20412.19
 2025-02-24 06:50:19 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:50:19 - INFO - Simulación - t_int: 158
+2025-02-24 06:50:19 - INFO - Simulaciï¿½n - t_int: 158
 2025-02-24 06:50:19 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:50:20 - INFO - Dynamic simulation prepared
 2025-02-24 06:50:20 - INFO - Running dynamic simulation until time: 158.00
@@ -1375,7 +1375,7 @@
 2025-02-24 06:50:29 - INFO - -----------------------------
 2025-02-24 06:50:29 - INFO - Costo = 20746.90
 2025-02-24 06:50:29 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:50:30 - INFO - Simulación - t_int: 162
+2025-02-24 06:50:30 - INFO - Simulaciï¿½n - t_int: 162
 2025-02-24 06:50:30 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:50:31 - INFO - Dynamic simulation prepared
 2025-02-24 06:50:31 - INFO - Running dynamic simulation until time: 162.00
@@ -1411,7 +1411,7 @@
 2025-02-24 06:50:41 - INFO - -----------------------------
 2025-02-24 06:50:41 - INFO - Costo = 20898.31
 2025-02-24 06:50:41 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:50:42 - INFO - Simulación - t_int: 166
+2025-02-24 06:50:42 - INFO - Simulaciï¿½n - t_int: 166
 2025-02-24 06:50:42 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:50:42 - INFO - Dynamic simulation prepared
 2025-02-24 06:50:43 - INFO - Running dynamic simulation until time: 166.00
@@ -1447,7 +1447,7 @@
 2025-02-24 06:50:52 - INFO - -----------------------------
 2025-02-24 06:50:52 - INFO - Costo = 20926.15
 2025-02-24 06:50:52 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:50:53 - INFO - Simulación - t_int: 170
+2025-02-24 06:50:53 - INFO - Simulaciï¿½n - t_int: 170
 2025-02-24 06:50:53 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:50:54 - INFO - Dynamic simulation prepared
 2025-02-24 06:50:54 - INFO - Running dynamic simulation until time: 170.00
@@ -1483,7 +1483,7 @@
 2025-02-24 06:51:05 - INFO - -----------------------------
 2025-02-24 06:51:05 - INFO - Costo = 20873.37
 2025-02-24 06:51:05 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:51:06 - INFO - Simulación - t_int: 174
+2025-02-24 06:51:06 - INFO - Simulaciï¿½n - t_int: 174
 2025-02-24 06:51:06 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:51:07 - INFO - Dynamic simulation prepared
 2025-02-24 06:51:07 - INFO - Running dynamic simulation until time: 174.00
@@ -1519,7 +1519,7 @@
 2025-02-24 06:51:18 - INFO - -----------------------------
 2025-02-24 06:51:18 - INFO - Costo = 20769.86
 2025-02-24 06:51:18 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:51:19 - INFO - Simulación - t_int: 178
+2025-02-24 06:51:19 - INFO - Simulaciï¿½n - t_int: 178
 2025-02-24 06:51:19 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:51:20 - INFO - Dynamic simulation prepared
 2025-02-24 06:51:20 - INFO - Running dynamic simulation until time: 178.00
@@ -1555,7 +1555,7 @@
 2025-02-24 06:51:32 - INFO - -----------------------------
 2025-02-24 06:51:32 - INFO - Costo = 20635.92
 2025-02-24 06:51:32 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:51:33 - INFO - Simulación - t_int: 182
+2025-02-24 06:51:33 - INFO - Simulaciï¿½n - t_int: 182
 2025-02-24 06:51:33 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:51:34 - INFO - Dynamic simulation prepared
 2025-02-24 06:51:34 - INFO - Running dynamic simulation until time: 182.00
@@ -1591,7 +1591,7 @@
 2025-02-24 06:51:47 - INFO - -----------------------------
 2025-02-24 06:51:47 - INFO - Costo = 20485.14
 2025-02-24 06:51:47 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:51:48 - INFO - Simulación - t_int: 186
+2025-02-24 06:51:48 - INFO - Simulaciï¿½n - t_int: 186
 2025-02-24 06:51:48 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:51:49 - INFO - Dynamic simulation prepared
 2025-02-24 06:51:49 - INFO - Running dynamic simulation until time: 186.00
@@ -1627,7 +1627,7 @@
 2025-02-24 06:52:01 - INFO - -----------------------------
 2025-02-24 06:52:01 - INFO - Costo = 20326.48
 2025-02-24 06:52:01 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:52:02 - INFO - Simulación - t_int: 190
+2025-02-24 06:52:02 - INFO - Simulaciï¿½n - t_int: 190
 2025-02-24 06:52:02 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:52:03 - INFO - Dynamic simulation prepared
 2025-02-24 06:52:03 - INFO - Running dynamic simulation until time: 190.00
@@ -1663,7 +1663,7 @@
 2025-02-24 06:52:18 - INFO - -----------------------------
 2025-02-24 06:52:18 - INFO - Costo = 20165.82
 2025-02-24 06:52:18 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:52:19 - INFO - Simulación - t_int: 194
+2025-02-24 06:52:19 - INFO - Simulaciï¿½n - t_int: 194
 2025-02-24 06:52:19 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:52:20 - INFO - Dynamic simulation prepared
 2025-02-24 06:52:20 - INFO - Running dynamic simulation until time: 194.00
@@ -1699,7 +1699,7 @@
 2025-02-24 06:52:33 - INFO - -----------------------------
 2025-02-24 06:52:33 - INFO - Costo = 20006.91
 2025-02-24 06:52:33 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 06:52:34 - INFO - Simulación - t_int: 198
+2025-02-24 06:52:34 - INFO - Simulaciï¿½n - t_int: 198
 2025-02-24 06:52:34 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 06:52:34 - INFO - Dynamic simulation prepared
 2025-02-24 06:52:34 - INFO - Running dynamic simulation until time: 198.00
@@ -2889,7 +2889,7 @@
 2025-02-24 07:09:54 - INFO - New shift factors initialized
 2025-02-24 07:09:54 - INFO - Switched lines: []
 2025-02-24 07:09:54 - INFO - Generadores que participan en el CSF: ['G7_1' 'G4_3' 'G3_2' 'G4_2']
-2025-02-24 07:09:55 - INFO - Simulación - t_int: 34
+2025-02-24 07:09:55 - INFO - Simulaciï¿½n - t_int: 34
 2025-02-24 07:09:55 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:09:55 - INFO - Dynamic simulation prepared
 2025-02-24 07:09:55 - INFO - Running dynamic simulation until time: 34.00
@@ -2929,7 +2929,7 @@
 2025-02-24 07:09:59 - INFO - Event Gamma G4_2 created with value 0.3031728164512362
 2025-02-24 07:10:00 - INFO - Event Gamma G4_3 created with value 0.3031606413588643
 2025-02-24 07:10:01 - INFO - Event Gamma G7_1 created with value 0.31791390500228855
-2025-02-24 07:10:01 - INFO - Simulación - t_int: 38
+2025-02-24 07:10:01 - INFO - Simulaciï¿½n - t_int: 38
 2025-02-24 07:10:01 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:01 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:01 - INFO - Running dynamic simulation until time: 38.00
@@ -2969,7 +2969,7 @@
 2025-02-24 07:10:05 - INFO - Event Gamma G4_2 created with value 0.3067847965652804
 2025-02-24 07:10:06 - INFO - Event Gamma G4_3 created with value 0.3067451739483391
 2025-02-24 07:10:07 - INFO - Event Gamma G7_1 created with value 0.35402264468472217
-2025-02-24 07:10:07 - INFO - Simulación - t_int: 42
+2025-02-24 07:10:07 - INFO - Simulaciï¿½n - t_int: 42
 2025-02-24 07:10:07 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:07 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:07 - INFO - Running dynamic simulation until time: 42.00
@@ -3009,7 +3009,7 @@
 2025-02-24 07:10:12 - INFO - Event Gamma G4_2 created with value 0.30200432822886064
 2025-02-24 07:10:12 - INFO - Event Gamma G4_3 created with value 0.30205786533121776
 2025-02-24 07:10:13 - INFO - Event Gamma G7_1 created with value 0.37966694798435674
-2025-02-24 07:10:13 - INFO - Simulación - t_int: 46
+2025-02-24 07:10:13 - INFO - Simulaciï¿½n - t_int: 46
 2025-02-24 07:10:13 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:14 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:14 - INFO - Running dynamic simulation until time: 46.00
@@ -3048,7 +3048,7 @@
 2025-02-24 07:10:18 - INFO - Event Gamma G4_2 created with value 0.2994380475574491
 2025-02-24 07:10:18 - INFO - Event Gamma G4_3 created with value 0.2994696205072871
 2025-02-24 07:10:19 - INFO - Event Gamma G7_1 created with value 0.4010923319352639
-2025-02-24 07:10:19 - INFO - Simulación - t_int: 50
+2025-02-24 07:10:19 - INFO - Simulaciï¿½n - t_int: 50
 2025-02-24 07:10:19 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:20 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:20 - INFO - Running dynamic simulation until time: 50.00
@@ -3087,7 +3087,7 @@
 2025-02-24 07:10:24 - INFO - Event Gamma G4_2 created with value 0.30080933505761265
 2025-02-24 07:10:25 - INFO - Event Gamma G4_3 created with value 0.30081429437938295
 2025-02-24 07:10:26 - INFO - Event Gamma G7_1 created with value 0.3983763705630044
-2025-02-24 07:10:26 - INFO - Simulación - t_int: 54
+2025-02-24 07:10:26 - INFO - Simulaciï¿½n - t_int: 54
 2025-02-24 07:10:26 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:26 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:26 - INFO - Running dynamic simulation until time: 54.00
@@ -3126,7 +3126,7 @@
 2025-02-24 07:10:30 - INFO - Event Gamma G4_2 created with value 0.30069441913138517
 2025-02-24 07:10:31 - INFO - Event Gamma G4_3 created with value 0.3006736566734585
 2025-02-24 07:10:32 - INFO - Event Gamma G7_1 created with value 0.3986319241951563
-2025-02-24 07:10:32 - INFO - Simulación - t_int: 58
+2025-02-24 07:10:32 - INFO - Simulaciï¿½n - t_int: 58
 2025-02-24 07:10:32 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:33 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:33 - INFO - Running dynamic simulation until time: 58.00
@@ -3165,7 +3165,7 @@
 2025-02-24 07:10:39 - INFO - Event Gamma G4_2 created with value 0.3004861754922892
 2025-02-24 07:10:40 - INFO - Event Gamma G4_3 created with value 0.30047102309985807
 2025-02-24 07:10:41 - INFO - Event Gamma G7_1 created with value 0.3990428014078528
-2025-02-24 07:10:41 - INFO - Simulación - t_int: 62
+2025-02-24 07:10:41 - INFO - Simulaciï¿½n - t_int: 62
 2025-02-24 07:10:41 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:42 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:42 - INFO - Running dynamic simulation until time: 62.00
@@ -3204,7 +3204,7 @@
 2025-02-24 07:10:47 - INFO - Event Gamma G4_2 created with value 0.30022178793728727
 2025-02-24 07:10:48 - INFO - Event Gamma G4_3 created with value 0.3001989717290748
 2025-02-24 07:10:48 - INFO - Event Gamma G7_1 created with value 0.399579240333638
-2025-02-24 07:10:48 - INFO - Simulación - t_int: 66
+2025-02-24 07:10:48 - INFO - Simulaciï¿½n - t_int: 66
 2025-02-24 07:10:48 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:49 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:49 - INFO - Running dynamic simulation until time: 66.00
@@ -3243,7 +3243,7 @@
 2025-02-24 07:10:54 - INFO - Event Gamma G4_2 created with value 0.2999825876934454
 2025-02-24 07:10:55 - INFO - Event Gamma G4_3 created with value 0.299961983308609
 2025-02-24 07:10:56 - INFO - Event Gamma G7_1 created with value 0.40005542899794566
-2025-02-24 07:10:56 - INFO - Simulación - t_int: 70
+2025-02-24 07:10:56 - INFO - Simulaciï¿½n - t_int: 70
 2025-02-24 07:10:56 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:10:57 - INFO - Dynamic simulation prepared
 2025-02-24 07:10:57 - INFO - Running dynamic simulation until time: 70.00
@@ -3282,7 +3282,7 @@
 2025-02-24 07:11:02 - INFO - Event Gamma G4_2 created with value 0.299775618013058
 2025-02-24 07:11:03 - INFO - Event Gamma G4_3 created with value 0.29975344627664774
 2025-02-24 07:11:04 - INFO - Event Gamma G7_1 created with value 0.4004709357102943
-2025-02-24 07:11:04 - INFO - Simulación - t_int: 74
+2025-02-24 07:11:04 - INFO - Simulaciï¿½n - t_int: 74
 2025-02-24 07:11:04 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:04 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:05 - INFO - Running dynamic simulation until time: 74.00
@@ -3321,7 +3321,7 @@
 2025-02-24 07:11:11 - INFO - Event Gamma G4_2 created with value 0.29960105197164183
 2025-02-24 07:11:11 - INFO - Event Gamma G4_3 created with value 0.29958214044758075
 2025-02-24 07:11:12 - INFO - Event Gamma G7_1 created with value 0.40081680758077753
-2025-02-24 07:11:12 - INFO - Simulación - t_int: 78
+2025-02-24 07:11:12 - INFO - Simulaciï¿½n - t_int: 78
 2025-02-24 07:11:12 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:13 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:13 - INFO - Running dynamic simulation until time: 78.00
@@ -3360,7 +3360,7 @@
 2025-02-24 07:11:19 - INFO - Event Gamma G4_2 created with value 0.2994533387018532
 2025-02-24 07:11:20 - INFO - Event Gamma G4_3 created with value 0.29943433448598783
 2025-02-24 07:11:21 - INFO - Event Gamma G7_1 created with value 0.4011123268121591
-2025-02-24 07:11:21 - INFO - Simulación - t_int: 82
+2025-02-24 07:11:21 - INFO - Simulaciï¿½n - t_int: 82
 2025-02-24 07:11:21 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:22 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:22 - INFO - Running dynamic simulation until time: 82.00
@@ -3399,7 +3399,7 @@
 2025-02-24 07:11:28 - INFO - Event Gamma G4_2 created with value 0.2993293101578294
 2025-02-24 07:11:28 - INFO - Event Gamma G4_3 created with value 0.29931411116709267
 2025-02-24 07:11:29 - INFO - Event Gamma G7_1 created with value 0.401356578675078
-2025-02-24 07:11:29 - INFO - Simulación - t_int: 86
+2025-02-24 07:11:29 - INFO - Simulaciï¿½n - t_int: 86
 2025-02-24 07:11:29 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:30 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:31 - INFO - Running dynamic simulation until time: 86.00
@@ -3438,7 +3438,7 @@
 2025-02-24 07:11:36 - INFO - Event Gamma G4_2 created with value 0.299225103081029
 2025-02-24 07:11:37 - INFO - Event Gamma G4_3 created with value 0.29920872625027417
 2025-02-24 07:11:38 - INFO - Event Gamma G7_1 created with value 0.40156617066869693
-2025-02-24 07:11:38 - INFO - Simulación - t_int: 90
+2025-02-24 07:11:38 - INFO - Simulaciï¿½n - t_int: 90
 2025-02-24 07:11:38 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:39 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:39 - INFO - Running dynamic simulation until time: 90.00
@@ -3477,7 +3477,7 @@
 2025-02-24 07:11:45 - INFO - Event Gamma G4_2 created with value 0.29913388983245515
 2025-02-24 07:11:46 - INFO - Event Gamma G4_3 created with value 0.2991240018112747
 2025-02-24 07:11:47 - INFO - Event Gamma G7_1 created with value 0.4017421083562701
-2025-02-24 07:11:47 - INFO - Simulación - t_int: 94
+2025-02-24 07:11:47 - INFO - Simulaciï¿½n - t_int: 94
 2025-02-24 07:11:47 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:47 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:48 - INFO - Running dynamic simulation until time: 94.00
@@ -3516,7 +3516,7 @@
 2025-02-24 07:11:54 - INFO - Event Gamma G4_2 created with value 0.2990593510960068
 2025-02-24 07:11:55 - INFO - Event Gamma G4_3 created with value 0.2990414539207888
 2025-02-24 07:11:56 - INFO - Event Gamma G7_1 created with value 0.40189919498320437
-2025-02-24 07:11:56 - INFO - Simulación - t_int: 98
+2025-02-24 07:11:56 - INFO - Simulaciï¿½n - t_int: 98
 2025-02-24 07:11:56 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:11:57 - INFO - Dynamic simulation prepared
 2025-02-24 07:11:57 - INFO - Running dynamic simulation until time: 98.00
@@ -3555,7 +3555,7 @@
 2025-02-24 07:12:03 - INFO - Event Gamma G4_2 created with value 0.29898706623517296
 2025-02-24 07:12:04 - INFO - Event Gamma G4_3 created with value 0.2989918949154806
 2025-02-24 07:12:05 - INFO - Event Gamma G7_1 created with value 0.4020210388493466
-2025-02-24 07:12:05 - INFO - Simulación - t_int: 102
+2025-02-24 07:12:05 - INFO - Simulaciï¿½n - t_int: 102
 2025-02-24 07:12:05 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:12:06 - INFO - Dynamic simulation prepared
 2025-02-24 07:12:06 - INFO - Running dynamic simulation until time: 102.00
@@ -3594,7 +3594,7 @@
 2025-02-24 07:12:13 - INFO - Event Gamma G4_2 created with value 0.29894471356865177
 2025-02-24 07:12:14 - INFO - Event Gamma G4_3 created with value 0.29889442235487107
 2025-02-24 07:12:15 - INFO - Event Gamma G7_1 created with value 0.4021608640764772
-2025-02-24 07:12:15 - INFO - Simulación - t_int: 106
+2025-02-24 07:12:15 - INFO - Simulaciï¿½n - t_int: 106
 2025-02-24 07:12:15 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:12:16 - INFO - Dynamic simulation prepared
 2025-02-24 07:12:16 - INFO - Running dynamic simulation until time: 106.00
@@ -3633,7 +3633,7 @@
 2025-02-24 07:12:24 - INFO - Event Gamma G4_2 created with value 0.2988472455130257
 2025-02-24 07:12:24 - INFO - Event Gamma G4_3 created with value 0.29896918255259397
 2025-02-24 07:12:25 - INFO - Event Gamma G7_1 created with value 0.4021835719343803
-2025-02-24 07:12:25 - INFO - Simulación - t_int: 110
+2025-02-24 07:12:25 - INFO - Simulaciï¿½n - t_int: 110
 2025-02-24 07:12:25 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:12:26 - INFO - Dynamic simulation prepared
 2025-02-24 07:12:27 - INFO - Running dynamic simulation until time: 110.00
@@ -3672,7 +3672,7 @@
 2025-02-24 07:12:33 - INFO - Event Gamma G4_2 created with value 0.2989714896858788
 2025-02-24 07:12:34 - INFO - Event Gamma G4_3 created with value 0.2984942383448424
 2025-02-24 07:12:35 - INFO - Event Gamma G7_1 created with value 0.4025342719692788
-2025-02-24 07:12:35 - INFO - Simulación - t_int: 114
+2025-02-24 07:12:35 - INFO - Simulaciï¿½n - t_int: 114
 2025-02-24 07:12:35 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:12:36 - INFO - Dynamic simulation prepared
 2025-02-24 07:12:36 - INFO - Running dynamic simulation until time: 114.00
@@ -3711,7 +3711,7 @@
 2025-02-24 07:12:45 - INFO - Event Gamma G4_2 created with value 0.29825019914270434
 2025-02-24 07:12:46 - INFO - Event Gamma G4_3 created with value 0.300187951913672
 2025-02-24 07:12:47 - INFO - Event Gamma G7_1 created with value 0.4015618489436236
-2025-02-24 07:12:47 - INFO - Simulación - t_int: 118
+2025-02-24 07:12:47 - INFO - Simulaciï¿½n - t_int: 118
 2025-02-24 07:12:47 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:12:48 - INFO - Dynamic simulation prepared
 2025-02-24 07:12:48 - INFO - Running dynamic simulation until time: 118.00
@@ -3750,7 +3750,7 @@
 2025-02-24 07:12:56 - INFO - Event Gamma G4_2 created with value 0.30138661339731865
 2025-02-24 07:12:56 - INFO - Event Gamma G4_3 created with value 0.2922183988840185
 2025-02-24 07:12:57 - INFO - Event Gamma G7_1 created with value 0.4063949877186629
-2025-02-24 07:12:57 - INFO - Simulación - t_int: 122
+2025-02-24 07:12:57 - INFO - Simulaciï¿½n - t_int: 122
 2025-02-24 07:12:57 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:12:59 - INFO - Dynamic simulation prepared
 2025-02-24 07:12:59 - INFO - Running dynamic simulation until time: 122.00
@@ -3789,7 +3789,7 @@
 2025-02-24 07:13:07 - INFO - Event Gamma G4_2 created with value 0.28462416288945014
 2025-02-24 07:13:08 - INFO - Event Gamma G4_3 created with value 0.3336689870213314
 2025-02-24 07:13:08 - INFO - Event Gamma G7_1 created with value 0.3817068500892185
-2025-02-24 07:13:08 - INFO - Simulación - t_int: 126
+2025-02-24 07:13:08 - INFO - Simulaciï¿½n - t_int: 126
 2025-02-24 07:13:08 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:13:10 - INFO - Dynamic simulation prepared
 2025-02-24 07:13:10 - INFO - Running dynamic simulation until time: 126.00
@@ -3828,7 +3828,7 @@
 2025-02-24 07:13:18 - INFO - Event Gamma G4_2 created with value 0.3479434315075976
 2025-02-24 07:13:18 - INFO - Event Gamma G4_3 created with value 0.1748227229769315
 2025-02-24 07:13:19 - INFO - Event Gamma G7_1 created with value 0.4772338455154708
-2025-02-24 07:13:19 - INFO - Simulación - t_int: 130
+2025-02-24 07:13:19 - INFO - Simulaciï¿½n - t_int: 130
 2025-02-24 07:13:19 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:13:20 - INFO - Dynamic simulation prepared
 2025-02-24 07:13:20 - INFO - Running dynamic simulation until time: 130.00
@@ -3866,7 +3866,7 @@
 2025-02-24 07:13:27 - DEBUG - Potencia AGC por recuperar: 0.27847591008271555
 2025-02-24 07:13:28 - INFO - Event Gamma G4_2 created with value 0.16385227163743546
 2025-02-24 07:13:29 - INFO - Event Gamma G4_3 created with value 0.8361477283625646
-2025-02-24 07:13:29 - INFO - Simulación - t_int: 134
+2025-02-24 07:13:29 - INFO - Simulaciï¿½n - t_int: 134
 2025-02-24 07:13:29 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:13:30 - INFO - Dynamic simulation prepared
 2025-02-24 07:13:30 - INFO - Running dynamic simulation until time: 134.00
@@ -3904,7 +3904,7 @@
 2025-02-24 07:13:37 - DEBUG - Potencia AGC por recuperar: 0.3225789066097177
 2025-02-24 07:13:38 - INFO - Event Gamma G4_2 created with value 0.7851720918052384
 2025-02-24 07:13:39 - INFO - Event Gamma G4_3 created with value 0.2148279081947616
-2025-02-24 07:13:39 - INFO - Simulación - t_int: 138
+2025-02-24 07:13:39 - INFO - Simulaciï¿½n - t_int: 138
 2025-02-24 07:13:39 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:13:40 - INFO - Dynamic simulation prepared
 2025-02-24 07:13:40 - INFO - Running dynamic simulation until time: 138.00
@@ -3943,7 +3943,7 @@
 2025-02-24 07:13:48 - DEBUG - Potencia AGC por recuperar: 0.16696276063710408
 2025-02-24 07:13:49 - INFO - Event Gamma G4_2 created with value 0.36330897002395884
 2025-02-24 07:13:50 - INFO - Event Gamma G4_3 created with value 0.6366910299760411
-2025-02-24 07:13:51 - INFO - Simulación - t_int: 142
+2025-02-24 07:13:51 - INFO - Simulaciï¿½n - t_int: 142
 2025-02-24 07:13:51 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:13:52 - INFO - Dynamic simulation prepared
 2025-02-24 07:13:52 - INFO - Running dynamic simulation until time: 142.00
@@ -3980,7 +3980,7 @@
 2025-02-24 07:14:00 - INFO - Costo = 17532.73
 2025-02-24 07:14:00 - DEBUG - Potencia AGC por recuperar: 0.006059208892939404
 2025-02-24 07:14:01 - INFO - Event Gamma G4_2 created with value 1.0
-2025-02-24 07:14:02 - INFO - Simulación - t_int: 146
+2025-02-24 07:14:02 - INFO - Simulaciï¿½n - t_int: 146
 2025-02-24 07:14:02 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:14:03 - INFO - Dynamic simulation prepared
 2025-02-24 07:14:03 - INFO - Running dynamic simulation until time: 146.00
@@ -4016,7 +4016,7 @@
 2025-02-24 07:14:11 - INFO - -----------------------------
 2025-02-24 07:14:11 - INFO - Costo = 18830.38
 2025-02-24 07:14:11 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:14:12 - INFO - Simulación - t_int: 150
+2025-02-24 07:14:12 - INFO - Simulaciï¿½n - t_int: 150
 2025-02-24 07:14:12 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:14:13 - INFO - Dynamic simulation prepared
 2025-02-24 07:14:13 - INFO - Running dynamic simulation until time: 150.00
@@ -4052,7 +4052,7 @@
 2025-02-24 07:14:21 - INFO - -----------------------------
 2025-02-24 07:14:21 - INFO - Costo = 19812.81
 2025-02-24 07:14:21 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:14:22 - INFO - Simulación - t_int: 154
+2025-02-24 07:14:22 - INFO - Simulaciï¿½n - t_int: 154
 2025-02-24 07:14:22 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:14:23 - INFO - Dynamic simulation prepared
 2025-02-24 07:14:23 - INFO - Running dynamic simulation until time: 154.00
@@ -4088,7 +4088,7 @@
 2025-02-24 07:14:32 - INFO - -----------------------------
 2025-02-24 07:14:32 - INFO - Costo = 20412.19
 2025-02-24 07:14:32 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:14:33 - INFO - Simulación - t_int: 158
+2025-02-24 07:14:33 - INFO - Simulaciï¿½n - t_int: 158
 2025-02-24 07:14:33 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:14:33 - INFO - Dynamic simulation prepared
 2025-02-24 07:14:34 - INFO - Running dynamic simulation until time: 158.00
@@ -4124,7 +4124,7 @@
 2025-02-24 07:14:43 - INFO - -----------------------------
 2025-02-24 07:14:43 - INFO - Costo = 20746.90
 2025-02-24 07:14:43 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:14:44 - INFO - Simulación - t_int: 162
+2025-02-24 07:14:44 - INFO - Simulaciï¿½n - t_int: 162
 2025-02-24 07:14:44 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:14:45 - INFO - Dynamic simulation prepared
 2025-02-24 07:14:45 - INFO - Running dynamic simulation until time: 162.00
@@ -4160,7 +4160,7 @@
 2025-02-24 07:14:54 - INFO - -----------------------------
 2025-02-24 07:14:54 - INFO - Costo = 20898.31
 2025-02-24 07:14:54 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:14:55 - INFO - Simulación - t_int: 166
+2025-02-24 07:14:55 - INFO - Simulaciï¿½n - t_int: 166
 2025-02-24 07:14:55 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:14:56 - INFO - Dynamic simulation prepared
 2025-02-24 07:14:57 - INFO - Running dynamic simulation until time: 166.00
@@ -4196,7 +4196,7 @@
 2025-02-24 07:15:06 - INFO - -----------------------------
 2025-02-24 07:15:06 - INFO - Costo = 20926.15
 2025-02-24 07:15:06 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:15:07 - INFO - Simulación - t_int: 170
+2025-02-24 07:15:07 - INFO - Simulaciï¿½n - t_int: 170
 2025-02-24 07:15:07 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:15:07 - INFO - Dynamic simulation prepared
 2025-02-24 07:15:08 - INFO - Running dynamic simulation until time: 170.00
@@ -4232,7 +4232,7 @@
 2025-02-24 07:15:17 - INFO - -----------------------------
 2025-02-24 07:15:17 - INFO - Costo = 20873.37
 2025-02-24 07:15:17 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:15:18 - INFO - Simulación - t_int: 174
+2025-02-24 07:15:18 - INFO - Simulaciï¿½n - t_int: 174
 2025-02-24 07:15:18 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:15:19 - INFO - Dynamic simulation prepared
 2025-02-24 07:15:19 - INFO - Running dynamic simulation until time: 174.00
@@ -4268,7 +4268,7 @@
 2025-02-24 07:15:31 - INFO - -----------------------------
 2025-02-24 07:15:31 - INFO - Costo = 20769.86
 2025-02-24 07:15:31 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:15:32 - INFO - Simulación - t_int: 178
+2025-02-24 07:15:32 - INFO - Simulaciï¿½n - t_int: 178
 2025-02-24 07:15:32 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:15:33 - INFO - Dynamic simulation prepared
 2025-02-24 07:15:33 - INFO - Running dynamic simulation until time: 178.00
@@ -4304,7 +4304,7 @@
 2025-02-24 07:15:44 - INFO - -----------------------------
 2025-02-24 07:15:44 - INFO - Costo = 20635.92
 2025-02-24 07:15:44 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:15:44 - INFO - Simulación - t_int: 182
+2025-02-24 07:15:44 - INFO - Simulaciï¿½n - t_int: 182
 2025-02-24 07:15:44 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:15:46 - INFO - Dynamic simulation prepared
 2025-02-24 07:15:46 - INFO - Running dynamic simulation until time: 182.00
@@ -4340,7 +4340,7 @@
 2025-02-24 07:15:57 - INFO - -----------------------------
 2025-02-24 07:15:57 - INFO - Costo = 20485.14
 2025-02-24 07:15:57 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:15:58 - INFO - Simulación - t_int: 186
+2025-02-24 07:15:58 - INFO - Simulaciï¿½n - t_int: 186
 2025-02-24 07:15:58 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:15:59 - INFO - Dynamic simulation prepared
 2025-02-24 07:15:59 - INFO - Running dynamic simulation until time: 186.00
@@ -4376,7 +4376,7 @@
 2025-02-24 07:16:11 - INFO - -----------------------------
 2025-02-24 07:16:11 - INFO - Costo = 20326.48
 2025-02-24 07:16:11 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:16:12 - INFO - Simulación - t_int: 190
+2025-02-24 07:16:12 - INFO - Simulaciï¿½n - t_int: 190
 2025-02-24 07:16:12 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:16:13 - INFO - Dynamic simulation prepared
 2025-02-24 07:16:13 - INFO - Running dynamic simulation until time: 190.00
@@ -4412,7 +4412,7 @@
 2025-02-24 07:16:26 - INFO - -----------------------------
 2025-02-24 07:16:26 - INFO - Costo = 20165.82
 2025-02-24 07:16:26 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:16:27 - INFO - Simulación - t_int: 194
+2025-02-24 07:16:27 - INFO - Simulaciï¿½n - t_int: 194
 2025-02-24 07:16:27 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:16:28 - INFO - Dynamic simulation prepared
 2025-02-24 07:16:28 - INFO - Running dynamic simulation until time: 194.00
@@ -4448,7 +4448,7 @@
 2025-02-24 07:16:40 - INFO - -----------------------------
 2025-02-24 07:16:40 - INFO - Costo = 20006.91
 2025-02-24 07:16:40 - DEBUG - Potencia AGC por recuperar: 0.0
-2025-02-24 07:16:41 - INFO - Simulación - t_int: 198
+2025-02-24 07:16:41 - INFO - Simulaciï¿½n - t_int: 198
 2025-02-24 07:16:41 - INFO - Preparing dynamic simulation with sim_type: rms
 2025-02-24 07:16:42 - INFO - Dynamic simulation prepared
 2025-02-24 07:16:42 - INFO - Running dynamic simulation until time: 198.00
@@ -5664,3 +5664,1159 @@
 2025-02-24 07:20:49 - DEBUG - b'sBIT' 41 4 (unknown)
 2025-02-24 07:20:49 - DEBUG - STREAM b'pHYs' 57 9
 2025-02-24 07:20:49 - DEBUG - STREAM b'IDAT' 78 364
+2025-02-27 19:53:10 - INFO - Starting main function
+2025-02-27 19:53:10 - INFO - Setting up simulation with estudio: 6
+2025-02-27 19:53:10 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 19:53:10 - INFO - Start up PowerFactory
+2025-02-27 19:53:10 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 19:53:22 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 19:53:22 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 19:53:22 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 20:03:05 - INFO - Starting main function
+2025-02-27 20:03:05 - INFO - Setting up simulation with estudio: 6
+2025-02-27 20:03:05 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 20:03:05 - INFO - Start up PowerFactory
+2025-02-27 20:03:05 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 20:03:22 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 20:03:23 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 20:03:24 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 20:06:45 - DEBUG - Generators outages: ['G4_1']
+2025-02-27 20:06:45 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 20:06:45 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 20:06:45 - INFO - Exporting CSV with flujo: AC
+2025-02-27 20:06:48 - INFO - CSV export complete
+2025-02-27 20:06:48 - INFO - Getting data from PowerFactory simulation
+2025-02-27 20:06:48 - INFO - Data extraction complete
+2025-02-27 20:06:48 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 20:07:00 - INFO - Escenario: 1
+2025-02-27 20:07:00 - INFO - Progreso: 1/1
+2025-02-27 20:07:00 - INFO -  - Generador Out: G4_1
+2025-02-27 20:15:11 - INFO - Starting main function
+2025-02-27 20:15:11 - INFO - Setting up simulation with estudio: 6
+2025-02-27 20:15:11 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 20:15:11 - INFO - Start up PowerFactory
+2025-02-27 20:15:11 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 20:15:31 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 20:15:33 - DEBUG - Generators outages: ['G4_1']
+2025-02-27 20:15:33 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 20:15:33 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 20:15:33 - INFO - Exporting CSV with flujo: AC
+2025-02-27 20:15:37 - INFO - CSV export complete
+2025-02-27 20:15:37 - INFO - Getting data from PowerFactory simulation
+2025-02-27 20:15:38 - INFO - Data extraction complete
+2025-02-27 20:15:38 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 20:15:49 - INFO - Escenario: 1
+2025-02-27 20:15:49 - INFO - Progreso: 1/1
+2025-02-27 20:15:49 - INFO -  - Generador Out: G4_1
+2025-02-27 20:15:50 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 20:15:50 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 20:28:05 - INFO - Starting main function
+2025-02-27 20:28:05 - INFO - Setting up simulation with estudio: 6
+2025-02-27 20:28:05 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 20:28:05 - INFO - Start up PowerFactory
+2025-02-27 20:28:05 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 20:28:23 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 20:28:24 - DEBUG - Generators outages: ['Load_B3']
+2025-02-27 20:28:24 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 20:28:24 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 20:28:24 - INFO - Exporting CSV with flujo: AC
+2025-02-27 20:28:29 - INFO - CSV export complete
+2025-02-27 20:28:29 - INFO - Getting data from PowerFactory simulation
+2025-02-27 20:28:30 - INFO - Data extraction complete
+2025-02-27 20:28:30 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 20:28:49 - INFO - Escenario: 1
+2025-02-27 20:28:49 - INFO - Progreso: 1/1
+2025-02-27 20:28:49 - INFO -  - Generador Out: Load_B3
+2025-02-27 20:28:49 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 20:28:49 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 20:29:59 - INFO - Starting main function
+2025-02-27 20:29:59 - INFO - Setting up simulation with estudio: 6
+2025-02-27 20:29:59 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 20:29:59 - INFO - Start up PowerFactory
+2025-02-27 20:29:59 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 20:30:14 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 20:30:15 - DEBUG - Generators outages: ['Load_B3']
+2025-02-27 20:30:15 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 20:30:15 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 20:30:15 - INFO - Exporting CSV with flujo: AC
+2025-02-27 20:30:18 - INFO - CSV export complete
+2025-02-27 20:30:18 - INFO - Getting data from PowerFactory simulation
+2025-02-27 20:30:18 - INFO - Data extraction complete
+2025-02-27 20:30:18 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 20:30:28 - INFO - Escenario: 1
+2025-02-27 20:30:28 - INFO - Progreso: 1/1
+2025-02-27 20:30:28 - INFO -  - Generador Out: Load_B3
+2025-02-27 20:30:28 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 20:30:28 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 20:30:29 - INFO - Dynamic simulation prepared
+2025-02-27 20:30:29 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 20:30:31 - INFO - Dynamic simulation complete with result: False
+2025-02-27 20:30:31 - INFO - Simulation initialized
+2025-02-27 20:30:31 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 20:30:31 - INFO - Initializing Model
+2025-02-27 20:30:31 - INFO - Set parameter Username
+2025-02-27 20:30:31 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 20:30:31 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 20:30:31 - INFO - Optimization model initialized
+2025-02-27 20:30:31 - INFO - Formulating Model
+2025-02-27 20:30:31 - INFO - Objective function set
+2025-02-27 20:30:31 - INFO - Formulating Objective Function
+2025-02-27 20:30:31 - INFO - Adding Constraints
+2025-02-27 20:30:31 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 20:30:31 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 20:30:31 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 20:30:31 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 20:30:31 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 20:30:31 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 20:30:31 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 20:30:31 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 20:30:31 - INFO - Optimize a model with 1236 rows, 1102 columns and 14110 nonzeros
+2025-02-27 20:30:31 - INFO - Model fingerprint: 0x36ca36cf
+2025-02-27 20:30:31 - INFO - Variable types: 1041 continuous, 61 integer (61 binary)
+2025-02-27 20:30:31 - INFO - Coefficient statistics:
+2025-02-27 20:30:31 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 20:30:31 - INFO -   Objective range  [1e+01, 3e+04]
+2025-02-27 20:30:31 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 20:30:31 - INFO -   RHS range        [6e-03, 1e+02]
+2025-02-27 20:30:31 - INFO - Presolve removed 894 rows and 193 columns
+2025-02-27 20:30:31 - INFO - Presolve time: 0.05s
+2025-02-27 20:30:31 - INFO - Presolved: 342 rows, 909 columns, 3308 nonzeros
+2025-02-27 20:30:31 - INFO - Variable types: 744 continuous, 165 integer (57 binary)
+2025-02-27 20:30:32 - INFO - Found heuristic solution: objective 166876.23901
+2025-02-27 20:30:32 - INFO - Root relaxation: objective 6.376595e+04, 358 iterations, 0.01 seconds (0.00 work units)
+2025-02-27 20:30:32 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 20:30:32 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 20:30:32 - INFO -      0     0 63765.9465    0    8 166876.239 63765.9465  61.8%     -    0s
+2025-02-27 20:30:32 - INFO - H    0     0                    63858.446506 63765.9465  0.14%     -    0s
+2025-02-27 20:30:32 - INFO - Explored 1 nodes (358 simplex iterations) in 0.11 seconds (0.03 work units)
+2025-02-27 20:30:32 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 20:30:32 - INFO - Solution count 2: 63858.4 166876
+2025-02-27 20:30:32 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 20:30:32 - INFO - Best objective 6.385843819509e+04, best bound 6.376594652112e+04, gap 0.1448%
+2025-02-27 20:30:32 - INFO - -----------------------------
+2025-02-27 20:30:32 - INFO - Cost = 63858.44 ($) => Csfc = 10700.00 ($) + Cop = 30231.73 ($) + Cue = 0.00 ($) + Cpl = 22926.71 ($) + Cts = 0.00
+2025-02-27 20:30:32 - INFO - num_Vars =  1102 / num_Const =  1236 / num_NonZeros =  14110
+2025-02-27 20:30:32 - INFO - => Solver time: 0.1120 (s)
+2025-02-27 20:30:32 - INFO - Results extraction complete
+2025-02-27 20:30:32 - INFO - => Formulation time: 0.2504 (s)
+2025-02-27 20:30:32 - INFO - => Solution time: 0.1162 (s)
+2025-02-27 20:30:32 - INFO - Optimization model results: <optm.Modelo object at 0x000001F22A271F90>
+2025-02-27 20:30:32 - INFO - => Extract data time: 31.9057 (s)
+2025-02-27 20:30:32 - INFO - Extracting 2 alternatives solutions
+2025-02-27 20:30:32 - INFO - Another Solution: 166876.2390147638
+2025-02-27 20:30:32 - INFO - Cost = 166876.24 ($) => Csfc = 0.00 ($) + Cop = 0.00 ($) + Cue = 0.00 ($) + Cpl = 166876.24 ($) + Cts = 0.00
+2025-02-27 20:30:32 - INFO - Revision big optm with PowerFactory
+2025-02-27 20:30:33 - INFO - Results saved to Excel file 00ResultadosArticulo2 - TS_20250227-203033.xlsx
+2025-02-27 20:30:33 - INFO - Escenario: 1
+2025-02-27 20:30:44 - INFO - Progreso: 1/1
+2025-02-27 20:30:44 - INFO - Generador Out: Load_B3
+2025-02-27 20:30:44 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 20:30:44 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 21:12:23 - INFO - Starting main function
+2025-02-27 21:12:23 - INFO - Setting up simulation with estudio: 6
+2025-02-27 21:12:23 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:12:23 - INFO - Start up PowerFactory
+2025-02-27 21:12:23 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 21:12:39 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 21:12:39 - DEBUG - Generators outages: ['Load_B3']
+2025-02-27 21:12:40 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 21:12:40 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 21:12:40 - INFO - Exporting CSV with flujo: AC
+2025-02-27 21:12:42 - INFO - CSV export complete
+2025-02-27 21:12:42 - INFO - Getting data from PowerFactory simulation
+2025-02-27 21:12:42 - INFO - Data extraction complete
+2025-02-27 21:12:42 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 21:12:52 - INFO - Escenario: 1
+2025-02-27 21:12:52 - INFO - Progreso: 1/1
+2025-02-27 21:12:52 - INFO -  - Generador Out: Load_B3
+2025-02-27 21:12:53 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:12:53 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:12:53 - INFO - Dynamic simulation prepared
+2025-02-27 21:12:54 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:12:56 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:12:56 - INFO - Simulation initialized
+2025-02-27 21:12:56 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:12:56 - INFO - Initializing Model
+2025-02-27 21:12:56 - INFO - Set parameter Username
+2025-02-27 21:12:56 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 21:12:56 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 21:12:56 - INFO - Optimization model initialized
+2025-02-27 21:12:56 - INFO - Formulating Model
+2025-02-27 21:12:56 - INFO - Objective function set
+2025-02-27 21:12:56 - INFO - Formulating Objective Function
+2025-02-27 21:12:56 - INFO - Adding Constraints
+2025-02-27 21:12:56 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 21:12:56 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 21:12:56 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 21:12:56 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 21:12:56 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 21:12:56 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 21:12:56 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 21:12:56 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 21:12:56 - INFO - Optimize a model with 1236 rows, 1102 columns and 14110 nonzeros
+2025-02-27 21:12:56 - INFO - Model fingerprint: 0x36ca36cf
+2025-02-27 21:12:56 - INFO - Variable types: 1041 continuous, 61 integer (61 binary)
+2025-02-27 21:12:56 - INFO - Coefficient statistics:
+2025-02-27 21:12:56 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 21:12:56 - INFO -   Objective range  [1e+01, 3e+04]
+2025-02-27 21:12:56 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 21:12:56 - INFO -   RHS range        [6e-03, 1e+02]
+2025-02-27 21:12:56 - INFO - Presolve removed 894 rows and 193 columns
+2025-02-27 21:12:56 - INFO - Presolve time: 0.04s
+2025-02-27 21:12:56 - INFO - Presolved: 342 rows, 909 columns, 3308 nonzeros
+2025-02-27 21:12:56 - INFO - Variable types: 744 continuous, 165 integer (57 binary)
+2025-02-27 21:12:56 - INFO - Found heuristic solution: objective 166876.23901
+2025-02-27 21:12:56 - INFO - Root relaxation: objective 6.376595e+04, 358 iterations, 0.00 seconds (0.00 work units)
+2025-02-27 21:12:56 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 21:12:56 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 21:12:56 - INFO -      0     0 63765.9465    0    8 166876.239 63765.9465  61.8%     -    0s
+2025-02-27 21:12:56 - INFO - H    0     0                    63858.446506 63765.9465  0.14%     -    0s
+2025-02-27 21:12:56 - INFO - Explored 1 nodes (358 simplex iterations) in 0.11 seconds (0.03 work units)
+2025-02-27 21:12:56 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 21:12:56 - INFO - Solution count 2: 63858.4 166876
+2025-02-27 21:12:56 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 21:12:56 - INFO - Best objective 6.385843819509e+04, best bound 6.376594652112e+04, gap 0.1448%
+2025-02-27 21:12:56 - INFO - -----------------------------
+2025-02-27 21:12:56 - INFO - Cost = 63858.44 ($) => Csfc = 10700.00 ($) + Cop = 30231.73 ($) + Cue = 0.00 ($) + Cpl = 22926.71 ($) + Cts = 0.00
+2025-02-27 21:12:56 - INFO - num_Vars =  1102 / num_Const =  1236 / num_NonZeros =  14110
+2025-02-27 21:12:56 - INFO - => Solver time: 0.1160 (s)
+2025-02-27 21:12:56 - INFO - Results extraction complete
+2025-02-27 21:12:56 - INFO - => Formulation time: 0.2238 (s)
+2025-02-27 21:12:56 - INFO - => Solution time: 0.1197 (s)
+2025-02-27 21:12:56 - INFO - Optimization model results: <optm.Modelo object at 0x00000234403F3390>
+2025-02-27 21:12:56 - INFO - => Extract data time: 32.6122 (s)
+2025-02-27 21:12:56 - INFO - Extracting 2 alternatives solutions
+2025-02-27 21:12:56 - INFO - Another Solution: 166876.2390147638
+2025-02-27 21:12:56 - INFO - Cost = 166876.24 ($) => Csfc = 0.00 ($) + Cop = 0.00 ($) + Cue = 0.00 ($) + Cpl = 166876.24 ($) + Cts = 0.00
+2025-02-27 21:12:56 - INFO - Revision big optm with PowerFactory
+2025-02-27 21:12:57 - INFO - Results saved to Excel file 00ResultadosArticulo2 - TS_20250227-211257.xlsx
+2025-02-27 21:12:57 - INFO - Escenario: 1
+2025-02-27 21:13:07 - INFO - Progreso: 1/1
+2025-02-27 21:13:07 - INFO - Generador Out: Load_B3
+2025-02-27 21:13:08 - INFO - Event Gamma G3_2 created with value 0.22873435098544023
+2025-02-27 21:13:09 - INFO - Event Gamma G4_1 created with value 0.20848457377165838
+2025-02-27 21:13:10 - INFO - Event Gamma G4_2 created with value 0.20847829006993485
+2025-02-27 21:13:11 - INFO - Event Gamma G4_3 created with value 0.1772326139031152
+2025-02-27 21:13:12 - INFO - Event Gamma G7_1 created with value 0.17707011353180702
+2025-02-27 21:13:12 - INFO - Switched lines: []
+2025-02-27 21:13:12 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:13:13 - INFO - Dynamic simulation prepared
+2025-02-27 21:13:13 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:13:25 - INFO - Starting main function
+2025-02-27 21:13:25 - INFO - Setting up simulation with estudio: 6
+2025-02-27 21:13:25 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:13:25 - INFO - Start up PowerFactory
+2025-02-27 21:13:25 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 21:13:37 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 21:13:38 - DEBUG - Generators outages: ['Load_B3', 'Load_F4', 'Load_C1', 'Load_E1', 'Load_A2', 'Load_E2', 'Load_C4']
+2025-02-27 21:13:38 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 21:13:38 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 21:13:38 - INFO - Exporting CSV with flujo: AC
+2025-02-27 21:13:41 - INFO - CSV export complete
+2025-02-27 21:13:41 - INFO - Getting data from PowerFactory simulation
+2025-02-27 21:13:41 - INFO - Data extraction complete
+2025-02-27 21:13:41 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 21:13:50 - INFO - Escenario: 1
+2025-02-27 21:13:50 - INFO - Progreso: 1/7
+2025-02-27 21:13:50 - INFO -  - Generador Out: Load_B3
+2025-02-27 21:13:50 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:13:50 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:13:51 - INFO - Dynamic simulation prepared
+2025-02-27 21:13:51 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:13:53 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:13:53 - INFO - Progreso: 2/7
+2025-02-27 21:13:53 - INFO -  - Generador Out: Load_F4
+2025-02-27 21:13:53 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:13:53 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:13:54 - INFO - Dynamic simulation prepared
+2025-02-27 21:13:54 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:13:56 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:13:56 - INFO - Progreso: 3/7
+2025-02-27 21:13:56 - INFO -  - Generador Out: Load_C1
+2025-02-27 21:13:56 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:13:56 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:13:57 - INFO - Dynamic simulation prepared
+2025-02-27 21:13:57 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:13:59 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:13:59 - INFO - Progreso: 4/7
+2025-02-27 21:13:59 - INFO -  - Generador Out: Load_E1
+2025-02-27 21:13:59 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:13:59 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:14:00 - INFO - Dynamic simulation prepared
+2025-02-27 21:14:00 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:14:02 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:14:02 - INFO - Progreso: 5/7
+2025-02-27 21:14:02 - INFO -  - Generador Out: Load_A2
+2025-02-27 21:14:03 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:14:03 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:14:04 - INFO - Dynamic simulation prepared
+2025-02-27 21:14:04 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:14:07 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:14:07 - INFO - Progreso: 6/7
+2025-02-27 21:14:07 - INFO -  - Generador Out: Load_E2
+2025-02-27 21:14:07 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:14:07 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:14:08 - INFO - Dynamic simulation prepared
+2025-02-27 21:14:09 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:14:11 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:14:11 - INFO - Progreso: 7/7
+2025-02-27 21:14:11 - INFO -  - Generador Out: Load_C4
+2025-02-27 21:14:11 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:14:11 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:14:12 - INFO - Dynamic simulation prepared
+2025-02-27 21:14:12 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:14:14 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:14:14 - INFO - Simulation initialized
+2025-02-27 21:14:14 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:14:14 - INFO - Initializing Model
+2025-02-27 21:14:14 - INFO - Set parameter Username
+2025-02-27 21:14:14 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 21:14:14 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 21:14:14 - INFO - Optimization model initialized
+2025-02-27 21:14:14 - INFO - Formulating Model
+2025-02-27 21:14:14 - INFO - Objective function set
+2025-02-27 21:14:14 - INFO - Formulating Objective Function
+2025-02-27 21:14:14 - INFO - Adding Constraints
+2025-02-27 21:14:14 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 21:14:14 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 21:14:14 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 21:14:14 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 21:14:14 - INFO - Adding balance constraint for s: 1, ti: 0
+2025-02-27 21:14:14 - INFO - Adding Balance and Generators Constraints for Scenario 1 and Time 0
+2025-02-27 21:14:15 - INFO - Adding TS Constraints for Scenario 1 and Time 0
+2025-02-27 21:14:15 - INFO - Adding balance constraint for s: 2, ti: 0
+2025-02-27 21:14:15 - INFO - Adding Balance and Generators Constraints for Scenario 2 and Time 0
+2025-02-27 21:14:15 - INFO - Adding TS Constraints for Scenario 2 and Time 0
+2025-02-27 21:14:15 - INFO - Adding balance constraint for s: 3, ti: 0
+2025-02-27 21:14:15 - INFO - Adding Balance and Generators Constraints for Scenario 3 and Time 0
+2025-02-27 21:14:15 - INFO - Adding TS Constraints for Scenario 3 and Time 0
+2025-02-27 21:14:15 - INFO - Adding balance constraint for s: 4, ti: 0
+2025-02-27 21:14:15 - INFO - Adding Balance and Generators Constraints for Scenario 4 and Time 0
+2025-02-27 21:14:15 - INFO - Adding TS Constraints for Scenario 4 and Time 0
+2025-02-27 21:14:15 - INFO - Adding balance constraint for s: 5, ti: 0
+2025-02-27 21:14:15 - INFO - Adding Balance and Generators Constraints for Scenario 5 and Time 0
+2025-02-27 21:14:15 - INFO - Adding TS Constraints for Scenario 5 and Time 0
+2025-02-27 21:14:15 - INFO - Adding balance constraint for s: 6, ti: 0
+2025-02-27 21:14:15 - INFO - Adding Balance and Generators Constraints for Scenario 6 and Time 0
+2025-02-27 21:14:15 - INFO - Adding TS Constraints for Scenario 6 and Time 0
+2025-02-27 21:14:15 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 21:14:15 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 21:14:15 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 21:14:15 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 21:14:15 - INFO - Optimize a model with 8652 rows, 7558 columns and 100870 nonzeros
+2025-02-27 21:14:15 - INFO - Model fingerprint: 0x2d46cfa5
+2025-02-27 21:14:15 - INFO - Variable types: 7287 continuous, 271 integer (271 binary)
+2025-02-27 21:14:15 - INFO - Coefficient statistics:
+2025-02-27 21:14:15 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 21:14:15 - INFO -   Objective range  [1e+00, 1e+04]
+2025-02-27 21:14:15 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 21:14:15 - INFO -   RHS range        [6e-03, 1e+02]
+2025-02-27 21:14:15 - INFO - Presolve removed 6238 rows and 1343 columns
+2025-02-27 21:14:15 - INFO - Presolve time: 0.18s
+2025-02-27 21:14:15 - INFO - Presolved: 2414 rows, 6215 columns, 23266 nonzeros
+2025-02-27 21:14:15 - INFO - Variable types: 5212 continuous, 1003 integer (247 binary)
+2025-02-27 21:14:16 - INFO - Found heuristic solution: objective 121328.57809
+2025-02-27 21:14:16 - INFO - Root relaxation: objective 1.196907e+05, 2122 iterations, 0.05 seconds (0.04 work units)
+2025-02-27 21:14:16 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 21:14:16 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 21:14:16 - INFO -      0     0 119690.652    0   50 121328.578 119690.652  1.35%     -    0s
+2025-02-27 21:14:16 - INFO - H    0     0                    120470.55645 119690.652  0.65%     -    0s
+2025-02-27 21:14:16 - INFO - Cutting planes:
+2025-02-27 21:14:16 - INFO -   Gomory: 5
+2025-02-27 21:14:16 - INFO -   Implied bound: 34
+2025-02-27 21:14:16 - INFO -   MIR: 87
+2025-02-27 21:14:16 - INFO -   Flow cover: 68
+2025-02-27 21:14:16 - INFO - Explored 1 nodes (2434 simplex iterations) in 0.50 seconds (0.28 work units)
+2025-02-27 21:14:16 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 21:14:16 - INFO - Solution count 2: 120471 121329
+2025-02-27 21:14:16 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 21:14:16 - INFO - Best objective 1.204705471816e+05, best bound 1.196917250681e+05, gap 0.6465%
+2025-02-27 21:14:16 - INFO - -----------------------------
+2025-02-27 21:14:16 - INFO - Cost = 120470.55 ($) => Csfc = 28700.00 ($) + Cop = 477858.89 ($) + Cue = 0.00 ($) + Cpl = 164534.94 ($) + Cts = 0.00
+2025-02-27 21:14:16 - INFO - num_Vars =  7558 / num_Const =  8652 / num_NonZeros =  100870
+2025-02-27 21:14:16 - INFO - => Solver time: 0.5210 (s)
+2025-02-27 21:14:16 - INFO - Results extraction complete
+2025-02-27 21:14:16 - INFO - => Formulation time: 1.0447 (s)
+2025-02-27 21:14:16 - INFO - => Solution time: 0.5257 (s)
+2025-02-27 21:14:16 - INFO - Optimization model results: <optm.Modelo object at 0x00000232C56E8310>
+2025-02-27 21:14:16 - INFO - => Extract data time: 49.1159 (s)
+2025-02-27 21:14:16 - INFO - Extracting 2 alternatives solutions
+2025-02-27 21:14:16 - INFO - Another Solution: 121328.57809176645
+2025-02-27 21:14:16 - INFO - Cost = 121328.58 ($) => Csfc = 30200.00 ($) + Cop = 69068.92 ($) + Cue = 0.00 ($) + Cpl = 22059.66 ($) + Cts = 0.00
+2025-02-27 21:14:16 - INFO - Revision big optm with PowerFactory
+2025-02-27 21:14:17 - INFO - Results saved to Excel file 00ResultadosArticulo2 - TS_20250227-211417.xlsx
+2025-02-27 21:14:17 - INFO - Escenario: 1
+2025-02-27 21:14:27 - INFO - Progreso: 1/7
+2025-02-27 21:14:27 - INFO - Generador Out: Load_B3
+2025-02-27 21:14:29 - INFO - Event Gamma G4_1 created with value 0.2055258460647406
+2025-02-27 21:14:29 - INFO - Event Gamma G4_2 created with value 0.20551965153873908
+2025-02-27 21:14:30 - INFO - Event Gamma G4_3 created with value 0.1747174012145307
+2025-02-27 21:14:31 - INFO - Event Gamma G4_4 created with value 0.17471092215984443
+2025-02-27 21:14:31 - INFO - Event Gamma G6_3 created with value 0.06496891512153977
+2025-02-27 21:14:32 - INFO - Event Gamma G7_1 created with value 0.17455720698195631
+2025-02-27 21:14:32 - INFO - Switched lines: []
+2025-02-27 21:14:32 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:14:33 - INFO - Dynamic simulation prepared
+2025-02-27 21:14:33 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:14:43 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:14:52 - INFO - Progreso: 2/7
+2025-02-27 21:14:52 - INFO - Generador Out: Load_F4
+2025-02-27 21:14:53 - INFO - Event Gamma G3_2 created with value 0.04749972432886546
+2025-02-27 21:14:53 - INFO - Event Gamma G3_4 created with value 0.17210065373489583
+2025-02-27 21:14:54 - INFO - Event Gamma G4_1 created with value 0.13654252592708743
+2025-02-27 21:14:55 - INFO - Event Gamma G4_2 created with value 0.1365445669300766
+2025-02-27 21:14:55 - INFO - Event Gamma G4_3 created with value 0.11722971636585951
+2025-02-27 21:14:56 - INFO - Event Gamma G4_4 created with value 0.11724059453338877
+2025-02-27 21:14:56 - INFO - Event Gamma G6_3 created with value 0.15573113528607063
+2025-02-27 21:14:57 - INFO - Event Gamma G7_1 created with value 0.11711104785175641
+2025-02-27 21:14:57 - INFO - Switched lines: []
+2025-02-27 21:14:57 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:14:58 - INFO - Dynamic simulation prepared
+2025-02-27 21:14:58 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:15:11 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:15:21 - INFO - Progreso: 3/7
+2025-02-27 21:15:21 - INFO - Generador Out: Load_C1
+2025-02-27 21:15:22 - INFO - Event Gamma G3_2 created with value 0.0440781722917726
+2025-02-27 21:15:22 - INFO - Event Gamma G3_4 created with value 0.17274663578387145
+2025-02-27 21:15:23 - INFO - Event Gamma G4_1 created with value 0.1370562342338309
+2025-02-27 21:15:23 - INFO - Event Gamma G4_2 created with value 0.13703242156701056
+2025-02-27 21:15:24 - INFO - Event Gamma G4_3 created with value 0.11765363632164558
+2025-02-27 21:15:24 - INFO - Event Gamma G4_4 created with value 0.11765177324672826
+2025-02-27 21:15:25 - INFO - Event Gamma G6_3 created with value 0.15630792950085734
+2025-02-27 21:15:25 - INFO - Event Gamma G7_1 created with value 0.11747316186381213
+2025-02-27 21:15:25 - INFO - Switched lines: []
+2025-02-27 21:15:25 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:15:26 - INFO - Dynamic simulation prepared
+2025-02-27 21:15:26 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:15:35 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:15:44 - INFO - Progreso: 4/7
+2025-02-27 21:15:44 - INFO - Generador Out: Load_E1
+2025-02-27 21:15:45 - INFO - Event Gamma G3_4 created with value 0.127879808823579
+2025-02-27 21:15:46 - INFO - Event Gamma G4_1 created with value 0.15275681335200042
+2025-02-27 21:15:46 - INFO - Event Gamma G4_2 created with value 0.1527434270430054
+2025-02-27 21:15:47 - INFO - Event Gamma G4_3 created with value 0.1307289061273584
+2025-02-27 21:15:47 - INFO - Event Gamma G4_4 created with value 0.13072760541655493
+2025-02-27 21:15:48 - INFO - Event Gamma G6_3 created with value 0.17464306035213548
+2025-02-27 21:15:48 - INFO - Event Gamma G7_1 created with value 0.13052033868406132
+2025-02-27 21:15:48 - INFO - Switched lines: []
+2025-02-27 21:15:48 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:15:49 - INFO - Dynamic simulation prepared
+2025-02-27 21:15:49 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:15:58 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:16:06 - INFO - Progreso: 5/7
+2025-02-27 21:16:06 - INFO - Generador Out: Load_A2
+2025-02-27 21:16:07 - INFO - Event Gamma G3_1 created with value 0.09197289938293897
+2025-02-27 21:16:08 - INFO - Event Gamma G3_2 created with value 0.1270881954087177
+2025-02-27 21:16:08 - INFO - Event Gamma G3_4 created with value 0.1427680588926421
+2025-02-27 21:16:09 - INFO - Event Gamma G4_1 created with value 0.1144258517189285
+2025-02-27 21:16:09 - INFO - Event Gamma G4_2 created with value 0.11447460264282745
+2025-02-27 21:16:10 - INFO - Event Gamma G4_3 created with value 0.09874426216064254
+2025-02-27 21:16:10 - INFO - Event Gamma G4_4 created with value 0.09876936873434752
+2025-02-27 21:16:11 - INFO - Event Gamma G6_3 created with value 0.11312280963160566
+2025-02-27 21:16:11 - INFO - Event Gamma G7_1 created with value 0.09863389528684587
+2025-02-27 21:16:11 - INFO - Switched lines: []
+2025-02-27 21:16:11 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:16:12 - INFO - Dynamic simulation prepared
+2025-02-27 21:16:12 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:16:24 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:16:33 - INFO - Progreso: 6/7
+2025-02-27 21:16:33 - INFO - Generador Out: Load_E2
+2025-02-27 21:16:34 - INFO - Event Gamma G2_3 created with value 0.07743242974865763
+2025-02-27 21:16:34 - INFO - Event Gamma G3_1 created with value 0.08838855933725133
+2025-02-27 21:16:35 - INFO - Event Gamma G3_2 created with value 0.10020692868509896
+2025-02-27 21:16:35 - INFO - Event Gamma G3_4 created with value 0.11202950030237958
+2025-02-27 21:16:36 - INFO - Event Gamma G4_1 created with value 0.09142384348185471
+2025-02-27 21:16:36 - INFO - Event Gamma G4_2 created with value 0.09148394662443456
+2025-02-27 21:16:37 - INFO - Event Gamma G4_3 created with value 0.07960107616262688
+2025-02-27 21:16:38 - INFO - Event Gamma G4_4 created with value 0.0796203014738603
+2025-02-27 21:16:38 - INFO - Event Gamma G6_3 created with value 0.10312548678049802
+2025-02-27 21:16:39 - INFO - Event Gamma G6_4 created with value 0.09719495430688087
+2025-02-27 21:16:39 - INFO - Event Gamma G7_1 created with value 0.07949295229066507
+2025-02-27 21:16:39 - INFO - Switched lines: []
+2025-02-27 21:16:39 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:16:40 - INFO - Dynamic simulation prepared
+2025-02-27 21:16:40 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:16:49 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:16:58 - INFO - Progreso: 7/7
+2025-02-27 21:16:58 - INFO - Generador Out: Load_C4
+2025-02-27 21:16:59 - INFO - Event Gamma G2_3 created with value 0.01190343767837254
+2025-02-27 21:17:00 - INFO - Event Gamma G3_1 created with value 0.09477979862264292
+2025-02-27 21:17:00 - INFO - Event Gamma G3_2 created with value 0.10764517636222973
+2025-02-27 21:17:01 - INFO - Event Gamma G3_4 created with value 0.12051405023975441
+2025-02-27 21:17:16 - INFO - Event Gamma G4_1 created with value 0.09784566391975866
+2025-02-27 21:17:17 - INFO - Event Gamma G4_2 created with value 0.09784515240067022
+2025-02-27 21:17:18 - INFO - Event Gamma G4_3 created with value 0.08497931973968495
+2025-02-27 21:17:18 - INFO - Event Gamma G4_4 created with value 0.08501377730347269
+2025-02-27 21:17:19 - INFO - Event Gamma G6_3 created with value 0.11059449041334932
+2025-02-27 21:17:20 - INFO - Event Gamma G6_4 created with value 0.10401622790250942
+2025-02-27 21:17:21 - INFO - Event Gamma G7_1 created with value 0.08486288263276891
+2025-02-27 21:17:21 - INFO - Switched lines: []
+2025-02-27 21:17:21 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:17:21 - INFO - Dynamic simulation prepared
+2025-02-27 21:17:22 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:17:42 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:17:42 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 21:17:42 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 21:23:05 - INFO - Starting main function
+2025-02-27 21:23:05 - INFO - Setting up simulation with estudio: 6
+2025-02-27 21:23:05 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:23:05 - INFO - Start up PowerFactory
+2025-02-27 21:23:05 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 21:23:20 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 21:23:21 - DEBUG - Generators outages: ['Load_B3', 'Load_F4', 'Load_C1', 'Load_E1', 'Load_A2', 'Load_E2', 'Load_C4']
+2025-02-27 21:23:21 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 21:23:21 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 21:23:21 - INFO - Exporting CSV with flujo: AC
+2025-02-27 21:23:24 - INFO - CSV export complete
+2025-02-27 21:23:24 - INFO - Getting data from PowerFactory simulation
+2025-02-27 21:23:24 - INFO - Data extraction complete
+2025-02-27 21:23:24 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 21:23:35 - INFO - Escenario: 1
+2025-02-27 21:23:35 - INFO - Progreso: 1/7
+2025-02-27 21:23:35 - INFO -  - Generador Out: Load_B3
+2025-02-27 21:23:35 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:23:35 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:23:36 - INFO - Dynamic simulation prepared
+2025-02-27 21:23:36 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:23:39 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:23:39 - INFO - Progreso: 2/7
+2025-02-27 21:23:39 - INFO -  - Generador Out: Load_F4
+2025-02-27 21:23:39 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 21:23:39 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 21:24:12 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:24:12 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:24:13 - INFO - Dynamic simulation prepared
+2025-02-27 21:24:13 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:24:15 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:24:16 - INFO - Progreso: 3/7
+2025-02-27 21:24:16 - INFO -  - Generador Out: Load_C1
+2025-02-27 21:24:16 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:24:16 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:24:17 - INFO - Dynamic simulation prepared
+2025-02-27 21:24:17 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:24:19 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:24:19 - INFO - Progreso: 4/7
+2025-02-27 21:24:19 - INFO -  - Generador Out: Load_E1
+2025-02-27 21:24:20 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:24:20 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:24:21 - INFO - Dynamic simulation prepared
+2025-02-27 21:24:21 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:24:23 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:24:23 - INFO - Progreso: 5/7
+2025-02-27 21:24:23 - INFO -  - Generador Out: Load_A2
+2025-02-27 21:24:23 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:24:23 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:24:24 - INFO - Dynamic simulation prepared
+2025-02-27 21:24:24 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:24:27 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:24:27 - INFO - Progreso: 6/7
+2025-02-27 21:24:27 - INFO -  - Generador Out: Load_E2
+2025-02-27 21:24:28 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:24:28 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:24:28 - INFO - Dynamic simulation prepared
+2025-02-27 21:24:28 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:24:31 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:24:31 - INFO - Progreso: 7/7
+2025-02-27 21:24:31 - INFO -  - Generador Out: Load_C4
+2025-02-27 21:24:31 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:24:31 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:24:32 - INFO - Dynamic simulation prepared
+2025-02-27 21:24:32 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:24:34 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:24:34 - INFO - Simulation initialized
+2025-02-27 21:26:07 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:26:07 - INFO - Initializing Model
+2025-02-27 21:26:07 - INFO - Set parameter Username
+2025-02-27 21:26:07 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 21:26:07 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 21:26:07 - INFO - Optimization model initialized
+2025-02-27 21:26:07 - INFO - Formulating Model
+2025-02-27 21:26:07 - INFO - Objective function set
+2025-02-27 21:26:07 - INFO - Formulating Objective Function
+2025-02-27 21:26:07 - INFO - Adding Constraints
+2025-02-27 21:26:07 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 21:26:07 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 21:26:07 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 21:26:07 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 21:26:07 - INFO - Adding balance constraint for s: 1, ti: 0
+2025-02-27 21:26:07 - INFO - Adding Balance and Generators Constraints for Scenario 1 and Time 0
+2025-02-27 21:26:08 - INFO - Adding TS Constraints for Scenario 1 and Time 0
+2025-02-27 21:26:08 - INFO - Adding balance constraint for s: 2, ti: 0
+2025-02-27 21:26:08 - INFO - Adding Balance and Generators Constraints for Scenario 2 and Time 0
+2025-02-27 21:26:08 - INFO - Adding TS Constraints for Scenario 2 and Time 0
+2025-02-27 21:26:08 - INFO - Adding balance constraint for s: 3, ti: 0
+2025-02-27 21:26:08 - INFO - Adding Balance and Generators Constraints for Scenario 3 and Time 0
+2025-02-27 21:26:08 - INFO - Adding TS Constraints for Scenario 3 and Time 0
+2025-02-27 21:26:08 - INFO - Adding balance constraint for s: 4, ti: 0
+2025-02-27 21:26:08 - INFO - Adding Balance and Generators Constraints for Scenario 4 and Time 0
+2025-02-27 21:26:08 - INFO - Adding TS Constraints for Scenario 4 and Time 0
+2025-02-27 21:26:08 - INFO - Adding balance constraint for s: 5, ti: 0
+2025-02-27 21:26:08 - INFO - Adding Balance and Generators Constraints for Scenario 5 and Time 0
+2025-02-27 21:26:08 - INFO - Adding TS Constraints for Scenario 5 and Time 0
+2025-02-27 21:26:08 - INFO - Adding balance constraint for s: 6, ti: 0
+2025-02-27 21:26:08 - INFO - Adding Balance and Generators Constraints for Scenario 6 and Time 0
+2025-02-27 21:26:08 - INFO - Adding TS Constraints for Scenario 6 and Time 0
+2025-02-27 21:26:08 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 21:26:08 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 21:26:08 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 21:26:08 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 21:26:08 - INFO - Optimize a model with 8652 rows, 7558 columns and 100870 nonzeros
+2025-02-27 21:26:08 - INFO - Model fingerprint: 0x2d46cfa5
+2025-02-27 21:26:08 - INFO - Variable types: 7287 continuous, 271 integer (271 binary)
+2025-02-27 21:26:08 - INFO - Coefficient statistics:
+2025-02-27 21:26:08 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 21:26:08 - INFO -   Objective range  [1e+00, 1e+04]
+2025-02-27 21:26:08 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 21:26:08 - INFO -   RHS range        [6e-03, 1e+02]
+2025-02-27 21:26:09 - INFO - Presolve removed 6238 rows and 1343 columns
+2025-02-27 21:26:09 - INFO - Presolve time: 0.22s
+2025-02-27 21:26:09 - INFO - Presolved: 2414 rows, 6215 columns, 23266 nonzeros
+2025-02-27 21:26:09 - INFO - Variable types: 5212 continuous, 1003 integer (247 binary)
+2025-02-27 21:26:09 - INFO - Found heuristic solution: objective 121328.57809
+2025-02-27 21:26:09 - INFO - Root relaxation: objective 1.196907e+05, 2122 iterations, 0.06 seconds (0.04 work units)
+2025-02-27 21:26:09 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 21:26:09 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 21:26:09 - INFO -      0     0 119690.652    0   50 121328.578 119690.652  1.35%     -    0s
+2025-02-27 21:26:09 - INFO - H    0     0                    120470.55645 119690.652  0.65%     -    0s
+2025-02-27 21:26:09 - INFO - Cutting planes:
+2025-02-27 21:26:09 - INFO -   Gomory: 5
+2025-02-27 21:26:09 - INFO -   Implied bound: 34
+2025-02-27 21:26:09 - INFO -   MIR: 87
+2025-02-27 21:26:09 - INFO -   Flow cover: 68
+2025-02-27 21:26:09 - INFO - Explored 1 nodes (2434 simplex iterations) in 0.55 seconds (0.28 work units)
+2025-02-27 21:26:09 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 21:26:09 - INFO - Solution count 2: 120471 121329
+2025-02-27 21:26:09 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 21:26:09 - INFO - Best objective 1.204705471816e+05, best bound 1.196917250681e+05, gap 0.6465%
+2025-02-27 21:26:09 - INFO - -----------------------------
+2025-02-27 21:26:09 - INFO - Cost = 120470.55 ($) => Csfc = 28700.00 ($) + Cop = 477858.89 ($) + Cue = 0.00 ($) + Cpl = 164534.94 ($) + Cts = 0.00
+2025-02-27 21:26:09 - INFO - num_Vars =  7558 / num_Const =  8652 / num_NonZeros =  100870
+2025-02-27 21:26:09 - INFO - => Solver time: 0.5530 (s)
+2025-02-27 21:26:09 - INFO - Results extraction complete
+2025-02-27 21:26:09 - INFO - => Formulation time: 1.0332 (s)
+2025-02-27 21:26:09 - INFO - => Solution time: 0.5575 (s)
+2025-02-27 21:26:09 - INFO - Optimization model results: <optm.Modelo object at 0x000002532041C6D0>
+2025-02-27 21:26:09 - INFO - => Extract data time: 89.6390 (s)
+2025-02-27 21:26:09 - INFO - Extracting 2 alternatives solutions
+2025-02-27 21:26:09 - INFO - Another Solution: 121328.57809176645
+2025-02-27 21:26:09 - INFO - Cost = 121328.58 ($) => Csfc = 30200.00 ($) + Cop = 69068.92 ($) + Cue = 0.00 ($) + Cpl = 22059.66 ($) + Cts = 0.00
+2025-02-27 21:26:12 - INFO - Revision big optm with PowerFactory
+2025-02-27 21:26:13 - INFO - Results saved to Excel file 00ResultadosArticulo2 - TS_20250227-212613.xlsx
+2025-02-27 21:26:13 - INFO - Escenario: 1
+2025-02-27 21:26:24 - INFO - Progreso: 1/7
+2025-02-27 21:26:24 - INFO - Generador Out: Load_B3
+2025-02-27 21:26:25 - INFO - Event Gamma G4_1 created with value 0.2055258460647406
+2025-02-27 21:26:26 - INFO - Event Gamma G4_2 created with value 0.20551965153873908
+2025-02-27 21:26:27 - INFO - Event Gamma G4_3 created with value 0.1747174012145307
+2025-02-27 21:26:28 - INFO - Event Gamma G4_4 created with value 0.17471092215984443
+2025-02-27 21:26:29 - INFO - Event Gamma G6_3 created with value 0.06496891512153977
+2025-02-27 21:26:29 - INFO - Event Gamma G7_1 created with value 0.17455720698195631
+2025-02-27 21:26:29 - INFO - Switched lines: []
+2025-02-27 21:26:29 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:26:31 - INFO - Dynamic simulation prepared
+2025-02-27 21:26:31 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:26:45 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:26:57 - INFO - Progreso: 2/7
+2025-02-27 21:26:57 - INFO - Generador Out: Load_F4
+2025-02-27 21:26:58 - INFO - Event Gamma G3_2 created with value 0.04749972432886546
+2025-02-27 21:26:59 - INFO - Event Gamma G3_4 created with value 0.17210065373489583
+2025-02-27 21:26:59 - INFO - Event Gamma G4_1 created with value 0.13654252592708743
+2025-02-27 21:27:00 - INFO - Event Gamma G4_2 created with value 0.1365445669300766
+2025-02-27 21:27:01 - INFO - Event Gamma G4_3 created with value 0.11722971636585951
+2025-02-27 21:27:02 - INFO - Event Gamma G4_4 created with value 0.11724059453338877
+2025-02-27 21:27:03 - INFO - Event Gamma G6_3 created with value 0.15573113528607063
+2025-02-27 21:27:04 - INFO - Event Gamma G7_1 created with value 0.11711104785175641
+2025-02-27 21:27:04 - INFO - Switched lines: []
+2025-02-27 21:27:04 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:27:05 - INFO - Dynamic simulation prepared
+2025-02-27 21:27:05 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:27:17 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:27:30 - INFO - Progreso: 3/7
+2025-02-27 21:27:30 - INFO - Generador Out: Load_C1
+2025-02-27 21:27:31 - INFO - Event Gamma G3_2 created with value 0.0440781722917726
+2025-02-27 21:27:32 - INFO - Event Gamma G3_4 created with value 0.17274663578387145
+2025-02-27 21:27:32 - INFO - Event Gamma G4_1 created with value 0.1370562342338309
+2025-02-27 21:27:33 - INFO - Event Gamma G4_2 created with value 0.13703242156701056
+2025-02-27 21:27:33 - INFO - Event Gamma G4_3 created with value 0.11765363632164558
+2025-02-27 21:27:34 - INFO - Event Gamma G4_4 created with value 0.11765177324672826
+2025-02-27 21:27:35 - INFO - Event Gamma G6_3 created with value 0.15630792950085734
+2025-02-27 21:27:35 - INFO - Event Gamma G7_1 created with value 0.11747316186381213
+2025-02-27 21:27:35 - INFO - Switched lines: []
+2025-02-27 21:27:35 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:27:36 - INFO - Dynamic simulation prepared
+2025-02-27 21:27:36 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:27:44 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:27:55 - INFO - Progreso: 4/7
+2025-02-27 21:27:55 - INFO - Generador Out: Load_E1
+2025-02-27 21:27:56 - INFO - Event Gamma G3_4 created with value 0.127879808823579
+2025-02-27 21:27:57 - INFO - Event Gamma G4_1 created with value 0.15275681335200042
+2025-02-27 21:27:57 - INFO - Event Gamma G4_2 created with value 0.1527434270430054
+2025-02-27 21:27:58 - INFO - Event Gamma G4_3 created with value 0.1307289061273584
+2025-02-27 21:27:59 - INFO - Event Gamma G4_4 created with value 0.13072760541655493
+2025-02-27 21:28:00 - INFO - Event Gamma G6_3 created with value 0.17464306035213548
+2025-02-27 21:28:01 - INFO - Event Gamma G7_1 created with value 0.13052033868406132
+2025-02-27 21:28:01 - INFO - Switched lines: []
+2025-02-27 21:28:01 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:28:02 - INFO - Dynamic simulation prepared
+2025-02-27 21:28:02 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:28:11 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:28:21 - INFO - Progreso: 5/7
+2025-02-27 21:28:21 - INFO - Generador Out: Load_A2
+2025-02-27 21:28:23 - INFO - Event Gamma G3_1 created with value 0.09197289938293897
+2025-02-27 21:28:24 - INFO - Event Gamma G3_2 created with value 0.1270881954087177
+2025-02-27 21:28:24 - INFO - Event Gamma G3_4 created with value 0.1427680588926421
+2025-02-27 21:28:25 - INFO - Event Gamma G4_1 created with value 0.1144258517189285
+2025-02-27 21:28:26 - INFO - Event Gamma G4_2 created with value 0.11447460264282745
+2025-02-27 21:28:27 - INFO - Event Gamma G4_3 created with value 0.09874426216064254
+2025-02-27 21:28:28 - INFO - Event Gamma G4_4 created with value 0.09876936873434752
+2025-02-27 21:28:29 - INFO - Event Gamma G6_3 created with value 0.11312280963160566
+2025-02-27 21:28:30 - INFO - Event Gamma G7_1 created with value 0.09863389528684587
+2025-02-27 21:28:30 - INFO - Switched lines: []
+2025-02-27 21:28:30 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:28:31 - INFO - Dynamic simulation prepared
+2025-02-27 21:28:31 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:28:42 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:29:00 - INFO - Progreso: 6/7
+2025-02-27 21:29:00 - INFO - Generador Out: Load_E2
+2025-02-27 21:29:01 - INFO - Event Gamma G2_3 created with value 0.07743242974865763
+2025-02-27 21:29:02 - INFO - Event Gamma G3_1 created with value 0.08838855933725133
+2025-02-27 21:29:03 - INFO - Event Gamma G3_2 created with value 0.10020692868509896
+2025-02-27 21:29:04 - INFO - Event Gamma G3_4 created with value 0.11202950030237958
+2025-02-27 21:29:05 - INFO - Event Gamma G4_1 created with value 0.09142384348185471
+2025-02-27 21:29:05 - INFO - Event Gamma G4_2 created with value 0.09148394662443456
+2025-02-27 21:29:06 - INFO - Event Gamma G4_3 created with value 0.07960107616262688
+2025-02-27 21:29:07 - INFO - Event Gamma G4_4 created with value 0.0796203014738603
+2025-02-27 21:29:07 - INFO - Event Gamma G6_3 created with value 0.10312548678049802
+2025-02-27 21:29:08 - INFO - Event Gamma G6_4 created with value 0.09719495430688087
+2025-02-27 21:29:08 - INFO - Event Gamma G7_1 created with value 0.07949295229066507
+2025-02-27 21:29:08 - INFO - Switched lines: []
+2025-02-27 21:29:08 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:29:09 - INFO - Dynamic simulation prepared
+2025-02-27 21:29:09 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:29:20 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:29:34 - INFO - Progreso: 7/7
+2025-02-27 21:29:34 - INFO - Generador Out: Load_C4
+2025-02-27 21:29:35 - INFO - Event Gamma G2_3 created with value 0.01190343767837254
+2025-02-27 21:29:36 - INFO - Event Gamma G3_1 created with value 0.09477979862264292
+2025-02-27 21:29:37 - INFO - Event Gamma G3_2 created with value 0.10764517636222973
+2025-02-27 21:29:37 - INFO - Event Gamma G3_4 created with value 0.12051405023975441
+2025-02-27 21:29:38 - INFO - Event Gamma G4_1 created with value 0.09784566391975866
+2025-02-27 21:29:39 - INFO - Event Gamma G4_2 created with value 0.09784515240067022
+2025-02-27 21:29:39 - INFO - Event Gamma G4_3 created with value 0.08497931973968495
+2025-02-27 21:29:40 - INFO - Event Gamma G4_4 created with value 0.08501377730347269
+2025-02-27 21:29:41 - INFO - Event Gamma G6_3 created with value 0.11059449041334932
+2025-02-27 21:29:41 - INFO - Event Gamma G6_4 created with value 0.10401622790250942
+2025-02-27 21:29:42 - INFO - Event Gamma G7_1 created with value 0.08486288263276891
+2025-02-27 21:29:42 - INFO - Switched lines: []
+2025-02-27 21:29:42 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:29:43 - INFO - Dynamic simulation prepared
+2025-02-27 21:29:43 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 21:29:52 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:29:53 - INFO - => Check time: 220.4749 (s)
+2025-02-27 21:29:53 - INFO - Check completed
+2025-02-27 21:47:54 - INFO - Starting main function
+2025-02-27 21:47:54 - INFO - Setting up simulation with estudio: 6
+2025-02-27 21:47:54 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:47:54 - INFO - Start up PowerFactory
+2025-02-27 21:47:54 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 21:48:09 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 21:48:10 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 21:48:10 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 21:48:14 - DEBUG - Generators outages: ['Load_B3']
+2025-02-27 21:48:14 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 21:48:14 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 21:48:14 - INFO - Exporting CSV with flujo: AC
+2025-02-27 21:48:17 - INFO - CSV export complete
+2025-02-27 21:48:17 - INFO - Getting data from PowerFactory simulation
+2025-02-27 21:48:17 - INFO - Data extraction complete
+2025-02-27 21:48:17 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 21:48:26 - INFO - Escenario: 1
+2025-02-27 21:48:26 - INFO - Progreso: 1/1
+2025-02-27 21:48:26 - INFO -  - Generador Out: Load_B3
+2025-02-27 21:48:27 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 21:48:27 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 21:48:27 - INFO - Dynamic simulation prepared
+2025-02-27 21:48:28 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 21:48:29 - INFO - Dynamic simulation complete with result: False
+2025-02-27 21:48:29 - INFO - Simulation initialized
+2025-02-27 21:48:29 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 21:48:29 - INFO - Initializing Model
+2025-02-27 21:48:29 - INFO - Set parameter Username
+2025-02-27 21:48:29 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 21:48:29 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 21:48:29 - INFO - Optimization model initialized
+2025-02-27 21:48:29 - INFO - Formulating Model
+2025-02-27 21:48:29 - INFO - Objective function set
+2025-02-27 21:48:29 - INFO - Formulating Objective Function
+2025-02-27 21:48:29 - INFO - Adding Constraints
+2025-02-27 21:48:29 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 21:48:29 - DEBUG - P_agc - ploss= -5.56
+2025-02-27 21:48:29 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 21:48:30 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 21:48:30 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 21:48:30 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 21:48:30 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 21:48:30 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 21:48:30 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 21:48:30 - INFO - Optimize a model with 1236 rows, 1102 columns and 14110 nonzeros
+2025-02-27 21:48:30 - INFO - Model fingerprint: 0x36ca36cf
+2025-02-27 21:48:30 - INFO - Variable types: 1041 continuous, 61 integer (61 binary)
+2025-02-27 21:48:30 - INFO - Coefficient statistics:
+2025-02-27 21:48:30 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 21:48:30 - INFO -   Objective range  [1e+01, 3e+04]
+2025-02-27 21:48:30 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 21:48:30 - INFO -   RHS range        [6e-03, 1e+02]
+2025-02-27 21:48:30 - INFO - Presolve removed 894 rows and 193 columns
+2025-02-27 21:48:30 - INFO - Presolve time: 0.02s
+2025-02-27 21:48:30 - INFO - Presolved: 342 rows, 909 columns, 3308 nonzeros
+2025-02-27 21:48:30 - INFO - Variable types: 744 continuous, 165 integer (57 binary)
+2025-02-27 21:48:30 - INFO - Found heuristic solution: objective 166876.23901
+2025-02-27 21:48:30 - INFO - Root relaxation: objective 6.376595e+04, 358 iterations, 0.00 seconds (0.00 work units)
+2025-02-27 21:48:30 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 21:48:30 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 21:48:30 - INFO -      0     0 63765.9465    0    8 166876.239 63765.9465  61.8%     -    0s
+2025-02-27 21:48:30 - INFO - H    0     0                    63858.446506 63765.9465  0.14%     -    0s
+2025-02-27 21:48:30 - INFO - Explored 1 nodes (358 simplex iterations) in 0.06 seconds (0.03 work units)
+2025-02-27 21:48:30 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 21:48:30 - INFO - Solution count 2: 63858.4 166876
+2025-02-27 21:48:30 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 21:48:30 - INFO - Best objective 6.385843819509e+04, best bound 6.376594652112e+04, gap 0.1448%
+2025-02-27 21:48:30 - INFO - -----------------------------
+2025-02-27 21:48:30 - INFO - Cost = 63858.44 ($) => Csfc = 10700.00 ($) + Cop = 30231.73 ($) + Cue = 0.00 ($) + Cpl = 22926.71 ($) + Cts = 0.00
+2025-02-27 21:48:30 - INFO - num_Vars =  1102 / num_Const =  1236 / num_NonZeros =  14110
+2025-02-27 21:48:30 - INFO - => Solver time: 0.0620 (s)
+2025-02-27 21:48:30 - INFO - Results extraction complete
+2025-02-27 21:48:30 - INFO - => Formulation time: 0.1731 (s)
+2025-02-27 21:48:30 - INFO - => Solution time: 0.0655 (s)
+2025-02-27 21:48:30 - INFO - Optimization model results: <optm.Modelo object at 0x00000237B42F4710>
+2025-02-27 22:09:59 - INFO - Starting main function
+2025-02-27 22:09:59 - INFO - Setting up simulation with estudio: 6
+2025-02-27 22:09:59 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 22:09:59 - INFO - Start up PowerFactory
+2025-02-27 22:09:59 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 22:10:16 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 22:10:17 - DEBUG - Generators outages: ['Load_B3']
+2025-02-27 22:10:17 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 22:10:17 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 22:10:17 - INFO - Exporting CSV with flujo: AC
+2025-02-27 22:10:19 - INFO - CSV export complete
+2025-02-27 22:10:19 - INFO - Getting data from PowerFactory simulation
+2025-02-27 22:10:19 - INFO - Data extraction complete
+2025-02-27 22:10:19 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 22:10:28 - INFO - Escenario: 1
+2025-02-27 22:10:28 - INFO - Progreso: 1/1
+2025-02-27 22:10:28 - INFO -  - Generador Out: Load_B3
+2025-02-27 22:10:29 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:10:29 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:10:29 - INFO - Dynamic simulation prepared
+2025-02-27 22:10:29 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:10:31 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:10:31 - INFO - Simulation initialized
+2025-02-27 22:10:31 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 22:10:31 - INFO - Initializing Model
+2025-02-27 22:10:31 - INFO - Set parameter Username
+2025-02-27 22:10:31 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 22:10:31 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 22:10:31 - INFO - Optimization model initialized
+2025-02-27 22:10:31 - INFO - Formulating Model
+2025-02-27 22:10:31 - INFO - Objective function set
+2025-02-27 22:10:31 - INFO - Formulating Objective Function
+2025-02-27 22:10:31 - INFO - Adding Constraints
+2025-02-27 22:10:31 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 22:10:31 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 22:10:31 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 22:10:32 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 22:10:32 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 22:10:32 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 22:10:32 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 22:10:32 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 22:10:32 - INFO - Optimize a model with 1236 rows, 1102 columns and 14110 nonzeros
+2025-02-27 22:10:32 - INFO - Model fingerprint: 0xf73aa426
+2025-02-27 22:10:32 - INFO - Variable types: 1041 continuous, 61 integer (61 binary)
+2025-02-27 22:10:32 - INFO - Coefficient statistics:
+2025-02-27 22:10:32 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 22:10:32 - INFO -   Objective range  [1e+01, 3e+04]
+2025-02-27 22:10:32 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 22:10:32 - INFO -   RHS range        [7e-02, 1e+02]
+2025-02-27 22:10:32 - INFO - Presolve removed 894 rows and 193 columns
+2025-02-27 22:10:32 - INFO - Presolve time: 0.02s
+2025-02-27 22:10:32 - INFO - Presolved: 342 rows, 909 columns, 3308 nonzeros
+2025-02-27 22:10:32 - INFO - Variable types: 744 continuous, 165 integer (57 binary)
+2025-02-27 22:10:32 - INFO - Found heuristic solution: objective 91876.238995
+2025-02-27 22:10:32 - INFO - Root relaxation: objective 3.815270e+04, 353 iterations, 0.00 seconds (0.00 work units)
+2025-02-27 22:10:32 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 22:10:32 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 22:10:32 - INFO -      0     0 38152.6953    0    9 91876.2390 38152.6953  58.5%     -    0s
+2025-02-27 22:10:32 - INFO - H    0     0                    39036.984237 38152.6953  2.27%     -    0s
+2025-02-27 22:10:32 - INFO - Cutting planes:
+2025-02-27 22:10:32 - INFO -   Implied bound: 5
+2025-02-27 22:10:32 - INFO -   MIR: 14
+2025-02-27 22:10:32 - INFO -   Flow cover: 13
+2025-02-27 22:10:32 - INFO - Explored 1 nodes (353 simplex iterations) in 0.08 seconds (0.04 work units)
+2025-02-27 22:10:32 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 22:10:32 - INFO - Solution count 2: 39037 91876.2
+2025-02-27 22:10:32 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 22:10:32 - INFO - Best objective 3.903697526854e+04, best bound 3.899094676561e+04, gap 0.1179%
+2025-02-27 22:10:32 - INFO - -----------------------------
+2025-02-27 22:10:32 - INFO - Cost = 39036.98 ($) => Csfc = 7400.00 ($) + Cop = 12746.32 ($) + Cue = 0.00 ($) + Cpl = 18890.65 ($) + Cts = 0.00
+2025-02-27 22:10:32 - INFO - num_Vars =  1102 / num_Const =  1236 / num_NonZeros =  14110
+2025-02-27 22:10:32 - INFO - => Solver time: 0.0850 (s)
+2025-02-27 22:10:32 - INFO - Results extraction complete
+2025-02-27 22:10:32 - INFO - => Formulation time: 0.1586 (s)
+2025-02-27 22:10:32 - INFO - => Solution time: 0.0888 (s)
+2025-02-27 22:10:32 - INFO - Optimization model results: <optm.Modelo object at 0x0000019BD0D15FD0>
+2025-02-27 22:10:32 - INFO - => Extract data time: 32.0266 (s)
+2025-02-27 22:10:32 - INFO - Extracting 2 alternatives solutions
+2025-02-27 22:10:32 - INFO - Another Solution: 91876.23899537163
+2025-02-27 22:10:32 - INFO - Cost = 91876.24 ($) => Csfc = 0.00 ($) + Cop = 0.00 ($) + Cue = 0.00 ($) + Cpl = 91876.24 ($) + Cts = 0.00
+2025-02-27 22:10:32 - INFO - Revision big optm with PowerFactory
+2025-02-27 22:10:32 - INFO - Results saved to Excel file 00ResultadosArticulo2 - TS_20250227-221032.xlsx
+2025-02-27 22:10:32 - INFO - Escenario: 1
+2025-02-27 22:10:43 - INFO - Progreso: 1/1
+2025-02-27 22:10:43 - INFO - Generador Out: Load_B3
+2025-02-27 22:10:44 - INFO - Event Gamma G4_1 created with value 0.4111943025684601
+2025-02-27 22:10:44 - INFO - Event Gamma G4_3 created with value 0.34955603547960734
+2025-02-27 22:10:45 - INFO - Event Gamma G7_1 created with value 0.23924953907628604
+2025-02-27 22:10:45 - INFO - Switched lines: []
+2025-02-27 22:10:45 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:10:46 - INFO - Dynamic simulation prepared
+2025-02-27 22:10:46 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:10:52 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:10:52 - INFO - => Check time: 20.8337 (s)
+2025-02-27 22:10:52 - INFO - Check completed
+2025-02-27 22:10:53 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 22:10:53 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
+2025-02-27 22:14:37 - INFO - Starting main function
+2025-02-27 22:14:37 - INFO - Setting up simulation with estudio: 6
+2025-02-27 22:14:37 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 22:14:37 - INFO - Start up PowerFactory
+2025-02-27 22:14:37 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 22:14:54 - INFO - Starting main function
+2025-02-27 22:14:54 - INFO - Setting up simulation with estudio: 6
+2025-02-27 22:14:54 - INFO - Simulation parameters: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 22:14:54 - INFO - Start up PowerFactory
+2025-02-27 22:14:54 - INFO - Initializing PowerFactory simulation for project: Articulo2 - TS
+2025-02-27 22:15:10 - DEBUG - Generators AGC: ['G2_1', 'G2_3', 'G2_4', 'G3_1', 'G3_2', 'G3_4', 'G4_1', 'G4_2', 'G4_3', 'G4_4', 'G6_3', 'G6_4', 'G7_1']
+2025-02-27 22:15:11 - DEBUG - Generators outages: ['Load_B3', 'Load_F4', 'Load_C1', 'Load_E1', 'Load_A2', 'Load_E2', 'Load_C4']
+2025-02-27 22:15:11 - DEBUG - TS lines: ['Line2_4', 'Line3_4', 'Line7_4', 'Line1_1', 'Line1_2', 'Line1_3', 'Line1_4', 'Line2_1', 'Line2_2', 'Line2_3', 'Line3_1', 'Line3_2', 'Line3_3', 'Line4_1', 'Line4_2', 'Line4_4', 'Line5_1', 'Line5_2', 'Line5_3', 'Line5_4', 'Line6_1', 'Line6_2', 'Line6_3', 'Line6_4', 'Line7_1', 'Line7_2', 'Line7_3', 'Trans_Line_1', 'Trans_Line_2', 'Trans_Line_3', 'Trans_Line_4', 'Trans_Line_5', 'Trans_Line_6', 'Trans_Line_7', 'Trans_Line_8']
+2025-02-27 22:15:11 - INFO - Changing max line values for objects: ['Line3_1'] with values: [500]
+2025-02-27 22:15:11 - INFO - Exporting CSV with flujo: AC
+2025-02-27 22:15:14 - INFO - CSV export complete
+2025-02-27 22:15:14 - INFO - Getting data from PowerFactory simulation
+2025-02-27 22:15:14 - INFO - Data extraction complete
+2025-02-27 22:15:14 - INFO - Initializing simulation with t_initial: 0, tstop_cpf: 30
+2025-02-27 22:15:23 - INFO - Escenario: 1
+2025-02-27 22:15:23 - INFO - Progreso: 1/7
+2025-02-27 22:15:23 - INFO -  - Generador Out: Load_B3
+2025-02-27 22:15:24 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:24 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:24 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:25 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:27 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:27 - INFO - Progreso: 2/7
+2025-02-27 22:15:27 - INFO -  - Generador Out: Load_F4
+2025-02-27 22:15:28 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:28 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:28 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:29 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:30 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:30 - INFO - Progreso: 3/7
+2025-02-27 22:15:30 - INFO -  - Generador Out: Load_C1
+2025-02-27 22:15:31 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:31 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:31 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:31 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:33 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:33 - INFO - Progreso: 4/7
+2025-02-27 22:15:33 - INFO -  - Generador Out: Load_E1
+2025-02-27 22:15:34 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:34 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:34 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:34 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:36 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:36 - INFO - Progreso: 5/7
+2025-02-27 22:15:36 - INFO -  - Generador Out: Load_A2
+2025-02-27 22:15:37 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:37 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:37 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:37 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:40 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:40 - INFO - Progreso: 6/7
+2025-02-27 22:15:40 - INFO -  - Generador Out: Load_E2
+2025-02-27 22:15:40 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:40 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:41 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:41 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:43 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:43 - INFO - Progreso: 7/7
+2025-02-27 22:15:43 - INFO -  - Generador Out: Load_C4
+2025-02-27 22:15:43 - DEBUG - Running dynamic simulation for contingency: <l3>\lldie.IntUser\Articulo2 - TS.IntPrj\Study Cases.IntPrjfolder\Base Case.IntCase\Simulation Events.IntEvt\Salida Load.EvtSwitch</l3>
+2025-02-27 22:15:43 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:15:44 - INFO - Dynamic simulation prepared
+2025-02-27 22:15:44 - INFO - Running dynamic simulation until time: 30.00
+2025-02-27 22:15:46 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:15:46 - INFO - Simulation initialized
+2025-02-27 22:15:46 - INFO - Running optimization model with params: {'VOLL': 300, 'Pot_Down': 1, 'Flujos': 1, 'Perdidas': 1, 'PerdidasPlus': 0, 'Sim_PF': True, 'Costo_ts': 10, 'TS': 1}
+2025-02-27 22:15:46 - INFO - Initializing Model
+2025-02-27 22:15:46 - INFO - Set parameter Username
+2025-02-27 22:15:46 - INFO - Academic license - for non-commercial use only - expires 2025-03-19
+2025-02-27 22:15:46 - INFO - Set parameter MIPGap to value 0.01
+2025-02-27 22:15:46 - INFO - Optimization model initialized
+2025-02-27 22:15:46 - INFO - Formulating Model
+2025-02-27 22:15:46 - INFO - Objective function set
+2025-02-27 22:15:46 - INFO - Formulating Objective Function
+2025-02-27 22:15:46 - INFO - Adding Constraints
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 0, ti: 0
+2025-02-27 22:15:46 - INFO - Adding Balance and Generators Constraints for Scenario 0 and Time 0
+2025-02-27 22:15:46 - INFO - Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+2025-02-27 22:15:46 - INFO - Adding TS Constraints for Scenario 0 and Time 0
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 1, ti: 0
+2025-02-27 22:15:46 - INFO - Adding Balance and Generators Constraints for Scenario 1 and Time 0
+2025-02-27 22:15:46 - INFO - Adding TS Constraints for Scenario 1 and Time 0
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 2, ti: 0
+2025-02-27 22:15:46 - INFO - Adding Balance and Generators Constraints for Scenario 2 and Time 0
+2025-02-27 22:15:46 - INFO - Adding TS Constraints for Scenario 2 and Time 0
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 3, ti: 0
+2025-02-27 22:15:46 - INFO - Adding Balance and Generators Constraints for Scenario 3 and Time 0
+2025-02-27 22:15:46 - INFO - Adding TS Constraints for Scenario 3 and Time 0
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 4, ti: 0
+2025-02-27 22:15:46 - INFO - Adding Balance and Generators Constraints for Scenario 4 and Time 0
+2025-02-27 22:15:46 - INFO - Adding TS Constraints for Scenario 4 and Time 0
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 5, ti: 0
+2025-02-27 22:15:46 - INFO - Adding Balance and Generators Constraints for Scenario 5 and Time 0
+2025-02-27 22:15:46 - INFO - Adding TS Constraints for Scenario 5 and Time 0
+2025-02-27 22:15:46 - INFO - Adding balance constraint for s: 6, ti: 0
+2025-02-27 22:15:47 - INFO - Adding Balance and Generators Constraints for Scenario 6 and Time 0
+2025-02-27 22:15:47 - INFO - Adding TS Constraints for Scenario 6 and Time 0
+2025-02-27 22:15:47 - INFO - Warning: constraint name "E1-Load_B3_Ramp+  s=0 c=0[0]" has a space
+2025-02-27 22:15:47 - INFO - Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 10.0 (19045.2))
+2025-02-27 22:15:47 - INFO - CPU model: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz, instruction set [SSE2|AVX|AVX2]
+2025-02-27 22:15:47 - INFO - Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+2025-02-27 22:15:47 - INFO - Optimize a model with 8652 rows, 7558 columns and 100870 nonzeros
+2025-02-27 22:15:47 - INFO - Model fingerprint: 0x94c1a7e6
+2025-02-27 22:15:47 - INFO - Variable types: 7287 continuous, 271 integer (271 binary)
+2025-02-27 22:15:47 - INFO - Coefficient statistics:
+2025-02-27 22:15:47 - INFO -   Matrix range     [1e-13, 1e+02]
+2025-02-27 22:15:47 - INFO -   Objective range  [1e+00, 1e+04]
+2025-02-27 22:15:47 - INFO -   Bounds range     [1e+00, 1e+00]
+2025-02-27 22:15:47 - INFO -   RHS range        [2e-02, 1e+02]
+2025-02-27 22:15:47 - INFO - Presolve removed 6238 rows and 1343 columns
+2025-02-27 22:15:47 - INFO - Presolve time: 0.19s
+2025-02-27 22:15:47 - INFO - Presolved: 2414 rows, 6215 columns, 23266 nonzeros
+2025-02-27 22:15:47 - INFO - Variable types: 5212 continuous, 1003 integer (247 binary)
+2025-02-27 22:15:47 - INFO - Found heuristic solution: objective 62205.684738
+2025-02-27 22:15:47 - INFO - Root relaxation: objective 5.581313e+04, 2126 iterations, 0.05 seconds (0.04 work units)
+2025-02-27 22:15:47 - INFO -     Nodes    |    Current Node    |     Objective Bounds      |     Work
+2025-02-27 22:15:47 - INFO -  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+2025-02-27 22:15:47 - INFO -      0     0 55813.1288    0   53 62205.6847 55813.1288  10.3%     -    0s
+2025-02-27 22:15:47 - INFO - H    0     0                    56518.681690 55813.1288  1.25%     -    0s
+2025-02-27 22:15:47 - INFO - Cutting planes:
+2025-02-27 22:15:47 - INFO -   Gomory: 2
+2025-02-27 22:15:47 - INFO -   Implied bound: 27
+2025-02-27 22:15:47 - INFO -   MIR: 95
+2025-02-27 22:15:47 - INFO -   Flow cover: 65
+2025-02-27 22:15:47 - INFO - Explored 1 nodes (2459 simplex iterations) in 0.49 seconds (0.29 work units)
+2025-02-27 22:15:47 - INFO - Thread count was 8 (of 8 available processors)
+2025-02-27 22:15:47 - INFO - Solution count 2: 56518.7 62205.7
+2025-02-27 22:15:47 - INFO - Optimal solution found (tolerance 1.00e-02)
+2025-02-27 22:15:47 - INFO - Best objective 5.651867347791e+04, best bound 5.615701263064e+04, gap 0.6399%
+2025-02-27 22:15:47 - INFO - -----------------------------
+2025-02-27 22:15:47 - INFO - Cost = 56518.67 ($) => Csfc = 11900.00 ($) + Cop = 181365.94 ($) + Cue = 0.00 ($) + Cpl = 130964.77 ($) + Cts = 0.00
+2025-02-27 22:15:47 - INFO - num_Vars =  7558 / num_Const =  8652 / num_NonZeros =  100870
+2025-02-27 22:15:47 - INFO - => Solver time: 0.4910 (s)
+2025-02-27 22:15:47 - INFO - Results extraction complete
+2025-02-27 22:15:47 - INFO - => Formulation time: 0.9105 (s)
+2025-02-27 22:15:47 - INFO - => Solution time: 0.4932 (s)
+2025-02-27 22:15:47 - INFO - Optimization model results: <optm.Modelo object at 0x000002DD28D85590>
+2025-02-27 22:15:47 - INFO - => Extract data time: 52.0862 (s)
+2025-02-27 22:15:47 - INFO - Extracting 2 alternatives solutions
+2025-02-27 22:15:47 - INFO - Another Solution: 62205.68473777118
+2025-02-27 22:15:47 - INFO - Cost = 62205.68 ($) => Csfc = 20300.00 ($) + Cop = 23549.66 ($) + Cue = 0.00 ($) + Cpl = 18356.02 ($) + Cts = 0.00
+2025-02-27 22:15:47 - INFO - Revision big optm with PowerFactory
+2025-02-27 22:15:48 - INFO - Results saved to Excel file 00ResultadosArticulo2 - TS_20250227-221548.xlsx
+2025-02-27 22:15:48 - INFO - Escenario: 1
+2025-02-27 22:15:58 - INFO - Progreso: 1/7
+2025-02-27 22:15:58 - INFO - Generador Out: Load_B3
+2025-02-27 22:16:00 - INFO - Event Gamma G4_1 created with value 0.4111943025684601
+2025-02-27 22:16:00 - INFO - Event Gamma G4_3 created with value 0.34955603547960734
+2025-02-27 22:16:01 - INFO - Event Gamma G7_1 created with value 0.23924953907628593
+2025-02-27 22:16:01 - INFO - Switched lines: []
+2025-02-27 22:16:01 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:16:02 - INFO - Dynamic simulation prepared
+2025-02-27 22:16:02 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:16:10 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:16:20 - INFO - Progreso: 2/7
+2025-02-27 22:16:20 - INFO - Generador Out: Load_F4
+2025-02-27 22:16:21 - INFO - Event Gamma G4_1 created with value 0.27655352078867745
+2025-02-27 22:16:22 - INFO - Event Gamma G4_2 created with value 0.2488121287798235
+2025-02-27 22:16:22 - INFO - Event Gamma G4_3 created with value 0.23743731545839908
+2025-02-27 22:16:23 - INFO - Event Gamma G7_1 created with value 0.23719696399896076
+2025-02-27 22:16:23 - INFO - Switched lines: []
+2025-02-27 22:16:23 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:16:24 - INFO - Dynamic simulation prepared
+2025-02-27 22:16:24 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:16:31 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:16:40 - INFO - Progreso: 3/7
+2025-02-27 22:16:40 - INFO - Generador Out: Load_C1
+2025-02-27 22:16:42 - INFO - Event Gamma G4_1 created with value 0.2755330184525106
+2025-02-27 22:16:42 - INFO - Event Gamma G4_2 created with value 0.2517762901578483
+2025-02-27 22:16:43 - INFO - Event Gamma G4_3 created with value 0.23652672006374909
+2025-02-27 22:16:43 - INFO - Event Gamma G7_1 created with value 0.23616390058021072
+2025-02-27 22:16:43 - INFO - Switched lines: []
+2025-02-27 22:16:43 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:16:44 - INFO - Dynamic simulation prepared
+2025-02-27 22:16:44 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:16:52 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:17:01 - INFO - Progreso: 4/7
+2025-02-27 22:17:01 - INFO - Generador Out: Load_E1
+2025-02-27 22:17:02 - INFO - Event Gamma G4_1 created with value 0.30698113990601306
+2025-02-27 22:17:03 - INFO - Event Gamma G4_2 created with value 0.16801050496396763
+2025-02-27 22:17:04 - INFO - Event Gamma G4_3 created with value 0.2627137064529313
+2025-02-27 22:17:05 - INFO - Event Gamma G7_1 created with value 0.2622945678882698
+2025-02-27 22:17:05 - INFO - Switched lines: []
+2025-02-27 22:17:05 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:17:06 - INFO - Dynamic simulation prepared
+2025-02-27 22:17:06 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:17:15 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:17:29 - INFO - Progreso: 5/7
+2025-02-27 22:17:29 - INFO - Generador Out: Load_A2
+2025-02-27 22:17:31 - INFO - Event Gamma G3_2 created with value 0.1265033354724834
+2025-02-27 22:17:32 - INFO - Event Gamma G4_1 created with value 0.2344724563751519
+2025-02-27 22:17:33 - INFO - Event Gamma G4_2 created with value 0.23457235293441217
+2025-02-27 22:17:34 - INFO - Event Gamma G4_3 created with value 0.20233897632354567
+2025-02-27 22:17:35 - INFO - Event Gamma G7_1 created with value 0.2021128212055124
+2025-02-27 22:17:35 - INFO - Switched lines: []
+2025-02-27 22:17:35 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:17:36 - INFO - Dynamic simulation prepared
+2025-02-27 22:17:36 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:17:47 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:17:58 - INFO - Progreso: 6/7
+2025-02-27 22:17:58 - INFO - Generador Out: Load_E2
+2025-02-27 22:17:59 - INFO - Event Gamma G3_2 created with value 0.20320300854008735
+2025-02-27 22:18:00 - INFO - Event Gamma G3_4 created with value 0.10327406248482562
+2025-02-27 22:18:01 - INFO - Event Gamma G4_1 created with value 0.18539237048359383
+2025-02-27 22:18:01 - INFO - Event Gamma G4_2 created with value 0.18551424967453597
+2025-02-27 22:18:02 - INFO - Event Gamma G4_3 created with value 0.16141776194044458
+2025-02-27 22:18:03 - INFO - Event Gamma G7_1 created with value 0.16119850468582214
+2025-02-27 22:18:03 - INFO - Switched lines: []
+2025-02-27 22:18:03 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:18:04 - INFO - Dynamic simulation prepared
+2025-02-27 22:18:04 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:18:15 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:18:26 - INFO - Progreso: 7/7
+2025-02-27 22:18:26 - INFO - Generador Out: Load_C4
+2025-02-27 22:18:27 - INFO - Event Gamma G3_2 created with value 0.020227040242132246
+2025-02-27 22:18:28 - INFO - Event Gamma G3_4 created with value 0.2429320321177015
+2025-02-27 22:18:29 - INFO - Event Gamma G4_1 created with value 0.19723713477925742
+2025-02-27 22:18:29 - INFO - Event Gamma G4_2 created with value 0.19723610365988692
+2025-02-27 22:18:30 - INFO - Event Gamma G4_3 created with value 0.1713011785038455
+2025-02-27 22:18:31 - INFO - Event Gamma G7_1 created with value 0.17106646476764006
+2025-02-27 22:18:31 - INFO - Switched lines: []
+2025-02-27 22:18:31 - INFO - Preparing dynamic simulation with sim_type: rms
+2025-02-27 22:18:32 - INFO - Dynamic simulation prepared
+2025-02-27 22:18:32 - INFO - Running dynamic simulation until time: 200.00
+2025-02-27 22:18:42 - INFO - Dynamic simulation complete with result: False
+2025-02-27 22:18:43 - INFO - => Check time: 175.3454 (s)
+2025-02-27 22:18:43 - INFO - Check completed
+2025-02-27 22:18:43 - DEBUG - Loaded backend tkagg version 8.6.
+2025-02-27 22:18:43 - INFO - Backend tkagg is interactive backend. Turning interactive mode on.
